@@ -1,0 +1,75 @@
+.register-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)),
+                url('../images/university-bg.jpg') center/cover;
+    padding: 2rem;
+}
+
+.registration-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-step h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.next-btn,
+.prev-btn,
+.submit-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+.next-btn,
+.submit-btn {
+    background: var(--secondary-color);
+    color: white;
+    float: right;
+}
+
+.prev-btn {
+    background: #95a5a6;
+    color: white;
+}
+
+.next-btn:hover,
+.submit-btn:hover {
+    background: #2980b9;
+}
+
+.prev-btn:hover {
+    background: #7f8c8d;
+} 

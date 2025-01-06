@@ -1,25 +1,40 @@
-# CakePHP 3
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
 
-/vendor/*
-/config/app.php
+# Environment files
+.env
+.env.local
+.env.*.local
 
-/tmp/cache/models/*
-!/tmp/cache/models/empty
-/tmp/cache/persistent/*
-!/tmp/cache/persistent/empty
-/tmp/cache/views/*
-!/tmp/cache/views/empty
-/tmp/sessions/*
-!/tmp/sessions/empty
-/tmp/tests/*
-!/tmp/tests/empty
+# Configuration files with sensitive data
+config/db_connection.php
 
-/logs/*
-!/logs/empty
+# Dependencies
+/vendor/
+/node_modules/
 
-# CakePHP 2
+# Logs and databases
+*.log
+*.sql
+*.sqlite
 
-/app/tmp/*
-/app/Config/core.php
-/app/Config/database.php
-/vendors/*
+# Cache and temporary files
+/tmp/
+/temp/
+/cache/
+
+# Uploaded files and media
+/uploads/*
+!/uploads/.gitkeep
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
