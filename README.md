@@ -3,7 +3,7 @@
 A comprehensive alumni management system designed for Uka Tarsadia University graduates to maintain professional connections and track career progress.
 
 ## Project Structure
-
+```
 alumni_network/
 ├── Authentication/
 │ ├── login.php
@@ -22,6 +22,7 @@ alumni_network/
 ├── index.html
 ├── README.md
 └── .gitignore
+```
 ## Features
 - Multi-step registration process
 - Secure authentication system
