@@ -17,14 +17,16 @@ require_once '../../config/db_connection.php';
     <nav class="navbar">
         <div class="logo">
             <a href="../../index.html" class="home-link">
-                <img src="../../assets/images/logo.png" alt="Alumni Network Logo">
+                <img src="../../assets/img/logo.png" alt="Alumni Network Logo">
                 <span>Alumni Network</span>
             </a>
         </div>
         <div class="nav-links">
             <a href="../../index.html" class="home-btn">Home</a>
+            <a href="../Login/login.php" class="login-btn">Login</a>
         </div>
     </nav>
+
     <div class="register-container">
         <form id="registrationForm" class="registration-form" action="process_registration.php" method="POST">
             <!-- Step 1: Basic Information -->
@@ -125,6 +127,11 @@ require_once '../../config/db_connection.php';
                 </div>
                 <button type="button" class="prev-btn" onclick="prevStep(3)">Previous</button>
                 <button type="submit" class="submit-btn">Complete Registration</button>
+            </div>
+
+            <!-- Add login link at the bottom of the form -->
+            <div class="form-links">
+                <span>Already have an account? <a href="../Login/login.php">Login here</a></span>
             </div>
         </form>
     </div>

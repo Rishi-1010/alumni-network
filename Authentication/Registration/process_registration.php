@@ -37,7 +37,7 @@ try {
 
             if ($statusResult['status'] === 'success') {
                 $_SESSION['success'] = "Registration completed successfully!";
-                header("Location: success.php");
+                header("Location: ../../dashboard.php");
                 exit();
             } else {
                 throw new Exception($statusResult['message']);

@@ -20,7 +20,7 @@ body {
 .welcome-container {
     min-height: 100vh;
     background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)),
-                url('../images/university-bg.jpg') center/cover;
+                url('../img/university-bg.jpg') center/cover;
 }
 
 .navbar {
@@ -89,4 +89,18 @@ body {
 
 .cta-button:hover {
     background: #c0392b;
+}
+
+.admin-btn {
+    background: var(--primary-color);
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.admin-btn:hover {
+    background: #34495e;
+    text-decoration: none;
 } 

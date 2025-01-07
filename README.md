@@ -4,8 +4,22 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 
 ## Project Structure
 ```
-alumni_network/
+├── admin/
+│ ├── dashboard.php
+│ ├── delete_alumni.php # New file
+│ ├── verifications.php
+│ ├── alumni-list.php
+│ ├── reports.php
+│ └── settings.php
 ├── Authentication/
+│ ├── AdminLogin/
+│ │ ├── login.php
+│ │ ├── process_login.php
+│ │ ├── logout.php
+│ │ └── generate_hash.php
+│ ├── Login/
+│ │ ├── login.php
+│ │ └── process_login.php
 │ └── Registration/
 │ ├── register.php
 │ ├── process_registration.php
@@ -15,18 +29,24 @@ alumni_network/
 ├── assets/
 │ ├── css/
 │ │ ├── style.css
-│ │ └── register.css
+│ │ ├── register.css
+│ │ └── admin.css
 │ ├── js/
-│ │ └── register.js
+│ │ ├── register.js
+│ │ ├── admin.js # Updated with delete functionality
+│ │ └── admin-login.js
 │ └── images/
-│ └── university-bg.jpg
+│ ├── logo.png
+│ └── admin-avatar.png
 ├── database/
 │ └── alumni_network.sql
 ├── index.html
 ├── .gitignore
 └── README.md
 ```
+
 ## Features
+### Implemented Features
 - Multi-step registration process
   - Basic Information
   - Educational Details
@@ -34,41 +54,76 @@ alumni_network/
 - Secure authentication system
   - Password hashing
   - Session management
-- Educational verification system
-  - University selection
-  - Enrollment validation
-  - Graduation year tracking
-- Professional status tracking
-  - Current employment status
-  - Company details
-  - Position tracking
+- Admin Panel
+  - Secure admin login
+  - Dashboard analytics
+  - Alumni verification system
+  - User management
+  - Record deletion with confirmation
+  - Real-time UI updates
 - Responsive design
   - Mobile-friendly interface
   - Modern UI components
   - Smooth transitions
+  - Delete animations
+
+### Under Development
+- Educational verification system
+  - Document upload
+  - Automated verification process
+  - Manual admin verification
+- Professional networking
+  - Alumni connections
+  - Direct messaging
+  - Job sharing
+- Event Management
+  - Alumni meetups
+  - Professional workshops
+  - University events
+- Analytics Dashboard
+  - Employment statistics
+  - Alumni distribution
+  - Industry trends
+- Email Notifications
+  - Verification updates
+  - Event reminders
+  - Connection requests
 
 ## Tech Stack
 - PHP 7.4+
 - MySQL 5.7+
 - HTML5/CSS3
 - JavaScript
-- PDO Database Connection
-- Bootstrap (for styling)
+- Bootstrap 5.3.2
+- jQuery 3.7.1
 
 ## Database Structure
 - Users table (authentication and profile)
+  - Cascade deletion support
+  - Referential integrity
 - Educational details (academic information)
 - Professional status (current employment)
 - Status history (career timeline)
-- Universities list (verified institutions)
 - Admin users (system management)
+- Universities list (verified institutions)
 
 ## Setup Instructions
 1. Clone the repository
 2. Import `database/alumni_network.sql` to your MySQL server
 3. Configure database connection in `config/db_connection.php`
-4. Run using XAMPP/WAMP server
-5. Access the application through localhost
+4. Set up admin credentials using `Authentication/AdminLogin/generate_hash.php`
+5. Run using XAMPP/WAMP server
+6. Access the application through localhost
+
+## Security Features
+- Password hashing using bcrypt
+- Session management
+- SQL injection prevention
+- XSS protection
+- CSRF protection
+- Secure admin authentication
+- Transaction-based deletions
+- Data integrity checks
 
 ## Contributing
 1. Fork the repository
