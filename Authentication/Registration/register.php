@@ -13,6 +13,18 @@ require_once '../../config/db_connection.php';
     <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
+    <!-- Add navigation bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="../../index.html" class="home-link">
+                <img src="../../assets/images/logo.png" alt="Alumni Network Logo">
+                <span>Alumni Network</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="../../index.html" class="home-btn">Home</a>
+        </div>
+    </nav>
     <div class="register-container">
         <form id="registrationForm" class="registration-form" action="process_registration.php" method="POST">
             <!-- Step 1: Basic Information -->
