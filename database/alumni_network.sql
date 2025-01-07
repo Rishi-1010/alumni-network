@@ -73,4 +73,57 @@ CREATE TABLE universities (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Projects table
+CREATE TABLE projects (
+    project_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    start_date DATE,
+    end_date DATE,
+    project_url VARCHAR(255),
+    technologies_used TEXT,
+    role VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- Skills table
+CREATE TABLE skills (
+    skill_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    skill_name VARCHAR(100) NOT NULL,
+    proficiency_level ENUM('beginner', 'intermediate', 'advanced', 'expert'),
+    years_of_experience DECIMAL(4,1),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- Career goals table
+CREATE TABLE career_goals (
+    goal_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    goal_year YEAR NOT NULL,
+    goal_type ENUM('learning', 'career', 'certification', 'other'),
+    description TEXT NOT NULL,
+    target_date DATE,
+    status ENUM('planned', 'in_progress', 'achieved', 'cancelled') DEFAULT 'planned',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- Certifications table
+CREATE TABLE certifications (
+    cert_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    issuing_organization VARCHAR(200) NOT NULL,
+    issue_date DATE,
+    expiry_date DATE,
+    credential_id VARCHAR(100),
+    credential_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
 -- Create connection file

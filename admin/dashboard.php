@@ -128,6 +128,7 @@ try {
                                 <th>Email</th>
                                 <th>Graduation Year</th>
                                 <th>Status</th>
+                                <th>Portfolio</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -142,6 +143,12 @@ try {
                                         <span class="status-badge <?php echo htmlspecialchars($alumni['verification_status']); ?>">
                                             <?php echo ucfirst(htmlspecialchars($alumni['verification_status'])); ?>
                                         </span>
+                                    </td>
+                                    <td>
+                                        <a href="view-portfolio.php?id=<?php echo htmlspecialchars($alumni['user_id']); ?>" 
+                                           class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
                                     </td>
                                     <td>
                                         <?php if($alumni['verification_status'] === 'pending'): ?>

@@ -6,8 +6,10 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 ```
 ├── admin/
 │ ├── dashboard.php
-│ ├── delete_alumni.php # New file
+│ ├── view-portfolio.php
+│ ├── delete_alumni.php
 │ ├── verifications.php
+│ ├── verify-alumni.php
 │ ├── alumni-list.php
 │ ├── reports.php
 │ └── settings.php
@@ -30,10 +32,12 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ ├── css/
 │ │ ├── style.css
 │ │ ├── register.css
+│ │ ├── dashboard.css
 │ │ └── admin.css
 │ ├── js/
 │ │ ├── register.js
-│ │ ├── admin.js # Updated with delete functionality
+│ │ ├── admin.js
+│ │ ├── dashboard.js
 │ │ └── admin-login.js
 │ └── images/
 │ ├── logo.png
@@ -41,6 +45,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 ├── database/
 │ └── alumni_network.sql
 ├── index.html
+├── dashboard.php
 ├── .gitignore
 └── README.md
 ```
@@ -51,6 +56,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Basic Information
   - Educational Details
   - Professional Status
+  - Project Details
 - Secure authentication system
   - Password hashing
   - Session management
@@ -61,17 +67,17 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - User management
   - Record deletion with confirmation
   - Real-time UI updates
+  - Portfolio view
+  - Educational verification
 - Responsive design
   - Mobile-friendly interface
   - Modern UI components
   - Smooth transitions
   - Delete animations
+  - Card layouts
+  - Status badges
 
 ### Under Development
-- Educational verification system
-  - Document upload
-  - Automated verification process
-  - Manual admin verification
 - Professional networking
   - Alumni connections
   - Direct messaging
@@ -89,6 +95,24 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Event reminders
   - Connection requests
 
+## Database Structure
+### Tables
+- users
+  - Basic user information
+  - Authentication details
+- educational_details
+  - University information
+  - Enrollment details
+  - Verification status
+- professional_status
+  - Current employment
+  - Company details
+  - Position
+- projects
+  - Project details
+  - Technologies used
+  - Duration
+
 ## Tech Stack
 - PHP 7.4+
 - MySQL 5.7+
@@ -96,16 +120,15 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - JavaScript
 - Bootstrap 5.3.2
 - jQuery 3.7.1
+- Font Awesome 6.5.1
 
-## Database Structure
-- Users table (authentication and profile)
-  - Cascade deletion support
-  - Referential integrity
-- Educational details (academic information)
-- Professional status (current employment)
-- Status history (career timeline)
-- Admin users (system management)
-- Universities list (verified institutions)
+## Recent Updates
+- Added portfolio view for admin
+- Implemented project display section
+- Enhanced verification system
+- Improved responsive design
+- Added status badges
+- Implemented educational details verification
 
 ## Setup Instructions
 1. Clone the repository
