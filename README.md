@@ -6,30 +6,46 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 ```
 alumni_network/
 ├── Authentication/
-│   ├── login.php
-│   └── register.php
+│ └── Registration/
+│ ├── register.php
+│ ├── process_registration.php
+│ └── success.php
 ├── config/
-│   └── db_connection.php
+│ └── db_connection.php
 ├── assets/
-│   ├── css/
-│   │   ├── style.css
-│   │   └── register.css
-│   ├── js/
-│   │   └── register.js
-│   └── images/
+│ ├── css/
+│ │ ├── style.css
+│ │ └── register.css
+│ ├── js/
+│ │ └── register.js
+│ └── images/
+│ └── university-bg.jpg
 ├── database/
-│   └── alumni_network.sql
+│ └── alumni_network.sql
 ├── index.html
-├── process_registration.php
-├── process_login.php
+├── .gitignore
 └── README.md
 ```
 ## Features
 - Multi-step registration process
+  - Basic Information
+  - Educational Details
+  - Professional Status
 - Secure authentication system
-- Professional status tracking
+  - Password hashing
+  - Session management
 - Educational verification system
+  - University selection
+  - Enrollment validation
+  - Graduation year tracking
+- Professional status tracking
+  - Current employment status
+  - Company details
+  - Position tracking
 - Responsive design
+  - Mobile-friendly interface
+  - Modern UI components
+  - Smooth transitions
 
 ## Tech Stack
 - PHP 7.4+
@@ -37,12 +53,22 @@ alumni_network/
 - HTML5/CSS3
 - JavaScript
 - PDO Database Connection
+- Bootstrap (for styling)
+
+## Database Structure
+- Users table (authentication and profile)
+- Educational details (academic information)
+- Professional status (current employment)
+- Status history (career timeline)
+- Universities list (verified institutions)
+- Admin users (system management)
 
 ## Setup Instructions
 1. Clone the repository
 2. Import `database/alumni_network.sql` to your MySQL server
 3. Configure database connection in `config/db_connection.php`
 4. Run using XAMPP/WAMP server
+5. Access the application through localhost
 
 ## Contributing
 1. Fork the repository

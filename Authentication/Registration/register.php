@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config/db_connection.php';
+require_once '../../config/db_connection.php';
 ?>
 
 <!DOCTYPE html>
@@ -9,8 +9,8 @@ require_once '../config/db_connection.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumni Registration</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/register.css">
+    <link rel="stylesheet" href="../../assets/css/register.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
     <div class="register-container">
@@ -117,6 +117,6 @@ require_once '../config/db_connection.php';
         </form>
     </div>
 
-    <script src="../assets/js/register.js"></script>
+    <script src="../../assets/js/register.js"></script>
 </body>
 </html>
