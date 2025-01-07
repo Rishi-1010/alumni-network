@@ -44,7 +44,32 @@ require_once '../config/db_connection.php';
                     <label for="university">University*</label>
                     <select id="university" name="university" required>
                         <option value="">Select University</option>
-                        <!-- Add universities dynamically from database -->
+                        <option value="">Select University</option>
+                            <?php
+                            // Database connection
+                            $conn = new mysqli("localhost", "root", "", "alumni_network");
+                            
+                            // Check connection
+                            if ($conn->connect_error) {
+                                die("Connection failed: " . $conn->connect_error);
+                            }
+                            
+                            // Fetch universities
+                            $sql = "SELECT university_id, university_name FROM universities";
+                            $result = $conn->query($sql);
+                            
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='" . $row['university_id'] . "'>" . htmlspecialchars($row['university_name']) . "</option>";
+                                }
+                            } else {
+                                echo "<option value=''>No universities available</option>";
+                            }
+                            
+                            // Close connection
+                            $conn->close();
+                            ?>
+
                     </select>
                 </div>
                 <div class="form-group">

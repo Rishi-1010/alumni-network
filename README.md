@@ -6,22 +6,23 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 ```
 alumni_network/
 ├── Authentication/
-│ ├── login.php
-│ └── register.php
+│   ├── login.php
+│   └── register.php
 ├── config/
-│ └── db_connection.php
+│   └── db_connection.php
 ├── assets/
-│ ├── css/
-│ │ ├── style.css
-│ │ └── register.css
-│ ├── js/
-│ │ └── register.js
-│ └── images/
+│   ├── css/
+│   │   ├── style.css
+│   │   └── register.css
+│   ├── js/
+│   │   └── register.js
+│   └── images/
 ├── database/
-│ └── alumni_network.sql
+│   └── alumni_network.sql
 ├── index.html
-├── README.md
-└── .gitignore
+├── process_registration.php
+├── process_login.php
+└── README.md
 ```
 ## Features
 - Multi-step registration process
