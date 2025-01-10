@@ -114,13 +114,12 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Duration
 
 ## Tech Stack
-- PHP 7.4+
-- MySQL 5.7+
+- PHP
+- MySQL
 - HTML5/CSS3
 - JavaScript
 - Bootstrap 5.3.2
 - jQuery 3.7.1
-- Font Awesome 6.5.1
 
 ## Recent Updates
 - Added portfolio view for admin

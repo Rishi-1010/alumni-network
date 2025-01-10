@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('registrationForm');
     const steps = document.querySelectorAll('.form-step');
     const progressBar = document.querySelector('.progress-bar');
@@ -6,66 +6,67 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentStep = 1;
     let projectCounter = 1; // Keep track of project count
 
-    // Make these functions global
-    window.nextStep = function(step) {
+    // Ensure there's only one 'Next' button and attach the event listener correctly
+    const nextButtons = document.querySelectorAll('.next-btn');
+    nextButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+            nextStep(currentStep);  // Call nextStep with the current step number
+        });
+    });
+
+    // Navigate to the next step
+    window.nextStep = function (step) {
+        console.log(`Attempting to move from Step ${step} to Step ${step + 1}`);
+        // Only proceed to the next step if the current step is valid
         if (validateStep(step)) {
             document.getElementById(`step${step}`).style.display = 'none';
             document.getElementById(`step${step + 1}`).style.display = 'block';
             currentStep = step + 1;
             updateProgressBar();
+        } else {
+            console.log(`Validation failed for Step ${step}`);
         }
     };
+    
 
-    window.prevStep = function(step) {
+    // Navigate to the previous step
+    window.prevStep = function (step) {
+        console.log(`Going back from Step ${step} to Step ${step - 1}`);
         document.getElementById(`step${step}`).style.display = 'none';
         document.getElementById(`step${step - 1}`).style.display = 'block';
         currentStep = step - 1;
         updateProgressBar();
     };
 
+    // Validate fields in the current step
     function validateStep(step) {
         const currentStepElement = document.getElementById(`step${step}`);
         const requiredFields = currentStepElement.querySelectorAll('[required]');
         let isValid = true;
-
-        // Get current status value for step 3
-        const currentStatus = document.getElementById('current_status');
-        
+    
         requiredFields.forEach(field => {
-            // Skip validation for employment fields if not employed
-            if (currentStatus && currentStatus.value !== 'employed' && 
-                (field.id === 'current_company' || field.id === 'current_position')) {
-                return;
-            }
-
-            // Only validate if the field is visible and enabled
-            if (field.offsetParent !== null && !field.disabled && 
-                window.getComputedStyle(field).display !== 'none') {
-                if (!field.value.trim()) {
-                    isValid = false;
-                    field.classList.add('error');
-                    // Ensure the field is visible before scrolling
-                    if (field.offsetParent !== null) {
-                        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                } else {
-                    field.classList.remove('error');
-                }
+            console.log(`Field: ${field.id}, Value: "${field.value}"`);
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('error');
+            } else {
+                field.classList.remove('error');
             }
         });
-
+    
         if (!isValid) {
-            alert('Please fill in all required fields in this step.');
+            alert('Please fill in all required fields.');
         }
-
+    
         return isValid;
     }
 
+    // Update progress bar and step indicators
     function updateProgressBar() {
         if (progressBar && steps.length > 0) {
             const progress = ((currentStep - 1) / (steps.length - 1)) * 100;
             progressBar.style.width = `${progress}%`;
-            
+
             // Update step indicators
             stepIndicators.forEach((indicator, index) => {
                 indicator.classList.toggle('active', index + 1 <= currentStep);
@@ -76,17 +77,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize form
     if (document.getElementById('step1')) {
         document.getElementById('step1').style.display = 'block';
+
         // Hide other steps
-        for(let i = 2; i <= steps.length; i++) {
+        for (let i = 2; i <= steps.length; i++) {
             const step = document.getElementById(`step${i}`);
             if (step) step.style.display = 'none';
         }
         updateProgressBar();
     }
 
-    // Form submission
+    // Form submission handler
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
             if (validateStep(currentStep)) {
                 this.submit();
@@ -94,11 +96,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Add event listener for current status change
-    document.getElementById('current_status')?.addEventListener('change', function() {
+    // Handle "current status" field changes
+    document.getElementById('current_status')?.addEventListener('change', function () {
         const companyField = document.getElementById('current_company');
         const positionField = document.getElementById('current_position');
-        
+
         if (this.value === 'employed') {
             companyField.required = true;
             positionField.required = true;
@@ -114,18 +116,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Add final submit handler
-    document.querySelector('.submit-btn')?.addEventListener('click', function(e) {
+    // Final submission button
+    document.querySelector('.submit-btn')?.addEventListener('click', function (e) {
         e.preventDefault();
         if (validateStep(currentStep)) {
             document.getElementById('registrationForm').submit();
         }
     });
 
-    // Add project function
-    document.getElementById('add-project')?.addEventListener('click', function() {
+    // Add project functionality
+    document.getElementById('add-project')?.addEventListener('click', function () {
         const projectsContainer = document.getElementById('projects-container');
-        
+
         // Create new project entry
         const newProject = document.createElement('div');
         newProject.className = 'project-entry';
@@ -176,29 +178,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add animation class
         newProject.classList.add('project-entry-new');
-        
+
         // Append new project
         projectsContainer.appendChild(newProject);
-        
+
         // Increment counter
         projectCounter++;
-        
+
         // Scroll to new project
         newProject.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    // Remove project function
-    window.removeProject = function(button) {
+    // Remove project functionality
+    window.removeProject = function (button) {
         const projectEntry = button.closest('.project-entry');
-        
+
         // Add removal animation
         projectEntry.classList.add('project-entry-remove');
-        
+
         // Remove after animation
         setTimeout(() => {
             projectEntry.remove();
         }, 300);
     };
-
-    // Rest of your existing code for projects and skills...
-}); 
+});

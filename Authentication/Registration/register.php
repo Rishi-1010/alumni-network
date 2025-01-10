@@ -43,107 +43,82 @@ require_once '../../config/db_connection.php';
 
             <form id="registrationForm" class="registration-form" action="process_registration.php" method="POST">
                 <!-- Step 1: Basic Information -->
-                <div class="form-step" id="step1">
-                    <h2>Basic Information</h2>
-                    <div class="form-group">
-                        <label for="fullname">Full Name*</label>
-                        <input type="text" id="fullname" name="fullname" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address*</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Phone Number*</label>
-                        <input type="tel" id="phone" name="phone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password*</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <button type="button" class="next-btn" onclick="nextStep(1)">Next</button>
-                </div>
+<div class="form-step" id="step1">
+    <h2>Basic Information</h2>
+    <div class="form-group">
+        <label for="fullname">Full Name*</label>
+        <input type="text" id="fullname" name="fullname" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email Address*</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+        <label for="phone">Phone Number*</label>
+        <input type="tel" id="phone" name="phone" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password*</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="button" class="next-btn" onclick="nextStep(1)">Next</button>
+</div>
 
-                <!-- Step 2: Educational Details -->
-                <div class="form-step" id="step2" style="display: none;">
-                    <h2>Educational Details</h2>
-                    <div class="form-group">
-                        <label for="university">University*</label>
-                        <select id="university" name="university" required>
-                            <option value="">Select University</option>
-                            <option value="">Select University</option>
-                                <?php
-                                // Database connection
-                                $conn = new mysqli("localhost", "root", "", "alumni_network");
-                                
-                                // Check connection
-                                if ($conn->connect_error) {
-                                    die("Connection failed: " . $conn->connect_error);
-                                }
-                                
-                                // Fetch universities
-                                $sql = "SELECT university_id, university_name FROM universities";
-                                $result = $conn->query($sql);
-                                
-                                if ($result->num_rows > 0) {
-                                    while ($row = $result->fetch_assoc()) {
-                                        echo "<option value='" . $row['university_id'] . "'>" . htmlspecialchars($row['university_name']) . "</option>";
-                                    }
-                                } else {
-                                    echo "<option value=''>No universities available</option>";
-                                }
-                                
-                                // Close connection
-                                $conn->close();
-                                ?>
+<!-- Step 2: Educational Details -->
+<div class="form-step" id="step2" style="display: none;">
+    <h2>Educational Details</h2>
+    <div class="form-group">
+        <label for="university">University*</label>
+        <select id="university" name="university" required>
+            <option value="1" selected>Uka Tarsadia University</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="enrollment">Enrollment Number*</label>
+        <input type="text" id="enrollment" name="enrollment" required>
+    </div>
+    <div class="form-group">
+        <label for="graduation_year_1">Graduation Year*</label> <!-- Updated ID here -->
+        <select id="graduation_year_1" name="graduation_year" required>
+            <?php
+            $current_year = date('Y');
+            for ($year = $current_year; $year >= $current_year - 50; $year--) {
+                echo "<option value='$year'>$year</option>";
+            }
+            ?>
+        </select>
+    </div>
+    <button type="button" class="prev-btn" onclick="prevStep(2)">Previous</button>
+    <button type="button" class="next-btn" onclick="nextStep(2)">Next</button>
+</div>
 
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="enrollment">Enrollment Number*</label>
-                        <input type="text" id="enrollment" name="enrollment" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="graduation_year">Graduation Year*</label>
-                        <select id="graduation_year" name="graduation_year" required>
-                            <?php
-                            $current_year = date('Y');
-                            for($year = $current_year; $year >= $current_year - 50; $year--) {
-                                echo "<option value='$year'>$year</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-                    <button type="button" class="prev-btn" onclick="prevStep(2)">Previous</button>
-                    <button type="button" class="next-btn" onclick="nextStep(2)">Next</button>
-                </div>
 
-                <!-- Step 3: Current Status -->
-                <div class="form-step" id="step3" style="display: none;">
-                    <h2>Current Status</h2>
-                    <div class="form-group">
-                        <label for="current_status">Current Professional Status*</label>
-                        <select id="current_status" name="current_status" required>
-                            <option value="employed">Employed</option>
-                            <option value="seeking">Seeking Opportunities</option>
-                            <option value="student">Further Studies</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="current_company">Current Company</label>
-                        <input type="text" id="current_company" name="current_company" 
-                               disabled required>
-                    </div>
-                    <div class="form-group">
-                        <label for="current_position">Current Position</label>
-                        <input type="text" id="current_position" name="current_position" 
-                               disabled required>
-                    </div>
-                    <button type="button" class="prev-btn" onclick="prevStep(3)">Previous</button>
-                    <button type="button" class="next-btn" onclick="nextStep(3)">Next</button>
-                </div>
+<!-- Step 3: Current Status -->
+<div class="form-step" id="step3" style="display: none;">
+    <h2>Current Status</h2>
+    <div class="form-group">
+        <label for="current_status">Current Professional Status*</label>
+        <select id="current_status" name="current_status" required onchange="toggleEmploymentFields()">
+            <option value="seeking">Seeking Opportunities</option>
+            <option value="employed">Employed</option>
+            <option value="student">Further Studies</option>
+            <option value="other">Other</option>
+        </select>
+    </div>
 
+    <div class="form-group">
+        <label for="current_company">Current Company</label>
+        <input type="text" id="current_company" name="current_company" disabled required>
+    </div>
+
+    <div class="form-group">
+        <label for="current_position">Current Position</label>
+        <input type="text" id="current_position" name="current_position" disabled required>
+    </div>
+
+    <button type="button" class="prev-btn" onclick="prevStep(3)">Previous</button>
+    <button type="button" class="next-btn" onclick="nextStep(3)">Next</button>
+</div>
                 <!-- Step 4: Projects -->
                 <div class="form-step" id="step4" style="display: none;">
                     <h3>Projects</h3>
@@ -205,26 +180,13 @@ require_once '../../config/db_connection.php';
 
                 <!-- Step 6: Career Goals -->
                 <div class="form-step" id="step6" style="display: none;">
-    <h3>Career Goals</h3>
-    <div class="form-group">
-        <label>Short-term Goal (1 year)*</label>
-        <textarea name="goals[short_term]" required></textarea>
-    </div>
-    <div class="form-group">
-        <label>Mid-term Goal (3 years)*</label>
-        <textarea name="goals[mid_term]" required></textarea>
-    </div>
-    <div class="form-group">
-        <label>Long-term Goal (5+ years)*</label>
-        <textarea name="goals[long_term]" required></textarea>
-    </div>
-    <button type="button" class="prev-btn" onclick="prevStep(6)">Previous</button>
-    <button type="submit" class="submit-btn">Complete Registration</button>
-</div>
-
-                <!-- Add login link at the bottom of the form -->
-                <div class="form-links">
-                    <span>Already have an account? <a href="../Login/login.php">Login here</a></span>
+                    <h3>Career Goals</h3>
+                    <div class="form-group">
+                        <label for="career_goals">What are your career goals?</label>
+                        <textarea name="career_goals" rows="4" required></textarea>
+                    </div>
+                    <button type="button" class="prev-btn" onclick="prevStep(6)">Previous</button>
+                    <button type="submit" class="submit-btn">Submit</button>
                 </div>
             </form>
         </div>

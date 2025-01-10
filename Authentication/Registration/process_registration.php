@@ -17,9 +17,14 @@ $password = $_POST['password'];
 $university = $_POST['university'];
 $enrollment = $_POST['enrollment'];
 $graduation_year = $_POST['graduation_year'];
-$status = $_POST['current_status'];
+$status = $_POST['current_status'] ?? 'seeking'; // Default to 'seeking' if no status is provided
 $company = $_POST['current_company'] ?? null;
 $position = $_POST['current_position'] ?? null;
+
+// Validate if `current_status` is not null or empty
+if (empty($status)) {
+    $status = 'seeking'; // Ensure a valid status is set
+}
 
 try {
     // Register User
@@ -37,7 +42,7 @@ try {
 
             if ($statusResult['status'] === 'success') {
                 $_SESSION['success'] = "Registration completed successfully!";
-                header("Location: ../../dashboard.php");
+                header("Location: ../login/login.php");
                 exit();
             } else {
                 throw new Exception($statusResult['message']);
