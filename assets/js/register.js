@@ -67,13 +67,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     sessionStorage.setItem(field.name, field.value);
                 }
             });
-
+    
             // Proceed to next step
             document.getElementById(`step${step}`).style.display = 'none';
             document.getElementById(`step${step + 1}`).style.display = 'block';
             currentStep = step + 1;
             updateProgressBar();
-
+    
             // Scroll to top of new step
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }

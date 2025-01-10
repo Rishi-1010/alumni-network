@@ -113,6 +113,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Verification updates
   - Event reminders
   - Connection requests
+  - OTP verification system
 
 ## Database Structure
 ### Tables
@@ -173,7 +174,6 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - Secure admin authentication
 - Transaction-based deletions
 - Data integrity checks
-- OTP verification system
 
 ## Recent Updates
 - Added portfolio view for admin
