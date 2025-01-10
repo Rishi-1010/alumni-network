@@ -18,7 +18,7 @@ $conn = $db->connect();
 $userId = $_GET['id'];
 
 try {
-    // First get basic user info and educational details
+    // Fetch user data along with projects, skills, career goals, and certifications
     $stmt = $conn->prepare("
         SELECT 
             u.*,
@@ -33,10 +33,29 @@ try {
     $stmt->execute([$userId]);
     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Fetch projects
+    $stmt = $conn->prepare("SELECT * FROM projects WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch skills
+    $stmt = $conn->prepare("SELECT * FROM skills WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    $skills = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch career goals
+    $stmt = $conn->prepare("SELECT * FROM career_goals WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    $careerGoals = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch certifications
+    $stmt = $conn->prepare("SELECT * FROM certifications WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    $certifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     if (!$userData) {
         die("Alumni not found");
     }
-
 } catch(PDOException $e) {
     die("Error: " . $e->getMessage());
 }
@@ -136,6 +155,53 @@ try {
                                 <?php endif; ?>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Project Details -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3><i class="fas fa-project-diagram"></i> Project Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <?php foreach ($projects as $project): ?>
+                            <p><strong>Title:</strong> <?php echo htmlspecialchars($project['title']); ?></p>
+                            <p><strong>Description:</strong> <?php echo htmlspecialchars($project['description']); ?></p>
+                            <!-- Add more fields as needed -->
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- Skills and Certifications -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3><i class="fas fa-certificate"></i> Skills and Certifications</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Skills</h4>
+                        <?php foreach ($skills as $skill): ?>
+                            <p><strong>Skill:</strong> <?php echo htmlspecialchars($skill['skill_name']); ?></p>
+                            <!-- Add more fields as needed -->
+                        <?php endforeach; ?>
+
+                        <h4>Certifications</h4>
+                        <?php foreach ($certifications as $certification): ?>
+                            <p><strong>Title:</strong> <?php echo htmlspecialchars($certification['title']); ?></p>
+                            <!-- Add more fields as needed -->
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- Career Goals -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bullseye"></i> Career Goals</h3>
+                    </div>
+                    <div class="card-body">
+                        <?php foreach ($careerGoals as $goal): ?>
+                            <p><strong>Goal:</strong> <?php echo htmlspecialchars($goal['description']); ?></p>
+                            <!-- Add more fields as needed -->
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>

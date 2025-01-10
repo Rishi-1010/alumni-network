@@ -21,6 +21,12 @@ $status = $_POST['current_status'] ?? 'seeking'; // Default to 'seeking' if no s
 $company = $_POST['current_company'] ?? null;
 $position = $_POST['current_position'] ?? null;
 
+// Capture additional data
+$projects = $_POST['projects'] ?? [];
+$skills = $_POST['skills'] ?? [];
+$careerGoals = $_POST['career_goals'] ?? [];
+$certifications = $_POST['certifications'] ?? [];
+
 // Validate if `current_status` is not null or empty
 if (empty($status)) {
     $status = 'seeking'; // Ensure a valid status is set
@@ -41,6 +47,30 @@ try {
             $statusResult = $db->updateStatus($user_id, $status, $company, $position);
 
             if ($statusResult['status'] === 'success') {
+                // Insert Projects
+                foreach ($projects as $project) {
+                    $stmt = $conn->prepare("INSERT INTO projects (user_id, title, description, start_date, end_date, technologies_used) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$user_id, $project['title'], $project['description'], $project['start_date'], $project['end_date'], $project['technologies']]);
+                }
+
+                // Insert Skills
+                foreach ($skills as $skill) {
+                    $stmt = $conn->prepare("INSERT INTO skills (user_id, skill_name, proficiency_level) VALUES (?, ?, ?)");
+                    $stmt->execute([$user_id, $skill['name'], $skill['level']]);
+                }
+
+                // Insert Career Goals
+                foreach ($careerGoals as $goal) {
+                    $stmt = $conn->prepare("INSERT INTO career_goals (user_id, goal_year, description, target_date, status) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->execute([$user_id, $goal['year'], $goal['description'], $goal['target_date'], $goal['status']]);
+                }
+
+                // Insert Certifications
+                foreach ($certifications as $cert) {
+                    $stmt = $conn->prepare("INSERT INTO certifications (user_id, title, issuing_organization, issue_date, expiry_date) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->execute([$user_id, $cert['title'], $cert['organization'], $cert['issue_date'], $cert['expiry_date']]);
+                }
+
                 $_SESSION['success'] = "Registration completed successfully!";
                 header("Location: ../login/login.php");
                 exit();

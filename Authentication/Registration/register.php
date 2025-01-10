@@ -78,7 +78,7 @@ require_once '../../config/db_connection.php';
         <input type="text" id="enrollment" name="enrollment" required>
     </div>
     <div class="form-group">
-        <label for="graduation_year_1">Graduation Year*</label> <!-- Updated ID here -->
+        <label for="graduation_year_1">Graduation Year*</label>
         <select id="graduation_year_1" name="graduation_year" required>
             <?php
             $current_year = date('Y');
