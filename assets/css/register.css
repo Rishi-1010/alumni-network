@@ -30,8 +30,12 @@
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 5px;
     color: var(--text-color);
+}
+
+.form-group.has-error label {
+    color: #dc3545;
 }
 
 .form-group input,
@@ -174,11 +178,28 @@
     height: 12px;
     border-radius: 50%;
     background: #ddd;
-    transition: background 0.3s ease;
+    margin: 0 4px;
+    transition: all 0.3s ease;
 }
 
 .step-indicator.active {
     background: var(--primary-color);
+    transform: scale(1.2);
+}
+
+.step-indicator.completed {
+    background: var(--secondary-color);
+}
+
+.error {
+    border-color: #dc3545 !important;
+    animation: shake 0.5s linear;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
 }
 
 .project-entry, .skill-entry {
@@ -205,10 +226,6 @@
 
 .remove-entry:hover {
     background: #c82333;
-}
-
-.error {
-    border-color: #dc3545;
 }
 
 hr {

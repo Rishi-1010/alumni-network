@@ -14,52 +14,88 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Navigate to the next step
-    window.nextStep = function (step) {
-        console.log(`Attempting to move from Step ${step} to Step ${step + 1}`);
-        // Only proceed to the next step if the current step is valid
-        if (validateStep(step)) {
-            document.getElementById(`step${step}`).style.display = 'none';
-            document.getElementById(`step${step + 1}`).style.display = 'block';
-            currentStep = step + 1;
-            updateProgressBar();
-        } else {
-            console.log(`Validation failed for Step ${step}`);
-        }
-    };
-    
-
-    // Navigate to the previous step
-    window.prevStep = function (step) {
-        console.log(`Going back from Step ${step} to Step ${step - 1}`);
-        document.getElementById(`step${step}`).style.display = 'none';
-        document.getElementById(`step${step - 1}`).style.display = 'block';
-        currentStep = step - 1;
-        updateProgressBar();
-    };
-
     // Validate fields in the current step
     function validateStep(step) {
         const currentStepElement = document.getElementById(`step${step}`);
-        const requiredFields = currentStepElement.querySelectorAll('[required]');
+        const requiredFields = currentStepElement.querySelectorAll('[required]:not([disabled])');
         let isValid = true;
     
         requiredFields.forEach(field => {
-            console.log(`Field: ${field.id}, Value: "${field.value}"`);
-            if (!field.value.trim()) {
+            // Clear previous error state
+            field.classList.remove('error');
+            
+            // Check if field is empty or invalid
+            if (field.type === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(field.value.trim())) {
+                    isValid = false;
+                    field.classList.add('error');
+                }
+            } else if (field.type === 'tel') {
+                const phoneRegex = /^\d{10}$/;
+                if (!phoneRegex.test(field.value.trim())) {
+                    isValid = false;
+                    field.classList.add('error');
+                }
+            } else if (!field.value.trim()) {
                 isValid = false;
                 field.classList.add('error');
-            } else {
-                field.classList.remove('error');
             }
         });
     
         if (!isValid) {
-            alert('Please fill in all required fields.');
+            const invalidFields = currentStepElement.querySelectorAll('.error');
+            if (invalidFields.length > 0) {
+                const firstInvalid = invalidFields[0];
+                const fieldName = firstInvalid.previousElementSibling?.textContent || 'Some fields';
+                alert(`${fieldName} require valid input.`);
+                firstInvalid.focus();
+            }
         }
     
         return isValid;
     }
+
+    // Navigate to the next step
+    window.nextStep = function (step) {
+        if (validateStep(step)) {
+            // Store form data in session storage
+            const currentStepElement = document.getElementById(`step${step}`);
+            const formFields = currentStepElement.querySelectorAll('input, select, textarea');
+            formFields.forEach(field => {
+                if (field.type !== 'password') {
+                    sessionStorage.setItem(field.name, field.value);
+                }
+            });
+
+            // Proceed to next step
+            document.getElementById(`step${step}`).style.display = 'none';
+            document.getElementById(`step${step + 1}`).style.display = 'block';
+            currentStep = step + 1;
+            updateProgressBar();
+
+            // Scroll to top of new step
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    // Navigate to the previous step
+    window.prevStep = function (step) {
+        document.getElementById(`step${step}`).style.display = 'none';
+        document.getElementById(`step${step - 1}`).style.display = 'block';
+        currentStep = step - 1;
+        updateProgressBar();
+
+        // Restore form data from session storage
+        const prevStepElement = document.getElementById(`step${step - 1}`);
+        const formFields = prevStepElement.querySelectorAll('input, select, textarea');
+        formFields.forEach(field => {
+            const savedValue = sessionStorage.getItem(field.name);
+            if (savedValue && field.type !== 'password') {
+                field.value = savedValue;
+            }
+        });
+    };
 
     // Update progress bar and step indicators
     function updateProgressBar() {
@@ -67,9 +103,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const progress = ((currentStep - 1) / (steps.length - 1)) * 100;
             progressBar.style.width = `${progress}%`;
 
-            // Update step indicators
             stepIndicators.forEach((indicator, index) => {
-                indicator.classList.toggle('active', index + 1 <= currentStep);
+                if (index + 1 < currentStep) {
+                    indicator.classList.add('completed');
+                    indicator.classList.remove('active');
+                } else if (index + 1 === currentStep) {
+                    indicator.classList.add('active');
+                    indicator.classList.remove('completed');
+                } else {
+                    indicator.classList.remove('active', 'completed');
+                }
             });
         }
     }
@@ -77,13 +120,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize form
     if (document.getElementById('step1')) {
         document.getElementById('step1').style.display = 'block';
-
-        // Hide other steps
         for (let i = 2; i <= steps.length; i++) {
             const step = document.getElementById(`step${i}`);
             if (step) step.style.display = 'none';
         }
         updateProgressBar();
+
+        // Restore form data if available
+        const formFields = document.querySelectorAll('input, select, textarea');
+        formFields.forEach(field => {
+            const savedValue = sessionStorage.getItem(field.name);
+            if (savedValue && field.type !== 'password') {
+                field.value = savedValue;
+            }
+        });
     }
 
     // Form submission handler

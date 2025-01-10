@@ -69,6 +69,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Real-time UI updates
   - Portfolio view
   - Educational verification
+  - OTP verification system
 - Responsive design
   - Mobile-friendly interface
   - Modern UI components
@@ -76,6 +77,24 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Delete animations
   - Card layouts
   - Status badges
+
+  ### New Features Added
+- Portfolio View System
+  - Detailed alumni information display
+  - Educational verification status
+  - Professional history
+  - Project showcase
+- Enhanced Admin Controls
+  - OTP generation and sending
+  - Real-time search functionality
+  - Status badge system
+  - Transaction-based deletions
+- Improved UI/UX
+  - Progress bars for registration
+  - Dynamic form validation
+  - Interactive project addition
+  - Responsive sidebar
+  - Custom status indicators
 
 ### Under Development
 - Professional networking
@@ -100,18 +119,26 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - users
   - Basic user information
   - Authentication details
+  - Status tracking
 - educational_details
   - University information
   - Enrollment details
   - Verification status
+  - Verification tracking
 - professional_status
   - Current employment
   - Company details
   - Position
-- projects
-  - Project details
-  - Technologies used
-  - Duration
+  - Employment history
+- status_history
+  - Career progression tracking
+  - Timeline management
+- admins
+  - Role-based access
+  - Department assignment
+- universities
+  - Institution database
+  - Location tracking
 
 ## Tech Stack
 - PHP
@@ -146,6 +173,19 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - Secure admin authentication
 - Transaction-based deletions
 - Data integrity checks
+- OTP verification system
+
+## Recent Updates
+- Added portfolio view for admin
+- Implemented project display section
+- Enhanced verification system
+- Improved responsive design
+- Added status badges
+- Implemented educational details verification
+- Added OTP verification system
+- Enhanced delete confirmation system
+- Improved search functionality
+- Added transaction-based deletions
 
 ## Contributing
 1. Fork the repository
