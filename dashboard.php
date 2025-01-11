@@ -8,6 +8,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Add this new check - redirect admin users to admin login
+if (isset($_SESSION['admin_id'])) {
+    header("Location: Authentication/AdminLogin/login.php");
+    exit();
+}
+
 // Get user data
 $db = new Database();
 $conn = $db->connect();

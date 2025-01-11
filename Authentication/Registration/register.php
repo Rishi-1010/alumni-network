@@ -178,15 +178,74 @@ require_once '../../config/db_connection.php';
                     <button type="button" class="next-btn" onclick="nextStep(5)">Next</button>
                 </div>
 
+                
+
                 <!-- Step 6: Career Goals -->
                 <div class="form-step" id="step6" style="display: none;">
                     <h3>Career Goals</h3>
-                    <div class="form-group">
-                        <label for="career_goals">What are your career goals?</label>
-                        <textarea name="career_goals" rows="4" required></textarea>
+                    <div class="career-goals-container">
+                        <div class="career-goal-entry">
+                            <div class="form-group">
+                                <label for="goal_year">Goal Year*</label>
+                                <input type="number" name="career_goals[0][year]" min="<?php echo date('Y'); ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="goal_description">Description*</label>
+                                <textarea name="career_goals[0][description]" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="goal_target_date">Target Date</label>
+                                <input type="date" name="career_goals[0][target_date]">
+                            </div>
+                            <div class="form-group">
+                                <label for="goal_status">Status*</label>
+                                <select name="career_goals[0][status]" required>
+                                    <option value="planned">Planned</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="achieved">Achieved</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <button type="button" class="prev-btn" onclick="prevStep(6)">Previous</button>
-                    <button type="submit" class="submit-btn">Submit</button>
+                    <button type="button" class="next-btn" onclick="nextStep(6)">Next</button>
+                </div>
+
+                <!-- Step 7: Certifications -->
+                <div class="form-step" id="step7" style="display: none;">
+                    <h3>Certifications</h3>
+                    <div class="certification-container">
+                        <div class="certification-entry">
+                            <div class="form-group">
+                                <label for="cert_title">Certification Title*</label>
+                                <input type="text" name="certifications[0][title]" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="issuing_org">Issuing Organization*</label>
+                                <input type="text" name="certifications[0][issuing_organization]" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="issue_date">Issue Date</label>
+                                <input type="date" name="certifications[0][issue_date]">
+                            </div>
+                            <div class="form-group">
+                                <label for="expiry_date">Expiry Date</label>
+                                <input type="date" name="certifications[0][expiry_date]">
+                            </div>
+                            <div class="form-group">
+                                <label for="credential_id">Credential ID</label>
+                                <input type="text" name="certifications[0][credential_id]">
+                            </div>
+                            <div class="form-group">
+                                <label for="credential_url">Credential URL</label>
+                                <input type="url" name="certifications[0][credential_url]" placeholder="https://example.com/credential">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="add-cert-btn" onclick="addCertification()">+ Add Another Certification</button>
+                    <button type="button" class="prev-btn" onclick="prevStep(7)">Previous</button>
+                    <button type="submit" class="submit-btn">Submit Registration</button>
                 </div>
             </form>
         </div>

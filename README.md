@@ -23,9 +23,10 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ │ ├── login.php
 │ │ └── process_login.php
 │ └── Registration/
-│ ├── register.php
-│ ├── process_registration.php
-│ └── success.php
+│   ├── otpverification.php
+│   ├── register.php
+│   ├── process_registration.php
+│   └── success.php
 ├── config/
 │ └── db_connection.php
 ├── assets/
@@ -44,6 +45,10 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ └── admin-avatar.png
 ├── database/
 │ └── alumni_network.sql
+├── send_otp/
+│ ├── verify_otp.php
+│ ├── PHPMailerFunction.php
+│ └── resend_otp.php
 ├── index.html
 ├── dashboard.php
 ├── .gitignore

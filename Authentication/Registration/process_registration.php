@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../../config/db_connection.php';
 
 // Initialize Database
@@ -33,6 +34,13 @@ if (empty($status)) {
 }
 
 try {
+    // Check for duplicate enrollment
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM educational_details WHERE enrollment_number = ?");
+    $stmt->execute([$_POST['enrollment']]);
+    if ($stmt->fetchColumn() > 0) {
+        throw new Exception("This enrollment number is already registered.");
+    }
+
     // Register User
     $result = $db->registerUser($fullname, $email, $phone, $password);
 
@@ -67,8 +75,26 @@ try {
 
                 // Insert Certifications
                 foreach ($certifications as $cert) {
-                    $stmt = $conn->prepare("INSERT INTO certifications (user_id, title, issuing_organization, issue_date, expiry_date) VALUES (?, ?, ?, ?, ?)");
-                    $stmt->execute([$user_id, $cert['title'], $cert['organization'], $cert['issue_date'], $cert['expiry_date']]);
+                    $stmt = $conn->prepare("
+                        INSERT INTO certifications (
+                            user_id, 
+                            title, 
+                            issuing_organization, 
+                            issue_date, 
+                            expiry_date,
+                            credential_id,
+                            credential_url
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ");
+                    $stmt->execute([
+                        $user_id,
+                        $cert['title'],
+                        $cert['issuing_organization'],
+                        $cert['issue_date'],
+                        $cert['expiry_date'],
+                        $cert['credential_id'],
+                        $cert['credential_url']
+                    ]);
                 }
 
                 $_SESSION['success'] = "Registration completed successfully!";

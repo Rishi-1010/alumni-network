@@ -106,4 +106,65 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         updateProgressBar();
     }
+
+    let certificationCount = 0;
+
+    function addCertification() {
+        certificationCount++;
+        const container = document.querySelector('.certification-container');
+        const newEntry = document.createElement('div');
+        newEntry.className = 'certification-entry';
+        newEntry.innerHTML = `
+            <hr>
+            <div class="form-group">
+                <label for="cert_title">Certification Title*</label>
+                <input type="text" name="certifications[${certificationCount}][title]" required>
+            </div>
+            <div class="form-group">
+                <label for="issuing_org">Issuing Organization*</label>
+                <input type="text" name="certifications[${certificationCount}][issuing_organization]" required>
+            </div>
+            <div class="form-group">
+                <label for="issue_date">Issue Date</label>
+                <input type="date" name="certifications[${certificationCount}][issue_date]">
+            </div>
+            <div class="form-group">
+                <label for="expiry_date">Expiry Date</label>
+                <input type="date" name="certifications[${certificationCount}][expiry_date]">
+            </div>
+            <div class="form-group">
+                <label for="credential_id">Credential ID</label>
+                <input type="text" name="certifications[${certificationCount}][credential_id]">
+            </div>
+            <div class="form-group">
+                <label for="credential_url">Credential URL</label>
+                <input type="url" name="certifications[${certificationCount}][credential_url]" placeholder="https://example.com/credential">
+            </div>
+            <button type="button" class="remove-cert-btn" onclick="removeCertification(this)">Remove Certification</button>
+        `;
+        container.appendChild(newEntry);
+    }
+
+    function removeCertification(button) {
+        button.parentElement.remove();
+    }
+
+    // Update your existing nextStep and prevStep functions to include step 7
+    function nextStep(step) {
+        // Your existing nextStep logic...
+        if (step === 7) {
+            document.getElementById('step7').style.display = 'none';
+            document.getElementById('step6').style.display = 'block';
+        }
+        // ... rest of your nextStep function
+    }
+
+    function prevStep(step) {
+        // Your existing prevStep logic...
+        if (step === 7) {
+            document.getElementById('step7').style.display = 'none';
+            document.getElementById('step5').style.display = 'block';
+        }
+        // ... rest of your prevStep function
+    }
 });

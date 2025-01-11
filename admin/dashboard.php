@@ -2,9 +2,20 @@
 session_start();
 require_once '../config/db_connection.php';
 
-// Check if admin is logged in
+// Make sure this is the very first check after session_start()
 if (!isset($_SESSION['admin_id'])) {
     header("Location: ../Authentication/AdminLogin/login.php");
+    exit();
+}
+
+// Additional security: ensure the header redirect happens
+if (headers_sent()) {
+    die("Redirect failed. Please <a href='../Authentication/AdminLogin/login.php'>click here</a>");
+}
+
+// Prevent regular users from accessing admin dashboard
+if (isset($_SESSION['user_id'])) {
+    header("Location: ../dashboard.php");
     exit();
 }
 
@@ -78,6 +89,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_enrollment']))
         $error = "Invalid enrollment number format. It must be a 15-digit number.";
     }
 }
+
+// Add this after the existing session checks
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
+    $alumniEmail = $_POST['alumni_email'];
+    
+    // Generate OTP
+    $otp = sprintf("%06d", mt_rand(100000, 999999));
+    
+    try {
+        // Store email and OTP in session
+        $_SESSION['temp_email'] = $alumniEmail;
+        $_SESSION['otp'] = $otp;
+        
+        // Include PHPMailer function
+        require_once '../send_otp/PHPMailerFunction.php';
+        
+        // Send OTP
+        $mailResult = sendInvitationEmail($alumniEmail, $otp);
+        
+        if ($mailResult === true) {
+            $_SESSION['success'] = "OTP sent successfully to " . htmlspecialchars($alumniEmail);
+        } else {
+            $_SESSION['error'] = "Failed to send OTP: " . $mailResult;
+        }
+    } catch(Exception $e) {
+        $_SESSION['error'] = "Error: " . $e->getMessage();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -106,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_enrollment']))
                      alt="Profile" class="profile-pic">
                 <div class="dropdown-content">
                     <a href="profile-settings.php">Settings</a>
-                    <a href="../Authentication/Login/logout.php">Logout</a>
+                    <a href="../Authentication/AdminLogin/logout.php">Logout</a>
                 </div>
             </div>
         </div>
@@ -120,11 +159,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_enrollment']))
             <p>Manage alumni data and perform administrative tasks.</p>
         </div>
 
-        <!-- Search Form -->
-        <form method="POST" class="search-form">
-            <input type="text" name="search_enrollment" placeholder="Enter Enrollment Number" required>
-            <button type="submit">Search</button>
-        </form>
+        <!-- Search Forms Container -->
+        <div class="search-forms-container">
+            <!-- Enrollment Search Form -->
+            <form method="POST" class="search-form">
+                <input type="text" name="search_enrollment" placeholder="Enter Enrollment Number" required>
+                <button type="submit">Search</button>
+            </form>
+
+            <!-- Email OTP Form -->
+            <form method="POST" class="search-form" id="sendOtpForm">
+                <input type="email" name="alumni_email" placeholder="Enter Alumni Email" required>
+                <button type="submit" name="send_otp">Send OTP</button>
+            </form>
+        </div>
+
+        <!-- Add this right after the search-forms-container div -->
+        <div class="message-container">
+            <?php if(isset($_SESSION['success'])): ?>
+                <div class="alert alert-success">
+                    <?php 
+                        echo $_SESSION['success']; 
+                        unset($_SESSION['success']);
+                    ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if(isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <?php 
+                        echo $_SESSION['error']; 
+                        unset($_SESSION['error']);
+                    ?>
+                </div>
+            <?php endif; ?>
+        </div>
 
         <!-- Display Alumni Information if Found -->
         <?php if ($alumni): ?>
