@@ -1,6 +1,10 @@
 <?php
 session_start();
 require_once '../../config/db_connection.php';
+if (isset($_SESSION['error'])) {
+    echo "<div class='error-message'>" . $_SESSION['error'] . "</div>";
+    unset($_SESSION['error']);
+}   
 ?>
 
 <!DOCTYPE html>
@@ -29,6 +33,7 @@ require_once '../../config/db_connection.php';
 
     <div class="register-container">
         <div class="registration-form">
+            <!-- Progress Bar and Indicators -->
             <div class="progress-container">
                 <div class="progress-bar"></div>
             </div>
@@ -39,89 +44,97 @@ require_once '../../config/db_connection.php';
                 <div class="step-indicator"></div>
                 <div class="step-indicator"></div>
                 <div class="step-indicator"></div>
+                <div class="step-indicator"></div>
             </div>
 
-            <form id="registrationForm" class="registration-form" action="process_registration.php" method="POST">
-                <!-- Step 1: Basic Information -->
-<div class="form-step" id="step1">
-    <h2>Basic Information</h2>
-    <div class="form-group">
-        <label for="fullname">Full Name*</label>
-        <input type="text" id="fullname" name="fullname" required>
-    </div>
-    <div class="form-group">
-        <label for="email">Email Address*</label>
-        <input type="email" id="email" name="email" required>
-    </div>
-    <div class="form-group">
-        <label for="phone">Phone Number*</label>
-        <input type="tel" id="phone" name="phone" required>
-    </div>
-    <div class="form-group">
-        <label for="password">Password*</label>
-        <input type="password" id="password" name="password" required>
-    </div>
-    <button type="button" class="next-btn" onclick="nextStep(1)">Next</button>
-</div>
+            <!-- Form Steps -->
+            <form id="registrationForm" method="POST" action="process_registration.php" enctype="multipart/form-data">
+                <!-- Step 1 -->
+                <div class="form-step" id="step1" style="display: block;">
+                    <h2>Basic Information</h2>
+                    <div class="form-group">
+                        <label for="fullname">Full Name*</label>
+                        <input type="text" id="fullname" name="fullname" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address*</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number*</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password*</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="button" id="step1Next" class="next-btn">Next</button>
+                </div>
 
-<!-- Step 2: Educational Details -->
-<div class="form-step" id="step2" style="display: none;">
-    <h2>Educational Details</h2>
-    <div class="form-group">
-        <label for="university">University*</label>
-        <select id="university" name="university" required>
-            <option value="1" selected>Uka Tarsadia University</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="enrollment">Enrollment Number*</label>
-        <input type="text" id="enrollment" name="enrollment" required>
-    </div>
-    <div class="form-group">
-        <label for="graduation_year_1">Graduation Year*</label>
-        <select id="graduation_year_1" name="graduation_year" required>
-            <?php
-            $current_year = date('Y');
-            for ($year = $current_year; $year >= $current_year - 50; $year--) {
-                echo "<option value='$year'>$year</option>";
-            }
-            ?>
-        </select>
-    </div>
-    <button type="button" class="prev-btn" onclick="prevStep(2)">Previous</button>
-    <button type="button" class="next-btn" onclick="nextStep(2)">Next</button>
-</div>
+                <!-- Step 2 -->
+                <div class="form-step" id="step2" style="display: none;">
+                    <h2>Educational Details</h2>
+                    <input type="hidden" id="university_name" name="university_name" value="Uka Tarsadia University">
+                    <div class="form-group">
+                        <label for="enrollment_number">Enrollment Number*</label>
+                        <input type="text" id="enrollment_number" name="enrollment_number" pattern="[0-9]{15}" title="Please enter your 15-digit enrollment number" placeholder="Enter your 15-digit enrollment number" maxlength="15" required>
+                        <small class="help-text">Enter your 15-digit enrollment number</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="graduation_year">Graduation Year*</label>
+                        <select id="graduation_year" name="graduation_year" required>
+                            <?php
+                            $current_year = date('Y');
+                            for ($year = $current_year; $year >= $current_year - 10; $year--) {
+                                echo "<option value='$year'>$year</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" class="prev-btn" id="step2Prev">Previous</button>
+                        <button type="button" class="next-btn" id="step2Next">Next</button>
+                    </div>
+                </div>
 
+                <!-- Step 3: Professional Status -->
+                <div class="form-step" id="step3" style="display: none;">
+                    <h2>Current Status</h2>
+                    <div class="form-group">
+                        <label for="current_status">Current Professional Status*</label>
+                        <select id="current_status" name="current_status" required onchange="toggleEmploymentFields()">
+                            <option value="">Select your status</option>
+                            <option value="employed">Employed</option>
+                            <option value="seeking">Seeking Opportunities</option>
+                            <option value="student">Further Studies</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
 
-<!-- Step 3: Current Status -->
-<div class="form-step" id="step3" style="display: none;">
-    <h2>Current Status</h2>
-    <div class="form-group">
-        <label for="current_status">Current Professional Status*</label>
-        <select id="current_status" name="current_status" required onchange="toggleEmploymentFields()">
-            <option value="seeking">Seeking Opportunities</option>
-            <option value="employed">Employed</option>
-            <option value="student">Further Studies</option>
-            <option value="other">Other</option>
-        </select>
-    </div>
+                    <div id="employment-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="company_name">Company Name*</label>
+                            <input type="text" id="company_name" name="company_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="position">Position*</label>
+                            <input type="text" id="position" name="position">
+                        </div>
+                        <div class="form-group">
+                            <label for="start_date">Start Date*</label>
+                            <input type="date" id="start_date" name="start_date">
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" class="prev-btn" id="step3Prev">Previous</button>
+                        <button type="button" class="next-btn" id="step3Next">Next</button>
+                    </div>
+                </div>
 
-    <div class="form-group">
-        <label for="current_company">Current Company</label>
-        <input type="text" id="current_company" name="current_company" disabled required>
-    </div>
-
-    <div class="form-group">
-        <label for="current_position">Current Position</label>
-        <input type="text" id="current_position" name="current_position" disabled required>
-    </div>
-
-    <button type="button" class="prev-btn" onclick="prevStep(3)">Previous</button>
-    <button type="button" class="next-btn" onclick="nextStep(3)">Next</button>
-</div>
                 <!-- Step 4: Projects -->
                 <div class="form-step" id="step4" style="display: none;">
-                    <h3>Projects</h3>
+                    <h2>Projects</h2>
                     <div id="projects-container">
                         <div class="project-entry">
                             <div class="form-group">
@@ -130,11 +143,12 @@ require_once '../../config/db_connection.php';
                             </div>
                             <div class="form-group">
                                 <label for="project_description">Description*</label>
-                                <textarea name="projects[0][description]" required></textarea>
+                                <textarea name="projects[0][description]" rows="3" required></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="technologies">Technologies Used*</label>
-                                <input type="text" name="projects[0][technologies]" placeholder="e.g., PHP, MySQL, JavaScript" required>
+                                <label for="project_technologies">Technologies Used*</label>
+                                <input type="text" name="projects[0][technologies]" 
+                                       placeholder="e.g., PHP, MySQL, JavaScript" required>
                             </div>
                             <div class="form-group date-range">
                                 <div>
@@ -149,103 +163,117 @@ require_once '../../config/db_connection.php';
                         </div>
                     </div>
                     <button type="button" id="add-project" class="btn-secondary">Add Another Project</button>
-                    <button type="button" class="prev-btn" onclick="prevStep(4)">Previous</button>
-                    <button type="button" class="next-btn" onclick="nextStep(4)">Next</button>
+                    <div class="button-group">
+                        <button type="button" class="prev-btn" id="step4Prev">Previous</button>
+                        <button type="button" class="next-btn" id="step4Next">Next</button>
+                    </div>
                 </div>
 
-                <!-- Step 5: Skills & Certifications -->
+                <!-- Step 5: Skills -->
                 <div class="form-step" id="step5" style="display: none;">
-                    <h3>Skills & Certifications</h3>
+                    <h2>Skills & Expertise</h2>
                     <div id="skills-container">
                         <div class="skill-entry">
                             <div class="form-group">
-                                <label>Skill Name*</label>
-                                <input type="text" name="skills[0][name]" required>
+                                <label for="skill_name">Skill Name*</label>
+                                <input type="text" name="skills[0][name]" required 
+                                       placeholder="e.g., Java, Python, Web Development">
                             </div>
                             <div class="form-group">
-                                <label>Proficiency Level*</label>
+                                <label for="skill_level">Proficiency Level*</label>
                                 <select name="skills[0][level]" required>
-                                    <option value="beginner">Beginner</option>
-                                    <option value="intermediate">Intermediate</option>
-                                    <option value="advanced">Advanced</option>
-                                    <option value="expert">Expert</option>
+                                    <option value="">Select Level</option>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                    <option value="Expert">Expert</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <button type="button" id="add-skill" class="btn-secondary">Add Another Skill</button>
-                    <button type="button" class="prev-btn" onclick="prevStep(5)">Previous</button>
-                    <button type="button" class="next-btn" onclick="nextStep(5)">Next</button>
+                    <div class="button-group">
+                        <button type="button" class="prev-btn" id="step5Prev">Previous</button>
+                        <button type="button" class="next-btn" id="step5Next">Next</button>
+                    </div>
                 </div>
-
-                
 
                 <!-- Step 6: Career Goals -->
                 <div class="form-step" id="step6" style="display: none;">
-                    <h3>Career Goals</h3>
-                    <div class="career-goals-container">
-                        <div class="career-goal-entry">
+                    <h2>Career Goals</h2>
+                    <div id="goals-container">
+                        <div class="goal-entry">
                             <div class="form-group">
-                                <label for="goal_year">Goal Year*</label>
-                                <input type="number" name="career_goals[0][year]" min="<?php echo date('Y'); ?>" required>
+                                <label for="goal_description">Career Goal*</label>
+                                <textarea name="career_goals[0][description]" rows="3" required
+                                          placeholder="Describe your career goal"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="goal_description">Description*</label>
-                                <textarea name="career_goals[0][description]" rows="4" required></textarea>
+                                <label for="goal_timeline">Target Timeline*</label>
+                                <select name="career_goals[0][timeline]" required>
+                                    <option value="">Select Timeline</option>
+                                    <option value="1">Within 1 year</option>
+                                    <option value="2">1-2 years</option>
+                                    <option value="5">2-5 years</option>
+                                    <option value="10">5-10 years</option>
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label for="goal_target_date">Target Date</label>
-                                <input type="date" name="career_goals[0][target_date]">
-                            </div>
-                            <div class="form-group">
-                                <label for="goal_status">Status*</label>
+                                <label for="goal_status">Current Status*</label>
                                 <select name="career_goals[0][status]" required>
-                                    <option value="planned">Planned</option>
-                                    <option value="in_progress">In Progress</option>
-                                    <option value="achieved">Achieved</option>
-                                    <option value="cancelled">Cancelled</option>
+                                    <option value="">Select Status</option>
+                                    <option value="Not Started">Not Started</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="prev-btn" onclick="prevStep(6)">Previous</button>
-                    <button type="button" class="next-btn" onclick="nextStep(6)">Next</button>
+                    <button type="button" id="add-goal" class="btn-secondary">Add Another Goal</button>
+                    <div class="button-group">
+                        <button type="button" class="prev-btn" id="step6Prev">Previous</button>
+                        <button type="button" class="next-btn" id="step6Next">Next</button>
+                    </div>
                 </div>
 
                 <!-- Step 7: Certifications -->
                 <div class="form-step" id="step7" style="display: none;">
-                    <h3>Certifications</h3>
-                    <div class="certification-container">
+                    <h2>Certifications</h2>
+                    <div id="certifications-container">
                         <div class="certification-entry">
                             <div class="form-group">
                                 <label for="cert_title">Certification Title*</label>
                                 <input type="text" name="certifications[0][title]" required>
                             </div>
                             <div class="form-group">
-                                <label for="issuing_org">Issuing Organization*</label>
+                                <label for="cert_organization">Issuing Organization*</label>
                                 <input type="text" name="certifications[0][issuing_organization]" required>
                             </div>
-                            <div class="form-group">
-                                <label for="issue_date">Issue Date</label>
-                                <input type="date" name="certifications[0][issue_date]">
+                            <div class="form-group date-range">
+                                <div>
+                                    <label>Issue Date*</label>
+                                    <input type="date" name="certifications[0][issue_date]" required>
+                                </div>
+                                <div>
+                                    <label>Expiry Date (if applicable)</label>
+                                    <input type="date" name="certifications[0][expiry_date]">
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label for="expiry_date">Expiry Date</label>
-                                <input type="date" name="certifications[0][expiry_date]">
-                            </div>
-                            <div class="form-group">
-                                <label for="credential_id">Credential ID</label>
+                                <label for="cert_id">Credential ID</label>
                                 <input type="text" name="certifications[0][credential_id]">
                             </div>
                             <div class="form-group">
-                                <label for="credential_url">Credential URL</label>
+                                <label for="cert_url">Credential URL</label>
                                 <input type="url" name="certifications[0][credential_url]" placeholder="https://example.com/credential">
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="add-cert-btn" onclick="addCertification()">+ Add Another Certification</button>
-                    <button type="button" class="prev-btn" onclick="prevStep(7)">Previous</button>
-                    <button type="submit" class="submit-btn">Submit Registration</button>
+                    <button type="button" id="add-certification" class="btn-secondary">Add Another Certification</button>
+                    <div class="button-group">
+                        <button type="button" class="prev-btn" id="step7Prev">Previous</button>
+                        <button type="submit" class="submit-btn" id="submitForm">Submit</button>
+                    </div>
                 </div>
             </form>
         </div>

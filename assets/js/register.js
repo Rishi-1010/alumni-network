@@ -1,170 +1,392 @@
-// Function to toggle employment fields
-function toggleEmploymentFields() {
-    const currentStatus = document.getElementById('current_status').value;
-    const companyField = document.getElementById('current_company');
-    const positionField = document.getElementById('current_position');
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Script loaded');
 
-    if (currentStatus === 'employed') {
-        companyField.disabled = false;
-        positionField.disabled = false;
-    } else {
-        companyField.disabled = true;
-        positionField.disabled = true;
-        companyField.value = ''; // Clear the value if not employed
-        positionField.value = ''; // Clear the value if not employed
-    }
-}
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('registrationForm');
+    // Get all step elements
     const steps = document.querySelectorAll('.form-step');
-    const progressBar = document.querySelector('.progress-bar');
-    const stepIndicators = document.querySelectorAll('.step-indicator');
-    let currentStep = 1;
-
+    const totalSteps = steps.length;
     
+    // Get all navigation buttons
+    const step1Next = document.getElementById('step1Next');
+    const step2Prev = document.getElementById('step2Prev');
+    const step2Next = document.getElementById('step2Next');
+    const step3Prev = document.getElementById('step3Prev');
+    const step3Next = document.getElementById('step3Next');
+    const step4Prev = document.getElementById('step4Prev');
+    const step4Next = document.getElementById('step4Next');
+    const step5Prev = document.getElementById('step5Prev');
+    const step5Next = document.getElementById('step5Next');
+    const step6Prev = document.getElementById('step6Prev');
+    const step6Next = document.getElementById('step6Next');
+    const step7Prev = document.getElementById('step7Prev');
+    const submitBtn = document.getElementById('submitForm');
 
-    // Validate fields in the current step
+    // Navigation functions
+    function moveToStep(currentStep, nextStep) {
+        console.log(`Moving from step ${currentStep} to ${nextStep}`);
+        
+        const currentStepElement = document.getElementById(`step${currentStep}`);
+        const nextStepElement = document.getElementById(`step${nextStep}`);
+        
+        console.log('Current step element:', currentStepElement);
+        console.log('Next step element:', nextStepElement);
+
+        if (currentStepElement && nextStepElement) {
+            if (nextStep > currentStep) {
+                // Moving forward - validate
+                if (!validateStep(currentStep)) {
+                    return false;
+                }
+            }
+            
+            // Hide current step
+            currentStepElement.style.display = 'none';
+            
+            // Show next step
+            nextStepElement.style.display = 'block';
+            
+            // Update progress
+            updateProgress(nextStep);
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            return true;
+        } else {
+            console.error('Step elements not found:', 
+                         `step${currentStep}:`, currentStepElement, 
+                         `step${nextStep}:`, nextStepElement);
+        }
+        return false;
+    }
+
     function validateStep(step) {
-        const currentStepElement = document.getElementById(`step${step}`);
-        const requiredFields = currentStepElement.querySelectorAll('[required]:not([disabled])');
+        const stepElement = document.getElementById(`step${step}`);
+        const requiredFields = stepElement.querySelectorAll('[required]');
         let isValid = true;
-    
+        
         requiredFields.forEach(field => {
-            field.classList.remove('error');
             if (!field.value.trim()) {
                 isValid = false;
                 field.classList.add('error');
-                console.log(`Field: ${field.id}, Value: "${field.value}"`);
+            } else {
+                // Check pattern validation for enrollment number
+                if (field.id === 'enrollment_number') {
+                    if (!field.value.match(/^[0-9]{15}$/)) {
+                        isValid = false;
+                        field.classList.add('error');
+                        alert('Please enter a valid 15-digit enrollment number');
+                    } else {
+                        field.classList.remove('error');
+                    }
+                } else {
+                    field.classList.remove('error');
+                }
             }
         });
-    
+        
         if (!isValid) {
-            alert('Please fill in all required fields.');
+            alert('Please fill in all required fields correctly.');
         }
-    
+        
         return isValid;
     }
 
-    function toggleRequiredAttributes(step) {
-        steps.forEach((stepElement, index) => {
-            const fields = stepElement.querySelectorAll('[required]');
-            fields.forEach(field => {
-                if (index + 1 === step) {
-                    field.setAttribute('required', 'required');
-                } else {
-                    field.removeAttribute('required');
-                }
-            });
-        });
-    }
-
-    // Navigate to the next step
-    window.nextStep = function (step) {
-        if (validateStep(step)) {
-            document.getElementById(`step${step}`).style.display = 'none';
-            document.getElementById(`step${step + 1}`).style.display = 'block';
-            currentStep = step + 1;
-            updateProgressBar();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    function updateProgress(step) {
+        const progress = ((step - 1) / (totalSteps - 1)) * 100;
+        const progressBar = document.querySelector('.progress-bar');
+        const indicators = document.querySelectorAll('.step-indicator');
+        
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`;
         }
-    };
-
-    // Navigate to the previous step
-    window.prevStep = function (step) {
-        document.getElementById(`step${step}`).style.display = 'none';
-        document.getElementById(`step${step - 1}`).style.display = 'block';
-        currentStep = step - 1;
-        updateProgressBar();
-    };
-
-    // Update progress bar and step indicators
-    function updateProgressBar() {
-        const progress = ((currentStep - 1) / (steps.length - 1)) * 100;
-        progressBar.style.width = `${progress}%`;
-
-        stepIndicators.forEach((indicator, index) => {
-            if (index + 1 < currentStep) {
-                indicator.classList.add('completed');
-                indicator.classList.remove('active');
-            } else if (index + 1 === currentStep) {
+        
+        indicators.forEach((indicator, index) => {
+            if (index < step) {
                 indicator.classList.add('active');
-                indicator.classList.remove('completed');
             } else {
-                indicator.classList.remove('active', 'completed');
+                indicator.classList.remove('active');
             }
         });
     }
 
-    // Initialize form
-    if (document.getElementById('step1')) {
-        document.getElementById('step1').style.display = 'block';
-        for (let i = 2; i <= steps.length; i++) {
-            const step = document.getElementById(`step${i}`);
-            if (step) step.style.display = 'none';
+    // Toggle employment fields based on status
+    window.toggleEmploymentFields = function() {
+        const status = document.getElementById('current_status').value;
+        const fields = document.getElementById('employment-fields');
+        const requiredInputs = fields.querySelectorAll('input');
+        
+        if (status === 'employed') {
+            fields.style.display = 'block';
+            requiredInputs.forEach(input => input.required = true);
+        } else {
+            fields.style.display = 'none';
+            requiredInputs.forEach(input => {
+                input.required = false;
+                input.value = '';
+            });
         }
-        updateProgressBar();
     }
 
-    let certificationCount = 0;
+    // Event Listeners
+    if (step1Next) {
+        step1Next.addEventListener('click', () => moveToStep(1, 2));
+    }
+    
+    if (step2Prev) {
+        step2Prev.addEventListener('click', () => moveToStep(2, 1));
+    }
+    
+    if (step2Next) {
+        step2Next.addEventListener('click', () => moveToStep(2, 3));
+    }
 
-    function addCertification() {
-        certificationCount++;
-        const container = document.querySelector('.certification-container');
-        const newEntry = document.createElement('div');
-        newEntry.className = 'certification-entry';
-        newEntry.innerHTML = `
-            <hr>
+    if (step3Prev) {
+        step3Prev.addEventListener('click', () => moveToStep(3, 2));
+    }
+    
+    if (step3Next) {
+        step3Next.addEventListener('click', () => moveToStep(3, 4));
+    }
+
+    // Add project functionality
+    let projectCount = 0;
+    document.getElementById('add-project').addEventListener('click', function() {
+        projectCount++;
+        const container = document.getElementById('projects-container');
+        const newProject = document.createElement('div');
+        newProject.className = 'project-entry';
+        newProject.innerHTML = `
             <div class="form-group">
-                <label for="cert_title">Certification Title*</label>
-                <input type="text" name="certifications[${certificationCount}][title]" required>
+                <label>Project Title*</label>
+                <input type="text" name="projects[${projectCount}][title]" required>
             </div>
             <div class="form-group">
-                <label for="issuing_org">Issuing Organization*</label>
-                <input type="text" name="certifications[${certificationCount}][issuing_organization]" required>
+                <label>Description*</label>
+                <textarea name="projects[${projectCount}][description]" rows="3" required></textarea>
             </div>
             <div class="form-group">
-                <label for="issue_date">Issue Date</label>
-                <input type="date" name="certifications[${certificationCount}][issue_date]">
+                <label>Technologies Used*</label>
+                <input type="text" name="projects[${projectCount}][technologies]" 
+                       placeholder="e.g., PHP, MySQL, JavaScript" required>
             </div>
-            <div class="form-group">
-                <label for="expiry_date">Expiry Date</label>
-                <input type="date" name="certifications[${certificationCount}][expiry_date]">
+            <div class="form-group date-range">
+                <div>
+                    <label>Start Date*</label>
+                    <input type="date" name="projects[${projectCount}][start_date]" required>
+                </div>
+                <div>
+                    <label>End Date</label>
+                    <input type="date" name="projects[${projectCount}][end_date]">
+                </div>
             </div>
-            <div class="form-group">
-                <label for="credential_id">Credential ID</label>
-                <input type="text" name="certifications[${certificationCount}][credential_id]">
-            </div>
-            <div class="form-group">
-                <label for="credential_url">Credential URL</label>
-                <input type="url" name="certifications[${certificationCount}][credential_url]" placeholder="https://example.com/credential">
-            </div>
-            <button type="button" class="remove-cert-btn" onclick="removeCertification(this)">Remove Certification</button>
+            <button type="button" class="remove-project" onclick="removeProject(this)">Remove Project</button>
         `;
-        container.appendChild(newEntry);
-    }
+        container.appendChild(newProject);
+    });
 
-    function removeCertification(button) {
+    // Remove project functionality
+    window.removeProject = function(button) {
         button.parentElement.remove();
+    };
+
+    // Add event listeners for Step 4
+    if (step4Prev) {
+        step4Prev.addEventListener('click', () => moveToStep(4, 3));
+    }
+    
+    if (step4Next) {
+        step4Next.addEventListener('click', () => moveToStep(4, 5));
     }
 
-    // Update your existing nextStep and prevStep functions to include step 7
-    function nextStep(step) {
-        // Your existing nextStep logic...
-        if (step === 7) {
-            document.getElementById('step7').style.display = 'none';
-            document.getElementById('step6').style.display = 'block';
-        }
-        // ... rest of your nextStep function
+    // Skills functionality
+    let skillCount = 0;
+    document.getElementById('add-skill').addEventListener('click', function() {
+        skillCount++;
+        const container = document.getElementById('skills-container');
+        const newSkill = document.createElement('div');
+        newSkill.className = 'skill-entry';
+        newSkill.innerHTML = `
+            <div class="form-group">
+                <label>Skill Name*</label>
+                <input type="text" name="skills[${skillCount}][name]" required 
+                       placeholder="e.g., Java, Python, Web Development">
+            </div>
+            <div class="form-group">
+                <label>Proficiency Level*</label>
+                <select name="skills[${skillCount}][level]" required>
+                    <option value="">Select Level</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                    <option value="Expert">Expert</option>
+                </select>
+            </div>
+            <button type="button" class="remove-skill" onclick="removeSkill(this)">Remove Skill</button>
+        `;
+        container.appendChild(newSkill);
+    });
+
+    // Remove skill functionality
+    window.removeSkill = function(button) {
+        button.parentElement.remove();
+    };
+
+    // Add event listeners for Step 5
+    if (step5Prev) {
+        step5Prev.addEventListener('click', () => moveToStep(5, 4));
+    }
+    
+    if (step5Next) {
+        step5Next.addEventListener('click', () => moveToStep(5, 6));
     }
 
-    function prevStep(step) {
-        // Your existing prevStep logic...
-        if (step === 7) {
-            document.getElementById('step7').style.display = 'none';
-            document.getElementById('step5').style.display = 'block';
-        }
-        // ... rest of your prevStep function
+    // Career Goals functionality
+    let goalCount = 0;
+    document.getElementById('add-goal').addEventListener('click', function() {
+        goalCount++;
+        const container = document.getElementById('goals-container');
+        const newGoal = document.createElement('div');
+        newGoal.className = 'goal-entry';
+        newGoal.innerHTML = `
+            <div class="form-group">
+                <label>Career Goal*</label>
+                <textarea name="career_goals[${goalCount}][description]" rows="3" required
+                          placeholder="Describe your career goal"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Target Timeline*</label>
+                <select name="career_goals[${goalCount}][timeline]" required>
+                    <option value="">Select Timeline</option>
+                    <option value="1">Within 1 year</option>
+                    <option value="2">1-2 years</option>
+                    <option value="5">2-5 years</option>
+                    <option value="10">5-10 years</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Current Status*</label>
+                <select name="career_goals[${goalCount}][status]" required>
+                    <option value="">Select Status</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            <button type="button" class="remove-goal" onclick="removeGoal(this)">Remove Goal</button>
+        `;
+        container.appendChild(newGoal);
+    });
+
+    // Remove goal functionality
+    window.removeGoal = function(button) {
+        button.parentElement.remove();
+    };
+
+    // Add event listeners for Step 6
+    if (step6Prev) {
+        step6Prev.addEventListener('click', () => moveToStep(6, 5));
     }
+    
+    if (step6Next) {
+        step6Next.addEventListener('click', () => moveToStep(6, 7));
+    }
+
+    // Certifications functionality
+    let certCount = 0;
+    document.getElementById('add-certification').addEventListener('click', function() {
+        certCount++;
+        const container = document.getElementById('certifications-container');
+        const newCert = document.createElement('div');
+        newCert.className = 'certification-entry';
+        newCert.innerHTML = `
+            <div class="form-group">
+                <label>Certification Title*</label>
+                <input type="text" name="certifications[${certCount}][title]" required>
+            </div>
+            <div class="form-group">
+                <label>Issuing Organization*</label>
+                <input type="text" name="certifications[${certCount}][issuing_organization]" required>
+            </div>
+            <div class="form-group date-range">
+                <div>
+                    <label>Issue Date*</label>
+                    <input type="date" name="certifications[${certCount}][issue_date]" required>
+                </div>
+                <div>
+                    <label>Expiry Date (if applicable)</label>
+                    <input type="date" name="certifications[${certCount}][expiry_date]">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Credential ID</label>
+                <input type="text" name="certifications[${certCount}][credential_id]">
+            </div>
+            <div class="form-group">
+                <label>Credential URL</label>
+                <input type="url" name="certifications[${certCount}][credential_url]" 
+                       placeholder="https://example.com/credential">
+            </div>
+            <button type="button" class="remove-cert" onclick="removeCertification(this)">Remove Certification</button>
+        `;
+        container.appendChild(newCert);
+    });
+
+    // Remove certification functionality
+    window.removeCertification = function(button) {
+        button.parentElement.remove();
+    };
+
+    // Add event listener for Step 7 Previous button
+    if (step7Prev) {
+        step7Prev.addEventListener('click', () => moveToStep(7, 6));
+    }
+
+    // Add event listener for form submission
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Submit button clicked');
+            
+            const form = document.getElementById('registrationForm');
+            
+            if (validateStep(7)) {
+                console.log('Final validation passed');
+                
+                // Add loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Submitting...';
+                
+                // Submit form using fetch
+                fetch('process_registration.php', {
+                    method: 'POST',
+                    body: new FormData(form)
+                })
+                .then(response => response.json())  // Parse response as JSON
+                .then(data => {
+                    console.log('Server response:', data);
+                    
+                    if (data.status === 'success') {
+                        // Show success message
+                        alert(data.message);
+                        // Redirect to login page
+                        window.location.href = '../Login/login.php';
+                    } else {
+                        // Show error message
+                        throw new Error(data.message || 'Registration failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Registration failed: ' + error.message);
+                    
+                    // Reset submit button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Submit';
+                });
+            }
+        });
+    }
+
+    // Initialize first step
+    updateProgress(1);
 });

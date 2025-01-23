@@ -2,17 +2,34 @@
 
 A comprehensive alumni management system designed for Uka Tarsadia University graduates to maintain professional connections and track career progress.
 
+## Changes Made
+
+### Date: [23-01-2025]
+
+1. **Fixed Horizontal Scrolling Issue**:
+   - Ensured that all elements within the page are responsive and do not exceed the viewport width.
+   - Updated CSS to prevent horizontal scrolling on mobile devices.
+
+2. **Improved Mobile Responsiveness**:
+   - Added media queries to ensure the layout adapts to smaller screens.
+   - Ensured the suggestion box is positioned correctly relative to the input field.
+
+3. **Updated CSS**:
+   - Added styles to ensure the search form and its elements are properly contained.
+   - Ensured the suggestion box is properly positioned and does not overlap with other elements.
+
+4. **Updated HTML Structure**:
+   - Ensured the HTML structure is correct and the CSS classes are applied properly.
+   - Added necessary attributes and classes to ensure responsiveness.
+
+
 ## Project Structure
 ```
 ├── admin/
 │ ├── dashboard.php
 │ ├── view-portfolio.php
 │ ├── delete_alumni.php
-│ ├── verifications.php
-│ ├── verify-alumni.php
-│ ├── alumni-list.php
-│ ├── reports.php
-│ └── settings.php
+│ └── search_enrollment.php
 ├── Authentication/
 │ ├── AdminLogin/
 │ │ ├── login.php
@@ -39,6 +56,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ │ ├── register.js
 │ │ ├── admin.js
 │ │ ├── dashboard.js
+│ │ ├── enrollment-autocomplete.js
 │ │ └── admin-login.js
 │ └── images/
 │ ├── logo.png
@@ -56,6 +74,9 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 ```
 
 ## Features
+- **Search Alumni**: Search for alumni by enrollment number.
+- **Send OTP**: Send OTP to alumni email for verification.
+- **View Statistics**: View total and verified alumni statistics.
 
 ### Implemented Features
 - **Multi-step Registration Process**

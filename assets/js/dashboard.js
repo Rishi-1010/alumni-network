@@ -28,4 +28,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    mobileMenuBtn.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dashboard-nav')) {
+            navLinks.classList.remove('active');
+        }
+    });
+
+    // Close menu when window is resized above mobile breakpoint
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            navLinks.classList.remove('active');
+        }
+    });
 }); 

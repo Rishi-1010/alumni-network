@@ -3,29 +3,26 @@ CREATE DATABASE IF NOT EXISTS alumni_network;
 USE alumni_network;
 
 -- Users table for basic authentication and profile
-CREATE TABLE users (
-    user_id INT PRIMARY KEY AUTO_INCREMENT,
-    fullname VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+CREATE TABLE IF NOT EXISTS users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    fullname VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(20) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP,
-    status ENUM('active', 'inactive', 'suspended') DEFAULT 'active'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Educational details
-CREATE TABLE educational_details (
-    edu_id INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS educational_details (
+    id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    university_name VARCHAR(200) NOT NULL,
-    enrollment_number VARCHAR(50) NOT NULL,
-    graduation_year YEAR NOT NULL,
-    verification_status ENUM('pending', 'verified', 'rejected') DEFAULT 'pending',
-    verified_by INT,
-    verification_date TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    UNIQUE KEY unique_enrollment (university_name, enrollment_number)
+    university_name VARCHAR(255) NOT NULL,
+    enrollment_number VARCHAR(15) NOT NULL UNIQUE,
+    graduation_year INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Professional status

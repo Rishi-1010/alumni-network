@@ -29,10 +29,41 @@ $verifiedAlumni = 0;
 // Function to get course details
 function getCourseDetails($courseCode) {
     $courses = [
-        '0051' => ['course' => 'BCA', 'department' => 'BVPICS', 'duration' => 3],
+        '0051' => ['course' => 'BCA', 'department' => 'BVPICS', 'duration' => 3, 'semesters' => 6],
+        '0461' => ['course' => 'MCA', 'department' => 'SRIMCA', 'duration' => 2, 'semesters' => 1],
         // Add more courses as needed
     ];
-    return $courses[$courseCode] ?? null;
+
+    // Define patterns for different enrollment numbers
+    $patterns = [
+        'BCA' => [
+            '/^2023051\d{7}$/', // Example pattern for BCA
+            '/^2022031\d{7}$/', // Another pattern for BCA
+            
+        ],
+        'MCA' => [
+            '/^2024041\d{7}$/', // Example pattern for MCA
+            // '/^2022071\d{7}$/', Another pattern for MCA
+            // Add more patterns for MCA as needed
+        ],
+        // Add more courses and their patterns as needed
+    ];
+
+    // Check if the course code matches any predefined course
+    if (isset($courses[$courseCode])) {
+        return $courses[$courseCode];
+    }
+
+    // Check if the course code matches any pattern
+    foreach ($patterns as $course => $coursePatterns) {
+        foreach ($coursePatterns as $pattern) {
+            if (preg_match($pattern, $courseCode)) {
+                return $courses[array_search($course, array_column($courses, 'course'))];
+            }
+        }
+    }
+
+    return null;
 }
 
 try {
@@ -126,7 +157,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">  
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation and other dashboard components -->
@@ -135,24 +168,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
             <img src="../assets/img/logo.png" alt="Alumni Network Logo">
             <span>Alumni Network</span>
         </div>
-        <div class="nav-links">
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="nav-links" id="navLinks">
             <a href="#" class="active">Dashboard</a>
             <a href="profile.php">Profile</a>
             <a href="connections.php">Connections</a>
             <a href="jobs.php">Jobs</a>
-            <div class="user-menu">
-                <img src="<?php echo $user['profile_picture'] ?? '../assets/img/default-avatar.png'; ?>" 
-                     alt="Profile" class="profile-pic">
-                <div class="dropdown-content">
-                    <a href="profile-settings.php">Settings</a>
-                    <a href="../Authentication/AdminLogin/logout.php">Logout</a>
-                </div>
-            </div>
+            <a href="../Authentication/AdminLogin/logout.php">Logout</a>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="dashboard-container">
+    <div class="dashboard-container container-fluid">
         <!-- Welcome Section -->
         <div class="welcome-section">
             <h1>Welcome, Admin!</h1>
@@ -161,9 +191,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
 
         <!-- Search Forms Container -->
         <div class="search-forms-container">
-            <!-- Enrollment Search Form -->
-            <form method="POST" class="search-form">
-                <input type="text" name="search_enrollment" placeholder="Enter Enrollment Number" required>
+            <form method="POST" class="search-form" id="enrollmentSearchForm">
+                <div class="search-input-container">
+                    <input type="text" 
+                           name="search_enrollment" 
+                           id="enrollmentSearch"
+                           placeholder="Enter Enrollment Number" 
+                           autocomplete="off"
+                           required>
+                    <div id="suggestionBox" class="suggestion-box"></div>
+                </div>
                 <button type="submit">Search</button>
             </form>
 
@@ -174,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
             </form>
         </div>
 
-        <!-- Add this right after the search-forms-container div -->
+        <!-- Message Container -->
         <div class="message-container">
             <?php if(isset($_SESSION['success'])): ?>
                 <div class="alert alert-success">
@@ -252,7 +289,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/dashboard.js"></script>
     <script src="../assets/js/rollnumformat.js"></script>
+    <script src="../assets/js/enrollment-autocomplete.js"></script>
+    <script>
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
