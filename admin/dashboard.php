@@ -273,20 +273,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
             </div>
             <!-- Add more stat cards as needed -->
         </div>
-
-        <div class="activity-section">
-            <h2>Recent Activity</h2>
-            <div class="activity-feed">
-                <!-- Add your activity items here -->
-                <div class="activity-item">
-                    <i class="fas fa-user-plus"></i>
-                    <div class="activity-content">
-                        <p>Profile created</p>
-                        <span class="activity-date">2023-10-01</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

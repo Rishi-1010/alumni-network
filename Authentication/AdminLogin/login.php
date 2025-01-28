@@ -1,60 +1,63 @@
 <?php
 session_start();
 require_once '../../config/db_connection.php';
-
-if(isset($_SESSION['admin_id'])) {
-    header("Location: ../../admin/dashboard.php");
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Network</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/style.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>\
-<!-- <script src="../../assets/js/main.js"></script> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
-    <link rel="stylesheet" href="../../assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/register.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
-    <div class="admin-login-container">
-        <div class="admin-login-box">
-            <h2>Admin Login</h2>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="../../index.html" class="home-link">
+                <img src="../../assets/img/logo.png" alt="Alumni Network Logo">
+                <span>Alumni Network</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="../../index.html" class="home-btn">Home</a>
+            <a href="../Registration/register.php" class="register-btn">Register</a>
+        </div>  
+    </nav>
+
+    <div class="register-container">
+        <form id="loginForm" class="registration-form" action="process_login.php" method="POST">
+            <h2>Admin Login</h2><br>
+            
             <?php
             if(isset($_SESSION['error'])) {
                 echo '<div class="alert alert-danger">' . $_SESSION['error'] . '</div>';
                 unset($_SESSION['error']);
             }
+            if(isset($_SESSION['success'])) {
+                echo '<div class="alert alert-success">' . $_SESSION['success'] . '</div>';
+                unset($_SESSION['success']);
+            }
+            if(isset($_SESSION['debug'])) {
+                echo '<script>console.log(' . json_encode($_SESSION['debug']) . ');</script>';
+                unset($_SESSION['debug']);
+            }
             ?>
-            <form action="process_login.php" method="POST">
-                <div class="form-group">
-                    <input type="text" id="username" name="username" required>
-                    <label for="username">Username</label>
-                </div>
-                
-                <div class="form-group">
-                    <input type="password" id="password" name="password" required>
-                    <label for="password">Password</label>
-                </div>
 
-                <button type="submit" class="admin-login-btn">Login</button>
-            </form>
-            <div class="back-to-home">
-                <a href="../../index.html">Back to Home</a>
+            <div class="form-group">
+                <label for="username">Username*</label>
+                <input type="text" id="username" name="username" required>
             </div>
-        </div>
+            <div class="form-group">
+                <label for="password">Password*</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="submit-btn">Login</button>
+            </div>
+        </form>
     </div>
-    <script src="../../assets/js/admin-login.js"></script>
 </body>
-</html> 
+</html>
