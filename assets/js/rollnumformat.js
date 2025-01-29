@@ -1,60 +1,106 @@
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('rollnumformat.js loaded'); // Debugging line
-
-    const searchForm = document.querySelector('.search-form');
-    if (!searchForm) {
-        console.error('Search form not found');
-        return;
-    }
-
-    const enrollmentInput = searchForm.querySelector('input[name="search_enrollment"]');
-    if (!enrollmentInput) {
-        console.error('Enrollment input not found');
-        return;
-    }
-
-    const errorMessage = document.createElement('div');
-    errorMessage.style.color = 'red';
-    errorMessage.style.marginTop = '10px';
-
-    searchForm.appendChild(errorMessage);
-
-    searchForm.addEventListener('submit', function (event) {
-        console.log('Form submitted'); // Debugging line
-        const enrollmentNumber = enrollmentInput.value.trim();
-        errorMessage.textContent = ''; // Clear previous error messages
-
-        if (!/^\d{15}$/.test(enrollmentNumber)) {
-            event.preventDefault();
-            errorMessage.textContent = 'Invalid enrollment number format. It must be a 15-digit number.';
-            console.log('Invalid format'); // Debugging line
-            return;
-        }
-
-        const enrolledYear = enrollmentNumber.substring(0, 4);
-        const courseCode = enrollmentNumber.substring(7, 11);
-        const uniqueNumber = enrollmentNumber.substring(12, 15);
-
-        const courseDetails = getCourseDetails(courseCode);
-
-        if (!courseDetails) {
-            event.preventDefault();
-            errorMessage.textContent = 'Invalid course code in enrollment number.';
-            console.log('Invalid course code'); // Debugging line
-            return;
-        }
-
-        // Optionally, display parsed information
-        console.log(`Enrolled Year: ${enrolledYear}`);
-        console.log(`Course: ${courseDetails.course}`);
-        console.log(`Department: ${courseDetails.department}`);
-    });
-
-    function getCourseDetails(courseCode) {
-        const courses = {
-            '0051': { course: 'BCA', department: 'BVPICS' },
-            // Add more courses as needed
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('enrollmentSearch');
+    const suggestionBox = document.getElementById('suggestionBox');
+    let currentFocus = -1;
+    
+    // Debounce function
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
         };
-        return courses[courseCode] || null;
     }
-}); 
+    
+    // Fetch suggestions
+    const fetchSuggestions = debounce(async (searchTerm) => {
+        if (searchTerm.length === 0) {
+            suggestionBox.style.display = 'none';
+            return;
+        }
+        
+        try {
+            const response = await fetch(`search_enrollment.php?term=${searchTerm}`);
+            const data = await response.json();
+            
+            if (data.length > 0) {
+                // Filter suggestions to ensure they start with the search term
+                const filteredData = data.filter(item => {
+                    const enrollmentNumber = item.enrollment_number;
+                    return enrollmentNumber.startsWith(searchTerm);
+                });
+                if (filteredData.length > 0) {
+                    displaySuggestions(filteredData);
+                } else {
+                    suggestionBox.style.display = 'none';
+                }
+            } else {
+                suggestionBox.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error fetching suggestions:', error);
+        }
+    }, 300);
+    
+    // Display suggestions
+    function displaySuggestions(suggestions) {
+        suggestionBox.innerHTML = '';
+        suggestions.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerHTML = `
+                <span class="enrollment-number">${item.enrollment_number}</span>
+                <span class="student-name">${item.fullname}</span>
+            `;
+            suggestionBox.appendChild(div);
+        });
+        suggestionBox.style.display = 'block';
+    }
+    
+    searchInput.addEventListener('input', (e) => {
+        fetchSuggestions(e.target.value);
+    });
+    
+    // Close suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+            suggestionBox.style.display = 'none';
+        }
+    });
+    
+    // Keyboard navigation
+    searchInput.addEventListener('keydown', (e) => {
+        const items = suggestionBox.getElementsByClassName('suggestion-item');
+        
+        if (e.key === 'ArrowDown') {
+            currentFocus++;
+            addActive(items);
+        } else if (e.key === 'ArrowUp') {
+            currentFocus--;
+            addActive(items);
+        } else if (e.key === 'Enter' && currentFocus > -1) {
+            if (items[currentFocus]) {
+                items[currentFocus].click();
+            }
+        }
+    });
+    
+    function addActive(items) {
+        if (!items) return;
+        
+        removeActive(items);
+        if (currentFocus >= items.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+        items[currentFocus].classList.add('active');
+    }
+    
+    function removeActive(items) {
+        for (let item of items) {
+            item.classList.remove('active');
+        }
+    }
+});

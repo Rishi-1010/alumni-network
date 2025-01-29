@@ -28,7 +28,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (data.length > 0) {
-                displaySuggestions(data);
+                // Filter suggestions to ensure they start with the search term
+                const filteredData = data.filter(item => item.enrollment_number.startsWith(searchTerm));
+                if (filteredData.length > 0) {
+                    displaySuggestions(filteredData);
+                } else {
+                    suggestionBox.style.display = 'none';
+                }
             } else {
                 suggestionBox.style.display = 'none';
             }
@@ -47,9 +53,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span class="enrollment-number">${item.enrollment_number}</span>
                 <span class="student-name">${item.fullname}</span>
             `;
-            div.addEventListener('click', () => {
+            div.addEventListener('click', function() {
                 searchInput.value = item.enrollment_number;
-                suggestionBox.style.display = 'none';
                 document.getElementById('enrollmentSearchForm').submit();
             });
             suggestionBox.appendChild(div);
@@ -57,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
         suggestionBox.style.display = 'block';
     }
     
-    // Input event listener
     searchInput.addEventListener('input', (e) => {
         fetchSuggestions(e.target.value);
     });
@@ -100,4 +104,4 @@ document.addEventListener('DOMContentLoaded', function() {
             item.classList.remove('active');
         }
     }
-}); 
+});

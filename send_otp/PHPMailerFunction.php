@@ -26,7 +26,7 @@ function sendInvitationEmail($toEmail, $otp) {
         $mail->Subject = 'Alumni Network Registration Invitation';
         $mail->Body    = "
             <h3>Welcome to the Alumni Network</h3>
-            <p>You have been invited to join the Alumni Network by an administrator.</p>
+            <p>You have been invited to join the Alumni Network by Jitu Sir.</p>
             <p>Your OTP for registration is: <strong>$otp</strong></p>
             <p>Please click the link below to verify your OTP and complete the registration:</p>
             <a href='http://localhost/alumni-network/Authentication/Registration/otpverification.php'>Click here to verify OTP</a>

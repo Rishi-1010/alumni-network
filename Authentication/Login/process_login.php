@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $db->loginUser($email, $password);
 
         if ($result['status'] === 'success') {
-            // Redirect to dashboard on successful login
             header("Location: ../../dashboard.php");
             exit();
         } else {
