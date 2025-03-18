@@ -18,14 +18,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.status === 'success') {
                         // Remove the row from the table
                         this.closest('tr').remove();
-                        alert('Alumni deleted successfully');
+                        showNotification('Alumni deleted successfully', 'success');
                     } else {
-                        alert('Error: ' + data.message);
+                        showNotification('Error: ' + data.message, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while deleting the alumni');
+                    showNotification('An error occurred while deleting the alumni', 'error');
                 });
             }
         });
@@ -77,4 +77,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         badge.classList.add(className);
     });
+
+    // Function to show notifications
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            notification.addEventListener('animationend', () => notification.remove());
+        }, 3000);
+    }
 });

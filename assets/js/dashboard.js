@@ -15,15 +15,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        alert('Alumni removed successfully');
-                        location.reload(); // Reload the page to update the list
+                        showNotification('Alumni removed successfully', 'success');
+                        setTimeout(() => location.reload(), 1000); // Reload the page to update the list
                     } else {
-                        alert('Error: ' + data.message);
+                        showNotification('Error: ' + data.message, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while removing the alumni');
+                    showNotification('An error occurred while removing the alumni', 'error');
                 });
             }
         });
@@ -49,4 +49,25 @@ document.addEventListener('DOMContentLoaded', function() {
             navLinks.classList.remove('active');
         }
     });
-}); 
+
+    // Hide success message after a few seconds
+    setTimeout(function() {
+        var successMessage = document.getElementById('successMessage');
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+    }, 5000); // 5000 milliseconds = 5 seconds
+
+    // Function to show notifications
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            notification.addEventListener('animationend', () => notification.remove());
+        }, 3000);
+    }
+});

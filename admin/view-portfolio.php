@@ -48,10 +48,15 @@ try {
     $stmt->execute([$userId]);
     $careerGoals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch certifications
-    $stmt = $conn->prepare("SELECT * FROM certifications WHERE user_id = ?");
+    // Fetch certifications (assuming certificate info is in users table for now)
+    $stmt = $conn->prepare("SELECT certificate_id, certificate_path FROM users WHERE user_id = ?");
     $stmt->execute([$userId]);
-    $certifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $certificateData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $certifications = []; // Initialize certifications array
+    if ($certificateData) {
+        $certifications[] = $certificateData; // Add fetched data as a "certification"
+    }
 
     if (!$userData) {
         die("Alumni not found");
@@ -69,7 +74,7 @@ try {
     <title>Alumni Portfolio - Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="../assets/css/admin-dark.css">
 </head>
 <body>
     <div class="admin-container">
@@ -77,7 +82,7 @@ try {
         
         <div class="main-content">
             <div class="portfolio-header">
-                <h1>Alumni Portfolio</h1>
+                <h1 align="center">Alumni Portfolio</h1>
                 <a href="dashboard.php" class="btn btn-primary">
                     <i class="fas fa-arrow-left"></i> Back to Dashboard
                 </a>
@@ -92,17 +97,30 @@ try {
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Name:</strong> <?php echo htmlspecialchars($userData['fullname']); ?></p>
-                                <p><strong>Email:</strong> <?php echo htmlspecialchars($userData['email']); ?></p>
-                                <p><strong>Phone:</strong> <?php echo htmlspecialchars($userData['phone'] ?? 'Not provided'); ?></p>
+                                <div class="info-item">
+                                    <strong><i class="fas fa-user-circle"></i> Name:</strong> 
+                                    <span><?php echo htmlspecialchars($userData['fullname']); ?></span>
+                                </div>
+                                <div class="info-item">
+                                    <strong><i class="fas fa-envelope"></i> Email:</strong> 
+                                    <span><?php echo htmlspecialchars($userData['email']); ?></span>
+                                </div>
+                                <div class="info-item">
+                                    <strong><i class="fas fa-phone"></i> Phone:</strong> 
+                                    <span><?php echo htmlspecialchars($userData['phone'] ?? 'Not provided'); ?></span>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Registration Date:</strong> <?php echo date('F j, Y', strtotime($userData['registration_date'])); ?></p>
-                                <p><strong>Status:</strong> 
-                                    <span class="badge bg-<?php echo $userData['verification_status'] === 'verified' ? 'success' : 'warning'; ?>">
+                                <div class="info-item">
+                                    <strong><i class="fas fa-calendar-alt"></i> Registration Date:</strong> 
+                                    <span><?php echo date('F j, Y', strtotime($userData['registration_date'])); ?></span>
+                                </div>
+                                <div class="info-item">
+                                    <strong><i class="fas fa-check-circle"></i> Status:</strong> 
+                                    <span class="badge status-badge <?php echo $userData['verification_status'] === 'verified' ? 'verified' : 'pending'; ?>">
                                         <?php echo ucfirst(htmlspecialchars($userData['verification_status'])); ?>
                                     </span>
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -125,9 +143,12 @@ try {
                                     <span class="badge bg-<?php echo ($userData['verification_status'] ?? '') === 'verified' ? 'success' : 'warning'; ?>">
                                         <?php echo ucfirst(htmlspecialchars($userData['verification_status'] ?? 'Pending')); ?>
                                     </span>
-                                </p>
+                                </div>
                                 <?php if($userData['verification_date']): ?>
-                                    <p><strong>Verified On:</strong> <?php echo date('F j, Y', strtotime($userData['verification_date'])); ?></p>
+                                    <div class="info-item">
+                                        <strong><i class="fas fa-calendar-check"></i> Verified On:</strong> 
+                                        <span><?php echo date('F j, Y', strtotime($userData['verification_date'])); ?></span>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -172,6 +193,19 @@ try {
                     </div>
                 </div>
 
+                <!-- Career Goals -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bullseye"></i> Career Goals</h3>
+                    </div>
+                    <div class="card-body">
+                        <?php foreach ($careerGoals as $goal): ?>
+                            <p><strong>Goal:</strong> <?php echo htmlspecialchars($goal['description']); ?></p>
+                            <!-- Add more fields as needed -->
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
                 <!-- Skills and Certifications -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -185,23 +219,20 @@ try {
                         <?php endforeach; ?>
 
                         <h4>Certifications</h4>
-                        <?php foreach ($certifications as $certification): ?>
-                            <p><strong>Title:</strong> <?php echo htmlspecialchars($certification['title']); ?></p>
-                            <!-- Add more fields as needed -->
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <!-- Career Goals -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h3><i class="fas fa-bullseye"></i> Career Goals</h3>
-                    </div>
-                    <div class="card-body">
-                        <?php foreach ($careerGoals as $goal): ?>
-                            <p><strong>Goal:</strong> <?php echo htmlspecialchars($goal['description']); ?></p>
-                            <!-- Add more fields as needed -->
-                        <?php endforeach; ?>
+                        <?php if (!empty($certifications)): ?>
+                            <?php $certification = $certifications[0]; // Assuming only one certificate for now ?>
+                            <p><strong>Certificate ID:</strong> <?php echo htmlspecialchars($certification['certificate_id'] ?? 'Not provided'); ?></p>
+                            <p><strong>Certificate:</strong> 
+                                <?php if ($certification['certificate_path']): ?>
+                                    <a href="<?php echo htmlspecialchars($certification['certificate_path']); ?>" target="_blank">View Certificate</a>
+                                <?php else: ?>
+                                    <span>No certificate uploaded</span>
+                                <?php endif; ?>
+                            </p>
+                        <?php else: ?>
+                            <p>No certifications available.</p>
+                        <?php endif; ?>
+                        <!-- Add more fields as needed -->
                     </div>
                 </div>
             </div>
@@ -211,4 +242,4 @@ try {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>

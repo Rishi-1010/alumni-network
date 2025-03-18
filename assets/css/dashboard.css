@@ -398,4 +398,37 @@ body {
 .student-name {
     color: #666;
     font-size: 0.9em;
-} 
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #444;
+    color: #fff;
+    border-radius: 5px;
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+.notification.success {
+    background-color: #4caf50;
+}
+.notification.error {
+    background-color: #f44336;
+}
+.notification.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}

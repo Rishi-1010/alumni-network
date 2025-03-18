@@ -104,3 +104,16 @@ body {
     background: #34495e;
     text-decoration: none;
 } 
+.user-btn {
+    background: var(--primary-color);
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.user-btn:hover {
+    background: #34495e;
+    text-decoration: none;
+} 

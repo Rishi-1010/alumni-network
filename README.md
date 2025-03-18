@@ -2,75 +2,60 @@
 
 A comprehensive alumni management system designed for Uka Tarsadia University graduates to maintain professional connections and track career progress.
 
-## Changes Made
-
-### Date: [23-01-2025]
-
-1. **Fixed Horizontal Scrolling Issue**:
-   - Ensured that all elements within the page are responsive and do not exceed the viewport width.
-   - Updated CSS to prevent horizontal scrolling on mobile devices.
-
-2. **Improved Mobile Responsiveness**:
-   - Added media queries to ensure the layout adapts to smaller screens.
-   - Ensured the suggestion box is positioned correctly relative to the input field.
-
-3. **Updated CSS**:
-   - Added styles to ensure the search form and its elements are properly contained.
-   - Ensured the suggestion box is properly positioned and does not overlap with other elements.
-
-4. **Updated HTML Structure**:
-   - Ensured the HTML structure is correct and the CSS classes are applied properly.
-   - Added necessary attributes and classes to ensure responsiveness.
-
-
 ## Project Structure
 ```
 ├── admin/
+│ ├── alumni-network.code-workspace
 │ ├── dashboard.php
-│ ├── view-portfolio.php
 │ ├── delete_alumni.php
-│ └── search_enrollment.php
+│ ├── search_enrollment.php
+│ └── view-portfolio.php
+├── assets/
+│ ├── css/
+│ │ ├── admin-dark.css
+│ │ ├── admin.css
+│ │ ├── dashboard.css
+│ │ ├── register.css
+│ │ └── style.css
+│ ├── img/
+│ │ └── logo.png
+│ ├── js/
+│ │ ├── admin-login.js
+│ │ ├── admin.js
+│ │ ├── dashboard.js
+│ │ ├── enrollment-autocomplete.js
+│ │ ├── login.js
+│ │ └── register.js
 ├── Authentication/
 │ ├── AdminLogin/
+│ │ ├── generate_hash.php
 │ │ ├── login.php
-│ │ ├── process_login.php
 │ │ ├── logout.php
-│ │ └── generate_hash.php
+│ │ └── process_login.php
+│ ├── CompanyLogin/
+│ │ ├── login.php
+│ │ └── process_login.php
 │ ├── Login/
 │ │ ├── login.php
 │ │ └── process_login.php
 │ └── Registration/
 │   ├── otpverification.php
-│   ├── register.php
 │   ├── process_registration.php
-│   └── success.php
+│   └── register.php
+├── company/
+│ └── dashboard.php
 ├── config/
-│ └── db_connection.php
-├── assets/
-│ ├── css/
-│ │ ├── style.css
-│ │ ├── register.css
-│ │ ├── dashboard.css
-│ │ └── admin.css
-│ ├── js/
-│ │ ├── register.js
-│ │ ├── admin.js
-│ │ ├── dashboard.js
-│ │ ├── enrollment-autocomplete.js
-│ │ └── admin-login.js
-│ └── images/
-│ ├── logo.png
-│ └── admin-avatar.png
 ├── database/
-│ └── alumni_network.sql
 ├── send_otp/
-│ ├── verify_otp.php
 │ ├── PHPMailerFunction.php
-│ └── resend_otp.php
-├── index.html
-├── dashboard.php
+│ └── verify_otp.php
 ├── .gitignore
-└── README.md
+├── composer.json
+├── composer.lock
+├── dashboard.php
+├── index.html
+├── README.md
+└── send_otp/resend_otp.php
 ```
 
 ## Features
@@ -84,7 +69,6 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Educational Details
   - Professional Status
   - Project Details
-  - Skills and Certifications
   - Career Goals
 
 - **Secure Authentication System**
@@ -115,7 +99,6 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Educational verification status
   - Professional history
   - Project showcase
-  - Skills and certifications
   - Career goals
 
 - **Enhanced Admin Controls**
@@ -137,17 +120,18 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Direct messaging
   - Job sharing
 
-- **Event Management**
+
+- **Event Management** (Under Development - To be decided later if needed)
   - Alumni meetups
   - Professional workshops
   - University events
 
-- **Analytics Dashboard**
+- **Analytics Dashboard** (Under Development - To be decided later if needed)
   - Employment statistics
   - Alumni distribution
   - Industry trends
 
-- **Email Notifications**
+- **Email Notifications** (Under Development - To be decided later if needed)
   - Verification updates
   - Event reminders
   - Connection requests
@@ -213,6 +197,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - jQuery 3.7.1
 
 ## Recent Updates
+- Updated project directory structure in README.md
 - Added portfolio view for admin
 - Implemented project display section
 - Enhanced verification system

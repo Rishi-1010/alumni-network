@@ -81,14 +81,6 @@ if (isset($_SESSION['error'])) {
                         <small class="help-text">Enter your 15-digit enrollment number</small>
                     </div>
                     <div class="form-group">
-                        <label for="graduation_year">Graduation Year*</label>
-                        <select id="graduation_year" name="graduation_year" required>
-                            <?php
-                            $current_year = date('Y');
-                            for ($year = $current_year; $year >= $current_year - 10; $year--) {
-                                echo "<option value='$year'>$year</option>";
-                            }
-                            ?>
                         </select>
                     </div>
                     <div class="button-group">
@@ -208,25 +200,6 @@ if (isset($_SESSION['error'])) {
                                 <textarea name="career_goals[0][description]" rows="3" required
                                           placeholder="Describe your career goal"></textarea>
                             </div>
-                            <div class="form-group">
-                                <label for="goal_timeline">Target Timeline*</label>
-                                <select name="career_goals[0][timeline]" required>
-                                    <option value="">Select Timeline</option>
-                                    <option value="1">Within 1 year</option>
-                                    <option value="2">1-2 years</option>
-                                    <option value="5">2-5 years</option>
-                                    <option value="10">5-10 years</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="goal_status">Current Status*</label>
-                                <select name="career_goals[0][status]" required>
-                                    <option value="">Select Status</option>
-                                    <option value="Not Started">Not Started</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Completed">Completed</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                     <button type="button" id="add-goal" class="btn-secondary">Add Another Goal</button>
@@ -242,30 +215,12 @@ if (isset($_SESSION['error'])) {
                     <div id="certifications-container">
                         <div class="certification-entry">
                             <div class="form-group">
-                                <label for="cert_title">Certification Title*</label>
-                                <input type="text" name="certifications[0][title]" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="cert_organization">Issuing Organization*</label>
-                                <input type="text" name="certifications[0][issuing_organization]" required>
-                            </div>
-                            <div class="form-group date-range">
-                                <div>
-                                    <label>Issue Date*</label>
-                                    <input type="date" name="certifications[0][issue_date]" required>
-                                </div>
-                                <div>
-                                    <label>Expiry Date (if applicable)</label>
-                                    <input type="date" name="certifications[0][expiry_date]">
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label for="cert_id">Credential ID</label>
                                 <input type="text" name="certifications[0][credential_id]">
                             </div>
                             <div class="form-group">
-                                <label for="cert_url">Credential URL</label>
-                                <input type="url" name="certifications[0][credential_url]" placeholder="https://example.com/credential">
+                                <label for="cert_file">Upload Certificate*</label>
+                                <input type="file" name="certifications[0][certificate_file]" accept=".pdf, .jpg, .jpeg, .png" required>
                             </div>
                         </div>
                     </div>

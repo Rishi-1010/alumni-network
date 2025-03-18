@@ -3,21 +3,16 @@ session_start();
 require_once '../config/db_connection.php';
 
 // Make sure this is the very first check after session_start()
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: ../Authentication/AdminLogin/login.php");
+if (!isset($_SESSION['company_id'])) {
+    header("Location: ../Authentication/CompanyLogin/login.php");
     exit();
 }
 
 // Additional security: ensure the header redirect happens
 if (headers_sent()) {
-    die("Redirect failed. Please <a href='../Authentication/AdminLogin/login.php'>click here</a>");
+    die("Redirect failed. Please <a href='../Authentication/CompanyLogin/login.php'>click here</a>");
 }
 
-// Prevent regular users from accessing admin dashboard
-if (isset($_SESSION['user_id'])) {
-    header("Location: ../dashboard.php");
-    exit();
-}
 
 $db = new Database();
 $conn = $db->connect();
@@ -155,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Company Dashboard</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/admin,">
@@ -209,9 +204,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
         <div class="nav-links" id="navLinks">
             <a href="#" class="active">Dashboard</a>
             <a href="profile.php">Profile</a>
-            <a href="connections.php">Connections</a>
             <a href="jobs.php">Jobs</a>
-            <a href="../Authentication/AdminLogin/logout.php">Logout</a>
+            <a href="../Authentication/CompanyLogin/logout.php">Logout</a>
         </div>
     </nav>
 
@@ -219,14 +213,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
     <div class="dashboard-container container-fluid">
         <!-- Welcome Section -->
         <div class="welcome-section">
-            <h1>Welcome, Admin!</h1>
-            <p>Manage alumni data and perform administrative tasks.</p>
+            <h1>Welcome, Company!</h1>
+            <p>Manage alumni connections and company profile.</p>
         </div>
 
         <!-- Search Forms Container -->
         <div class="search-forms-container">
             <form method="POST" class="search-form" id="enrollmentSearchForm">
-            <h2><li>Search Student by its Enrollment Number</li></h2>
                 <div class="search-input-container">
                     <input type="text" 
                            name="search_enrollment" 
@@ -237,13 +230,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
                     <div id="suggestionBox" class="suggestion-box"></div>
                 </div>
                 <button type="submit">Search</button>
-            </form>
-
-            <!-- Email OTP Form -->
-            <form method="POST" class="search-form" id="sendOtpForm">
-            <h2><li>Enter Email of a Student for Registration link</li></h2>
-                <input type="email" name="alumni_email" placeholder="Enter Alumni Email" required>
-                <button type="submit" name="send_otp">Send OTP</button>
             </form>
         </div>
 
@@ -280,8 +266,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
                 <p>Enrollment Number: <?php echo htmlspecialchars($alumni['enrollment_number']); ?></p>
                 <div class="actions">
                     <a href="view-portfolio.php?id=<?php echo $alumni['user_id']; ?>" class="btn">View Portfolio</a>
-                    <a href="verify.php?id=<?php echo $alumni['user_id']; ?>" class="btn">Verify</a>
-                    <button class="btn delete-alumni" data-id="<?php echo $alumni['user_id']; ?>">Remove</button>
+                    <!-- Company specific actions here -->
                 </div>
             </div>
         <?php elseif ($parsedInfo): ?>

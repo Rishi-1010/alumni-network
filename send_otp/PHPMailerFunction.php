@@ -5,7 +5,7 @@ use PHPMailer\PHPMailer\Exception;
 
 require '../vendor/autoload.php'; // Include PHPMailer using Composer (or manual inclusion)
 
-function sendInvitationEmail($toEmail, $otp) {
+function sendInvitationEmail($toEmail) {
     $mail = new PHPMailer(true);
     try {
         // Server settings
@@ -27,9 +27,8 @@ function sendInvitationEmail($toEmail, $otp) {
         $mail->Body    = "
             <h3>Welcome to the Alumni Network</h3>
             <p>You have been invited to join the Alumni Network by Jitu Sir.</p>
-            <p>Your OTP for registration is: <strong>$otp</strong></p>
-            <p>Please click the link below to verify your OTP and complete the registration:</p>
-            <a href='http://localhost/alumni-network/Authentication/Registration/otpverification.php'>Click here to verify OTP</a>
+            <p>Please click the link below to complete the registration:</p>
+            <a href='http://localhost/alumni-network/Authentication/Registration/register.php'>Click here to register</a>
         ";
 
         $mail->send();

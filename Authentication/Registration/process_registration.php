@@ -25,7 +25,7 @@ try {
     }
 
     // Validate mandatory fields
-    $requiredFields = ['fullname', 'email', 'phone', 'password', 'enrollment_number', 'graduation_year'];
+    $requiredFields = ['fullname', 'email', 'phone', 'password', 'enrollment_number'];
     foreach ($requiredFields as $field) {
         if (empty($_POST[$field])) {
             throw new Exception("Field '$field' is required");
@@ -60,33 +60,56 @@ try {
     $conn->beginTransaction();
 
     try {
-        // Insert User Basic Details (removing created_at as it's not in the schema)
-        $stmt = $conn->prepare("INSERT INTO users (fullname, email, phone, password) 
-                               VALUES (?, ?, ?, ?)");
+        // Insert User Basic Details
+        $stmt = $conn->prepare("INSERT INTO users (fullname, email, phone, password, certificate_id, certificate_path)
+                               VALUES (?, ?, ?, ?, ?, ?)");
         $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+        // Handle certificate upload
+        $certificateId = $_POST['certificate_id'] ?? null;
+        $certificatePath = null;
+        $certificateUpload = $_FILES['certificate_upload'] ?? null;
+
+        if ($certificateUpload && $certificateUpload['error'] == 0) {
+            $uploadDir = '../../assets/certificates/';
+            $certificateName = uniqid() . '_' . basename($certificateUpload['name']);
+            $certificatePath = $uploadDir . $certificateName;
+
+            if (!move_uploaded_file($certificateUpload['tmp_name'], $certificatePath)) {
+                error_log("Certificate upload failed"); // User ID not yet available
+                $certificatePath = null; // Set to null if upload fails
+            }
+        }
+
         $stmt->execute([
             $_POST['fullname'],
             $_POST['email'],
             $_POST['phone'],
-            $hashedPassword
+            $hashedPassword,
+            $certificateId,
+            $certificatePath
         ]);
         $userId = $conn->lastInsertId();
 
+
+        // No need to update user table separately for certificate ID and path anymore
+        // They are inserted during user creation
+
+
         // Insert Educational Details
-        $stmt = $conn->prepare("INSERT INTO educational_details 
-                               (user_id, university_name, enrollment_number, graduation_year) 
+        $stmt = $conn->prepare("INSERT INTO educational_details
+                               (user_id, university_name, enrollment_number, graduation_year)
                                VALUES (?, ?, ?, ?)");
         $stmt->execute([
             $userId,
             'Uka Tarsadia University',
-            $_POST['enrollment_number'],
-            $_POST['graduation_year']
+            $_POST['enrollment_number']
         ]);
 
         // Insert Professional Status (using correct table name and columns)
         if (!empty($_POST['current_status'])) {
-            $stmt = $conn->prepare("INSERT INTO professional_status 
-                                   (user_id, current_status, company_name, position, start_date, is_current) 
+            $stmt = $conn->prepare("INSERT INTO professional_status
+                                   (user_id, current_status, company_name, position, start_date, is_current)
                                    VALUES (?, ?, ?, ?, ?, TRUE)");
             $stmt->execute([
                 $userId,
@@ -99,8 +122,8 @@ try {
 
         // Insert Projects (using correct column names)
         if (!empty($_POST['projects'])) {
-            $stmt = $conn->prepare("INSERT INTO projects 
-                                   (user_id, title, description, technologies_used, start_date, end_date) 
+            $stmt = $conn->prepare("INSERT INTO projects
+                                   (user_id, title, description, technologies_used, start_date, end_date)
                                    VALUES (?, ?, ?, ?, ?, ?)");
             foreach ($_POST['projects'] as $project) {
                 $stmt->execute([
@@ -116,8 +139,8 @@ try {
 
         // Insert Skills (using correct column names)
         if (!empty($_POST['skills'])) {
-            $stmt = $conn->prepare("INSERT INTO skills 
-                                   (user_id, skill_name, proficiency_level) 
+            $stmt = $conn->prepare("INSERT INTO skills
+                                   (user_id, skill_name, proficiency_level)
                                    VALUES (?, ?, ?)");
             foreach ($_POST['skills'] as $skill) {
                 // Convert proficiency level to match ENUM values
@@ -130,47 +153,13 @@ try {
             }
         }
 
-        // Insert Career Goals (using correct column names)
-        if (!empty($_POST['career_goals'])) {
-            $stmt = $conn->prepare("INSERT INTO career_goals 
-                                   (user_id, goal_type, description, target_date, status) 
-                                   VALUES (?, ?, ?, ?, ?)");
-            foreach ($_POST['career_goals'] as $goal) {
-                $stmt->execute([
-                    $userId,
-                    'career', // default type
-                    $goal['description'],
-                    date('Y-m-d', strtotime('+' . $goal['timeline'] . ' years')), // Convert timeline to target date
-                    $goal['status']
-                ]);
-            }
-        }
-
-        // Insert Certifications (using correct column names)
-        if (!empty($_POST['certifications'])) {
-            $stmt = $conn->prepare("INSERT INTO certifications 
-                                   (user_id, title, issuing_organization, issue_date, expiry_date, credential_id, credential_url) 
-                                   VALUES (?, ?, ?, ?, ?, ?, ?)");
-            foreach ($_POST['certifications'] as $cert) {
-                $stmt->execute([
-                    $userId,
-                    $cert['title'],
-                    $cert['issuing_organization'],
-                    $cert['issue_date'],
-                    $cert['expiry_date'] ?? null,
-                    $cert['credential_id'] ?? null,
-                    $cert['credential_url'] ?? null
-                ]);
-            }
-        }
-
         // Commit transaction
         $conn->commit();
 
         // Return success response
         echo json_encode([
             'status' => 'success',
-            'message' => 'Registration completed successfully!'
+            'message' => 'User Registered Successfully. You may close the Webpage now.'
         ]);
         exit;
 
@@ -207,3 +196,4 @@ try {
     ]);
     exit;
 }
+?>

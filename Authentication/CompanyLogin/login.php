@@ -8,7 +8,7 @@ require_once '../../config/db_connection.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni Login</title>
+    <title>Company Login</title>
     <link rel="stylesheet" href="../../assets/css/register.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
@@ -23,13 +23,14 @@ require_once '../../config/db_connection.php';
         </div>
         <div class="nav-links">
             <a href="../../index.html" class="home-btn">Home</a>
-        </div>  
+            <a href="../Registration/register.php" class="register-btn">Register</a>
+        </div>
     </nav>
 
     <div class="register-container">
-        <form id="loginForm" class="registration-form" action="process_login.php" method="POST">
-            <h2>Alumni Login</h2><br>
-            
+        <form id="companyLoginForm" class="registration-form" action="process_login.php" method="POST">
+            <h2>Company Login</h2><br>
+
             <?php
             if(isset($_SESSION['error'])) {
                 echo '<div class="alert alert-danger">' . $_SESSION['error'] . '</div>';
@@ -39,29 +40,24 @@ require_once '../../config/db_connection.php';
                 echo '<div class="alert alert-success">' . $_SESSION['success'] . '</div>';
                 unset($_SESSION['success']);
             }
+            if(isset($_SESSION['debug'])) {
+                echo '<script>console.log(' . json_encode($_SESSION['debug']) . ');</script>';
+                unset($_SESSION['debug']);
+            }
             ?>
 
             <div class="form-group">
-                <label for="email">Email Address*</label>
-                <input type="email" id="email" name="email" required>
+                <label for="username">Username*</label>
+                <input type="text" id="username" name="username" required>
             </div>
-
             <div class="form-group">
                 <label for="password">Password*</label>
                 <input type="password" id="password" name="password" required>
             </div>
-
-            <div class="form-group">
+            <div class="button-group">
                 <button type="submit" class="submit-btn">Login</button>
-            </div>
-
-            <div class="form-links">
-                <a href="forgot_password.php">Forgot Password?</a>
-                
             </div>
         </form>
     </div>
-
-    <script src="../../assets/js/login.js"></script>
 </body>
 </html>
