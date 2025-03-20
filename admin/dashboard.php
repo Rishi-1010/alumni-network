@@ -158,9 +158,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/admin,">
+    <link rel="stylesheet" href="../assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
         .notification {
             position: fixed;
@@ -206,11 +207,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
         <button class="mobile-menu-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
         </button>
-        <div class="nav-links" id="navLinks">
+        <div class="dashboard-navbar" id="navLinks">
             <a href="#" class="active">Dashboard</a>
             <a href="profile.php">Profile</a>
-            <a href="connections.php">Connections</a>
-            <a href="jobs.php">Jobs</a>
+            <!-- <a href="connections.php">Connections</a>
+            <a href="jobs.php">Jobs</a> -->
+            <a href="totalalumnis.php">Total Alumni</a>
             <a href="../Authentication/AdminLogin/logout.php">Logout</a>
         </div>
     </nav>
@@ -220,7 +222,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
         <!-- Welcome Section -->
         <div class="welcome-section">
             <h1>Welcome, Admin!</h1>
-            <p>Manage alumni data and perform administrative tasks.</p>
         </div>
 
         <!-- Search Forms Container -->

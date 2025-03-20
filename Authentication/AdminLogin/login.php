@@ -23,7 +23,6 @@ require_once '../../config/db_connection.php';
         </div>
         <div class="nav-links">
             <a href="../../index.html" class="home-btn">Home</a>
-            <a href="../Registration/register.php" class="register-btn">Register</a>
         </div>  
     </nav>
 

@@ -9,6 +9,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ ├── dashboard.php
 │ ├── delete_alumni.php
 │ ├── search_enrollment.php
+│ ├── totalalumnis.php
 │ └── view-portfolio.php
 ├── assets/
 │ ├── css/
@@ -83,7 +84,10 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Record deletion with confirmation
   - Real-time UI updates
   - Portfolio view
-  - Educational verification
+  - Educational verifications
+  
+  - **Total Alumni Count**: Admin dashboard now displays the total number of registered alumni in the system.
+  - **Total Alumni Count**: Admin dashboard now displays the total number of registered alumni in the system.
 
 - **Responsive Design**
   - Mobile-friendly interface

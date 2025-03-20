@@ -28,20 +28,39 @@
     margin-top: 2rem;
 }
 
-.admin-nav a {
+/* Redefined CSS for .dashboard-navbar */
+.dashboard-navbar {
+    display: flex; /* Use flexbox for layout */
+    gap: 0.5rem; /* Add some space between links */
+}
+
+.dashboard-navbar a {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1rem;
+    padding: 0.75rem 1.25rem;
     color: white;
     text-decoration: none;
-    transition: background 0.3s;
-    border-radius: 8px;
+    transition: background-color 0.3s ease-in-out; /* Smooth background transition */
+    border-radius: 5px; /* Button-like border radius */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+    background-color: var(--primary-color); /* Default background color */
 }
 
-.admin-nav a:hover,
-.admin-nav a.active {
-    background: rgba(255, 255, 255, 0.1);
+.dashboard-navbar a:hover {
+    background-color: var(--secondary-color); /* Highlight with secondary color on hover, same as active */
+    color: white; /* Ensure text is readable on highlight */
+    border-color: rgba(255, 255, 255, 0.4); /* Stronger border on hover, same as active */
+    font-weight: bold; /* Bold text on hover, same as active */
+    opacity: 1; /* added to ensure it's fully visible */
+}
+
+.dashboard-navbar a.active {
+    background-color: var(--secondary-color); /* Highlight with secondary color */
+    color: white; /* Ensure text is readable on highlight */
+    border-color: rgba(255, 255, 255, 0.4);
+    font-weight: bold;
+    opacity: 1; /* added to ensure it's fully visible */
 }
 
 /* Main Content */
