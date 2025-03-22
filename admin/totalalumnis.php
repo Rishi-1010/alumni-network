@@ -37,7 +37,7 @@ try {
 
     // Fetch all alumni details
     $stmt = $conn->query("
-        SELECT u.*, ed.*
+SELECT u.*, ed.*, ed.verification_status
         FROM users u
         LEFT JOIN educational_details ed ON u.user_id = ed.user_id
     ");
@@ -131,6 +131,7 @@ try {
                         <th>Name</th>
                         <th>Email</th>
                         <th>Enrollment Number</th>
+                        <th>Verification Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -141,15 +142,28 @@ try {
                                 <td><?php echo htmlspecialchars($alumni['fullname']); ?></td>
                                 <td><?php echo htmlspecialchars($alumni['email']); ?></td>
                                 <td><?php echo htmlspecialchars($alumni['enrollment_number']); ?></td>
+                                <td>
+                                    <?php if ($alumni['verification_status'] === 'verified'): ?>
+                                        <i class="fas fa-check-circle" style="color: green;"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-exclamation-circle" style="color: yellow;"></i>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="alumni-actions">
                                     <a href="view-portfolio.php?id=<?php echo $alumni['user_id']; ?>" class="btn btn-primary btn-sm">View Portfolio</a>
+                                    <?php if ($alumni['verification_status'] !== 'verified'): ?>
+                                        <form method="post" action="verify_alumni.php" onsubmit="return confirmVerification(<?php echo $alumni['user_id']; ?>)">
+                                            <input type="hidden" name="user_id" value="<?php echo $alumni['user_id']; ?>">
+                                            <button type="submit" class="btn btn-success btn-sm">Verify</button>
+                                        </form>
+                                    <?php endif; ?>
                                     <button class="btn btn-danger btn-sm delete-alumni" data-id="<?php echo $alumni['user_id']; ?>">Remove</button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4">No alumni members found.</td>
+                            <td colspan="5">No alumni members found.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -173,6 +187,10 @@ try {
                 }
             });
         });
+
+        function confirmVerification(userId) {
+            return confirm('Are you sure you want to verify this user?');
+        }
     </script>
 </body>
 </html>

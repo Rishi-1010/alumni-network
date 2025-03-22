@@ -27,7 +27,6 @@ if (isset($_SESSION['error'])) {
         </div>
         <div class="nav-links">
             <a href="../../index.html" class="home-btn">Home</a>
-            <a href="../Login/login.php" class="login-btn">Login</a>
         </div>
     </nav>
 
@@ -75,9 +74,27 @@ if (isset($_SESSION['error'])) {
                 <div class="form-step" id="step2" style="display: none;">
                     <h2>Educational Details</h2>
                     <input type="hidden" id="university_name" name="university_name" value="Uka Tarsadia University">
-                    <div class="form-group">
-                        <label for="enrollment_number">Enrollment Number*</label>
-                        <input type="text" id="enrollment_number" name="enrollment_number" pattern="[0-9]{15}" title="Please enter your 15-digit enrollment number" placeholder="Enter your 15-digit enrollment number" maxlength="15" required>
+                    <div class="form-group enrollment-format-group">
+                        <label>Enrollment Number Format*</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="format_old" name="enrollment_format" value="old" checked>
+                                <label for="format_old">Before 2011</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="format_new" name="enrollment_format" value="new">
+                                <label for="format_new">After 2011</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="old_format_group">
+                        <label for="enrollment_number_old">Old Enrollment Number (YY|Course|Number)*</label>
+                        <input type="text" id="enrollment_number_old" name="enrollment_number_old" placeholder="YY|Course|Number" pattern="[0-9]{2}|[A-Z]{3}|[0-9]{3}" title="Please enter your enrollment number in the format YY|Course|Number" maxlength="11">
+                        <small class="help-text">Enter your enrollment number in the format YY|Course|Number</small>
+                    </div>
+                    <div class="form-group" id="new_format_group" style="display: none;">
+                        <label for="enrollment_number">New Enrollment Number*</label>
+                        <input type="text" id="enrollment_number" name="enrollment_number" pattern="[0-9]{15}" title="Please enter your 15-digit enrollment number" placeholder="Enter your 15-digit enrollment number" maxlength="15">
                         <small class="help-text">Enter your 15-digit enrollment number</small>
                     </div>
                     <div class="form-group">

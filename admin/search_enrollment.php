@@ -15,7 +15,7 @@ if (isset($_GET['term'])) {
         $conn = $db->connect();
         
         $stmt = $conn->prepare("
-            SELECT DISTINCT ed.enrollment_number, u.fullname
+SELECT DISTINCT ed.enrollment_number, u.fullname, u.user_id, ed.verification_status
             FROM educational_details ed
             JOIN users u ON ed.user_id = u.user_id
             WHERE ed.enrollment_number LIKE ?
@@ -30,4 +30,4 @@ if (isset($_GET['term'])) {
         echo json_encode(['error' => $e->getMessage()]);
     }
 }
-?> 
+?>

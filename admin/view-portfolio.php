@@ -163,6 +163,7 @@ try {
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
+                                
                                 <p><strong>Current Status:</strong> <?php echo ucfirst(htmlspecialchars($userData['current_status'] ?? 'Not provided')); ?></p>
                                 <p><strong>Company:</strong> <?php echo htmlspecialchars($userData['company_name'] ?? 'Not provided'); ?></p>
                                 <p><strong>Position:</strong> <?php echo htmlspecialchars($userData['position'] ?? 'Not provided'); ?></p>

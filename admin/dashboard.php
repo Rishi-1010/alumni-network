@@ -281,7 +281,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
                 <p>Enrollment Number: <?php echo htmlspecialchars($alumni['enrollment_number']); ?></p>
                 <div class="actions">
                     <a href="view-portfolio.php?id=<?php echo $alumni['user_id']; ?>" class="btn">View Portfolio</a>
-                    <a href="verify.php?id=<?php echo $alumni['user_id']; ?>" class="btn">Verify</a>
+                    <?php if ($alumni['verification_status'] !== 'verified'): ?>
+                        <form method="post" action="verify_alumni.php" onsubmit="return confirmVerification(<?php echo $alumni['user_id']; ?>)">
+                            <input type="hidden" name="user_id" value="<?php echo $alumni['user_id']; ?>">
+                            <button type="submit" class="btn">Verify</button>
+                        </form>
+                    <?php endif; ?>
+                    <script>
+                        function confirmVerification(userId) {
+                            return confirm('Are you sure you want to verify this user?');
+                        }
+                    </script>
                     <button class="btn delete-alumni" data-id="<?php echo $alumni['user_id']; ?>">Remove</button>
                 </div>
             </div>

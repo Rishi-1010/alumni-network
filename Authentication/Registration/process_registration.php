@@ -25,7 +25,7 @@ try {
     }
 
     // Validate mandatory fields
-    $requiredFields = ['fullname', 'email', 'phone', 'password', 'enrollment_number'];
+    $requiredFields = ['fullname', 'email', 'phone', 'password'];
     foreach ($requiredFields as $field) {
         if (empty($_POST[$field])) {
             throw new Exception("Field '$field' is required");
@@ -49,9 +49,17 @@ try {
         throw new Exception('User with this email already exists');
     }
 
+    // Determine enrollment number based on format
+    $enrollmentNumber = $_POST['enrollment_format'] === 'old' ? $_POST['enrollment_number_old'] : $_POST['enrollment_number'];
+
+    // Validate enrollment number
+    if (empty($enrollmentNumber)) {
+        throw new Exception("Enrollment number is required");
+    }
+
     // Check enrollment number separately
     $stmt = $conn->prepare("SELECT user_id FROM educational_details WHERE enrollment_number = ?");
-    $stmt->execute([$_POST['enrollment_number']]);
+    $stmt->execute([$enrollmentNumber]);
     if ($stmt->rowCount() > 0) {
         throw new Exception('User with this enrollment number already exists');
     }
@@ -103,7 +111,8 @@ try {
         $stmt->execute([
             $userId,
             'Uka Tarsadia University',
-            $_POST['enrollment_number']
+            $enrollmentNumber,
+            null // Graduation year is not collected in the form
         ]);
 
         // Insert Professional Status (using correct table name and columns)

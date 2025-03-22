@@ -139,6 +139,71 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Enrollment format logic
+    const formatOld = document.getElementById('format_old');
+    const formatNew = document.getElementById('format_new');
+    const oldFormatGroup = document.getElementById('old_format_group');
+    const newFormatGroup = document.getElementById('new_format_group');
+    const enrollmentNumberOld = document.getElementById('enrollment_number_old');
+    const enrollmentNumberNew = document.getElementById('enrollment_number');
+
+    function clearEnrollmentFields() {
+        enrollmentNumberOld.value = '';
+        enrollmentNumberNew.value = '';
+    }
+
+    formatOld.addEventListener('change', function() {
+        clearEnrollmentFields();
+        oldFormatGroup.style.display = 'block';
+        newFormatGroup.style.display = 'none';
+    });
+
+    formatNew.addEventListener('change', function() {
+        clearEnrollmentFields();
+        oldFormatGroup.style.display = 'none';
+        newFormatGroup.style.display = 'block';
+    });
+
+    // Update validation function to handle new enrollment fields
+    function validateStep(step) {
+        const stepElement = document.getElementById(`step${step}`);
+        const requiredFields = stepElement.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('error');
+            } else {
+                if (field.id === 'enrollment_number_old') {
+                    if (!field.value.match(/^[0-9]{2}\|[A-Z]{3}\|[0-9]{3}$/)) {
+                        isValid = false;
+                        field.classList.add('error');
+                        alert('Please enter a valid old enrollment number (YY|Course|Number)');
+                    } else {
+                        field.classList.remove('error');
+                    }
+                } else if (field.id === 'enrollment_number') {
+                    if (!field.value.match(/^[0-9]{15}$/)) {
+                        isValid = false;
+                        field.classList.add('error');
+                        alert('Please enter a valid 15-digit enrollment number');
+                    } else {
+                        field.classList.remove('error');
+                    }
+                } else {
+                    field.classList.remove('error');
+                }
+            }
+        });
+
+        if (!isValid) {
+            alert('Please fill in all required fields correctly.');
+        }
+
+        return isValid;
+    }
+
     // Event Listeners
     if (step1Next) {
         step1Next.addEventListener('click', () => moveToStep(1, 2));

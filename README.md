@@ -10,6 +10,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ ├── delete_alumni.php
 │ ├── search_enrollment.php
 │ ├── totalalumnis.php
+│ ├── verify_alumni.php
 │ └── view-portfolio.php
 ├── assets/
 │ ├── css/
@@ -85,9 +86,9 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Real-time UI updates
   - Portfolio view
   - Educational verifications
-  
   - **Total Alumni Count**: Admin dashboard now displays the total number of registered alumni in the system.
-  - **Total Alumni Count**: Admin dashboard now displays the total number of registered alumni in the system.
+  - **Verified Alumni Count**: Admin dashboard now displays the total number of verified alumni in the system.
+  - **Alumni Verification System**: Implemented a system for admins to verify alumni, including confirmation dialogs and real-time updates.
 
 - **Responsive Design**
   - Mobile-friendly interface
