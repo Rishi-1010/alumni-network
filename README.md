@@ -99,27 +99,15 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Status badges
 
 ### New Features Added
+- **Contact Us Page**
+  - Added a new page for users to contact the administrators.
 - **Portfolio View System**
   - Detailed alumni information display
-  - Educational verification status
-  - Professional history
-  - Project showcase
-  - Career goals
-
-- **Enhanced Admin Controls**
-  - OTP generation and sending
-  - Real-time search functionality
-  - Status badge system
-  - Transaction-based deletions
-
-- **Improved UI/UX**
-  - Progress bars for registration
-  - Dynamic form validation
-  - Interactive project addition
-  - Responsive sidebar
-  - Custom status indicators
 
 ### Under Development
+- **User Dashboard**
+  - User dashboard is now under development and not currently implemented.
+
 - **Professional Networking**
   - Alumni connections
   - Direct messaging
@@ -199,6 +187,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - HTML5/CSS3
 - JavaScript
 - Bootstrap 5.3.2
+- GSAP
 - jQuery 3.7.1
 
 ## Recent Updates
@@ -213,6 +202,8 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - Enhanced delete confirmation system
 - Improved search functionality
 - Added transaction-based deletions
+- Added GSAP to tech stack
+- Added Contact Us Page
 
 ## Setup Instructions
 1. Clone the repository

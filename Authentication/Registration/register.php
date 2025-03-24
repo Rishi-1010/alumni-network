@@ -15,6 +15,15 @@ if (isset($_SESSION['error'])) {
     <title>Alumni Registration</title>
     <link rel="stylesheet" href="../../assets/css/register.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="../../assets/js/animations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            hoverEffect('.next-btn');
+            hoverEffect('.submit-btn');
+            hoverEffect('.nav-links a');
+        });
+    </script>
 </head>
 <body>
     <!-- Add navigation bar -->
@@ -74,6 +83,14 @@ if (isset($_SESSION['error'])) {
                 <div class="form-step" id="step2" style="display: none;">
                     <h2>Educational Details</h2>
                     <input type="hidden" id="university_name" name="university_name" value="Uka Tarsadia University">
+                    <div class="form-group">
+                        <label for="course">Course*</label>
+                        <select id="course" name="course" required>
+                            <option value="">Select Course</option>
+                            <option value="BCA">BCA</option>
+                            <option value="MCA">MCA</option>
+                        </select>
+                    </div>
                     <div class="form-group enrollment-format-group">
                         <label>Enrollment Number Format*</label>
                         <div class="radio-group">
@@ -89,7 +106,7 @@ if (isset($_SESSION['error'])) {
                     </div>
                     <div class="form-group" id="old_format_group">
                         <label for="enrollment_number_old">Old Enrollment Number (YY|Course|Number)*</label>
-                        <input type="text" id="enrollment_number_old" name="enrollment_number_old" placeholder="YY|Course|Number" pattern="[0-9]{2}|[A-Z]{3}|[0-9]{3}" title="Please enter your enrollment number in the format YY|Course|Number" maxlength="11">
+                        <input type="text" id="enrollment_number_old" name="enrollment_number_old" placeholder="YY|Course|Number" pattern="[0-9]{2}(BCA|MCA)[0-9]{3}" title="Please enter your enrollment number in the format YY|Course|Number" maxlength="11" required>
                         <small class="help-text">Enter your enrollment number in the format YY|Course|Number</small>
                     </div>
                     <div class="form-group" id="new_format_group" style="display: none;">
@@ -97,9 +114,7 @@ if (isset($_SESSION['error'])) {
                         <input type="text" id="enrollment_number" name="enrollment_number" pattern="[0-9]{15}" title="Please enter your 15-digit enrollment number" placeholder="Enter your 15-digit enrollment number" maxlength="15">
                         <small class="help-text">Enter your 15-digit enrollment number</small>
                     </div>
-                    <div class="form-group">
-                        </select>
-                    </div>
+                    
                     <div class="button-group">
                         <button type="button" class="prev-btn" id="step2Prev">Previous</button>
                         <button type="button" class="next-btn" id="step2Next">Next</button>
@@ -128,10 +143,6 @@ if (isset($_SESSION['error'])) {
                         <div class="form-group">
                             <label for="position">Position*</label>
                             <input type="text" id="position" name="position">
-                        </div>
-                        <div class="form-group">
-                            <label for="start_date">Start Date*</label>
-                            <input type="date" id="start_date" name="start_date">
                         </div>
                     </div>
                     

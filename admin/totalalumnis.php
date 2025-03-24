@@ -75,9 +75,18 @@ SELECT u.*, ed.*, ed.verification_status
         .alumni-table th {
             background-color: #f4f4f4;
         }
+        .alumni-actions {
+            display: flex;
+            flex-direction: column; /* Stack buttons vertically */
+            align-items: flex-start; /* Align items to the start */
+        }
+
         .alumni-actions a, .alumni-actions button {
-            margin-right: 5px;
+            margin-bottom: 5px; /* Add spacing between buttons */
             text-decoration: none;
+            display: block; /* Make them block-level elements */
+            width: 100%; /* Make them take the full width of the cell */
+            text-align: center; /* Center the text inside the button */
         }
     </style>
 </head>
@@ -150,14 +159,18 @@ SELECT u.*, ed.*, ed.verification_status
                                     <?php endif; ?>
                                 </td>
                                 <td class="alumni-actions">
-                                    <a href="view-portfolio.php?id=<?php echo $alumni['user_id']; ?>" class="btn btn-primary btn-sm">View Portfolio</a>
-                                    <?php if ($alumni['verification_status'] !== 'verified'): ?>
-                                        <form method="post" action="verify_alumni.php" onsubmit="return confirmVerification(<?php echo $alumni['user_id']; ?>)">
-                                            <input type="hidden" name="user_id" value="<?php echo $alumni['user_id']; ?>">
-                                            <button type="submit" class="btn btn-success btn-sm">Verify</button>
-                                        </form>
-                                    <?php endif; ?>
-                                    <button class="btn btn-danger btn-sm delete-alumni" data-id="<?php echo $alumni['user_id']; ?>">Remove</button>
+                                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                        <a href="view-portfolio.php?id=<?php echo $alumni['user_id']; ?>" class="btn btn-primary btn-sm">View Portfolio</a>
+                                        <div style="display: flex; justify-content: space-between; width: 100%;">
+                                            <?php if ($alumni['verification_status'] !== 'verified'): ?>
+                                                <form method="post" action="verify_alumni.php" onsubmit="return confirmVerification(<?php echo $alumni['user_id']; ?>)">
+                                                    <input type="hidden" name="user_id" value="<?php echo $alumni['user_id']; ?>">
+                                                    <button type="submit" class="btn btn-success btn-sm">Verify</button>
+                                                </form>
+                                            <?php endif; ?>
+                                            <button class="btn btn-danger btn-sm delete-alumni" data-id="<?php echo $alumni['user_id']; ?>">Remove</button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

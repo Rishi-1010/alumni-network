@@ -168,8 +168,9 @@ try {
         // Return success response
         echo json_encode([
             'status' => 'success',
-            'message' => 'User Registered Successfully. You may close the Webpage now.'
+            'message' => 'User Registered Successfully. Redirecting to contact us page...'
         ]);
+        header("Location: ../../contactus.php");
         exit;
 
     } catch (Exception $e) {

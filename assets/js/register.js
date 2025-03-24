@@ -71,35 +71,62 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     }
 
-    function validateStep(step) {
+   function validateStep(step) {
         const stepElement = document.getElementById(`step${step}`);
-        const requiredFields = stepElement.querySelectorAll('[required]');
+        const requiredFields = stepElement ? stepElement.querySelectorAll('[required]') : [];
         let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
+
+        if (!stepElement) {
+            console.error(`Step element with id step${step} not found`);
+            return false;
+        }
+
+        for (let i = 0; i < requiredFields.length; i++) {
+            const field = requiredFields[i];
+
+            // Skip validation for fields that are not currently displayed
+            if (!field.offsetParent) {
+                continue;
+            }
+
+            const value = field.value ? field.value.trim() : '';
+            if (!value) {
                 isValid = false;
                 field.classList.add('error');
-            } else {
-                // Check pattern validation for enrollment number
-                if (field.id === 'enrollment_number') {
-                    if (!field.value.match(/^[0-9]{15}$/)) {
-                        isValid = false;
-                        field.classList.add('error');
-                        alert('Please enter a valid 15-digit enrollment number');
-                    } else {
-                        field.classList.remove('error');
-                    }
-                } else {
-                    field.classList.remove('error');
-                }
+                continue;
             }
-        });
-        
+
+            field.classList.remove('error');
+
+            if (field.id === 'enrollment_number_old') {
+                const course = document.getElementById('course').value;
+                let pattern;
+                if (course === 'BCA') {
+                    pattern = /^[0-9]{2}(BCA)[0-9]{3}$/;
+                } else if (course === 'MCA') {
+                    pattern = /^[0-9]{2}(MCA)[0-9]{3}$/;
+                }
+                if (pattern && !pattern.test(value)) {
+                    isValid = false;
+                    field.classList.add('error');
+                    alert('Please enter a valid old enrollment number (YYCourseNumber)');
+                }
+            } else if (field.id === 'enrollment_number') {
+                if (!/^[0-9]{15}$/.test(value)) {
+                    isValid = false;
+                    field.classList.add('error');
+                    alert('Please enter a valid 15-digit enrollment number');
+                }
+            } else if (field.tagName === 'SELECT' && field.value === '') {
+                isValid = false;
+                field.classList.add('error');
+            }
+        }
+
         if (!isValid) {
             alert('Please fill in all required fields correctly.');
         }
-        
+
         return isValid;
     }
 
@@ -152,50 +179,80 @@ document.addEventListener('DOMContentLoaded', function() {
         enrollmentNumberNew.value = '';
     }
 
-    formatOld.addEventListener('change', function() {
-        clearEnrollmentFields();
-        oldFormatGroup.style.display = 'block';
-        newFormatGroup.style.display = 'none';
-    });
+    const courseSelect = document.getElementById('course');
 
-    formatNew.addEventListener('change', function() {
+    function updateEnrollmentVisibility() {
         clearEnrollmentFields();
-        oldFormatGroup.style.display = 'none';
-        newFormatGroup.style.display = 'block';
-    });
+        const isOldFormat = formatOld.checked;
+
+        enrollmentNumberOld.required = isOldFormat;
+        enrollmentNumberNew.required = !isOldFormat;
+
+        oldFormatGroup.style.display = isOldFormat ? 'block' : 'none';
+        newFormatGroup.style.display = isOldFormat ? 'none' : 'block';
+    }
+
+    formatOld.addEventListener('change', updateEnrollmentVisibility);
+    formatNew.addEventListener('change', updateEnrollmentVisibility);
+    courseSelect.addEventListener('change', updateEnrollmentVisibility);
 
     // Update validation function to handle new enrollment fields
     function validateStep(step) {
         const stepElement = document.getElementById(`step${step}`);
-        const requiredFields = stepElement.querySelectorAll('[required]');
+        const requiredFields = stepElement ? stepElement.querySelectorAll('[required]') : [];
         let isValid = true;
 
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
+        for (let i = 0; i < requiredFields.length; i++) {
+            const field = requiredFields[i];
+
+            // Skip validation for fields that are not currently displayed
+            if (!field.offsetParent) {
+                continue;
+            }
+
+            const value = field.value ? field.value.trim() : '';
+            if (!value) {
                 isValid = false;
                 field.classList.add('error');
-            } else {
-                if (field.id === 'enrollment_number_old') {
-                    if (!field.value.match(/^[0-9]{2}\|[A-Z]{3}\|[0-9]{3}$/)) {
-                        isValid = false;
-                        field.classList.add('error');
-                        alert('Please enter a valid old enrollment number (YY|Course|Number)');
-                    } else {
-                        field.classList.remove('error');
-                    }
-                } else if (field.id === 'enrollment_number') {
-                    if (!field.value.match(/^[0-9]{15}$/)) {
-                        isValid = false;
-                        field.classList.add('error');
-                        alert('Please enter a valid 15-digit enrollment number');
-                    } else {
-                        field.classList.remove('error');
-                    }
-                } else {
-                    field.classList.remove('error');
-                }
+                continue;
             }
-        });
+
+            field.classList.remove('error');
+
+            if (field.id === 'enrollment_number_old') {
+                const course = document.getElementById('course').value;
+                const enrollmentNumber = field.value.toUpperCase();
+
+                if (!enrollmentNumber.includes(course)) {
+                    isValid = false;
+                    field.classList.add('error');
+                    document.getElementById('course').classList.add('error');
+                    alert("Course and Old Enrollment Number course don't match properly.");
+                }
+                else {
+                    let pattern;
+                    if (course === 'BCA') {
+                        pattern = /^[0-9]{2}(BCA)[0-9]{3}$/;
+                    } else if (course === 'MCA') {
+                        pattern = /^[0-9]{2}(MCA)[0-9]{3}$/;
+                    }
+                    if (pattern && !pattern.test(value)) {
+                        isValid = false;
+                        field.classList.add('error');
+                        alert('Please enter a valid old enrollment number (YYCourseNumber)');
+                    }
+                }
+            } else if (field.id === 'enrollment_number') {
+                if (!/^[0-9]{15}$/.test(value)) {
+                    isValid = false;
+                    field.classList.add('error');
+                    alert('Please enter a valid 15-digit enrollment number');
+                }
+            } else if (field.tagName === 'SELECT' && field.value === '') {
+                isValid = false;
+                field.classList.add('error');
+            }
+        }
 
         if (!isValid) {
             alert('Please fill in all required fields correctly.');

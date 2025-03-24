@@ -30,7 +30,7 @@ $verifiedAlumni = 0;
 function getCourseDetails($courseCode) {
     $courses = [
         '0051' => ['course' => 'BCA', 'department' => 'BVPICS', 'duration' => 3, 'semesters' => 6],
-        '0461' => ['course' => 'MCA', 'department' => 'SRIMCA', 'duration' => 2, 'semesters' => 1],
+        '0461' => ['course' => 'MCA', 'department' => 'SRIMCA', 'duration' => 2, 'semesters' => 4],
         // Add more courses as needed
     ];
 
@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
         if ($mailResult === true) {
             $_SESSION['success'] = "OTP sent successfully to " . htmlspecialchars($alumniEmail);
         } else {
-            $_SESSION['error'] = "Failed to send OTP: " . $mailResult;
+            $_SESSION['error'] = "Failed to send Link: " . $mailResult;
         }
     } catch(Exception $e) {
         $_SESSION['error'] = "Error: " . $e->getMessage();
