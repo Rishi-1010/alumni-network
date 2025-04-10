@@ -74,12 +74,27 @@ try {
     <title>Alumni Portfolio - Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/admin-dark.css">
+    <link rel="stylesheet" href="../assets/css/portfolio.css"> <!-- Link to the new portfolio CSS -->
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Include your sidebar here if needed -->
+    <!-- Navigation copied from dashboard.php -->
+    <nav class="dashboard-nav">
+        <div class="logo">
+            <img src="../assets/img/logo.png" alt="Alumni Network Logo">
+            <span>SRIMCA_BVPICS Alumni Network</span>
+        </div>
         
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="dashboard-navbar" id="navLinks">
+            <a href="dashboard.php" class="active">Dashboard</a>
+            <a href="profile.php">Profile</a>
+            <a href="totalalumnis.php">Total Alumni</a>
+            <a href="../Authentication/AdminLogin/logout.php">Logout</a>
+        </div>
+    </nav>
+    <div class="admin-container">
         <div class="main-content">
             <div class="portfolio-header">
                 <h1 align="center">Alumni Portfolio</h1>

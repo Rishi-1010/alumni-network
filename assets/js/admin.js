@@ -1,35 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Delete alumni functionality
-    const deleteButtons = document.querySelectorAll('.delete-alumni');
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete this alumni?')) {
-                const userId = this.dataset.id;
-                
-                fetch('delete_alumni.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `user_id=${userId}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        // Remove the row from the table
-                        this.closest('tr').remove();
-                        showNotification('Alumni deleted successfully', 'success');
-                    } else {
-                        showNotification('Error: ' + data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('An error occurred while deleting the alumni', 'error');
-                });
-            }
-        });
-    });
+    
 
     // Verify button confirmation
     const verifyButtons = document.querySelectorAll('a.btn-primary');

@@ -28,7 +28,7 @@ function sendInvitationEmail($toEmail) {
             <h3>Welcome to the Alumni Network</h3>
             <p>You have been invited to join the Alumni Network by Jitu Sir.</p>
             <p>Please click the link below to complete the registration:</p>
-            <a href='http://localhost/alumni-network/Authentication/Registration/register.php'>Click here to register</a>
+            <a href='http://localhost/alumni-network/authentication/Registration/register.php'>Click here to register</a>
         ";
 
         $mail->send();

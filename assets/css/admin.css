@@ -30,10 +30,33 @@
 
 /* Redefined CSS for .dashboard-navbar */
 .dashboard-navbar {
-    display: flex; /* Use flexbox for layout */
-    gap: 0.5rem; /* Add some space between links */
+    display: flex;
+    gap: 0.5rem;
+    display: none; /* Hide by default */
 }
 
+.mobile-menu-btn {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.mobile-menu-btn.active + .dashboard-navbar {
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu-btn.active + .dashboard-navbar a {
+    width: 100%;
+    text-align: center;
+}
+
+
+/* Navigation Links */
 .dashboard-navbar a {
     display: flex;
     align-items: center;
@@ -41,26 +64,47 @@
     padding: 0.75rem 1.25rem;
     color: white;
     text-decoration: none;
-    transition: background-color 0.3s ease-in-out; /* Smooth background transition */
-    border-radius: 5px; /* Button-like border radius */
-    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
-    background-color: var(--primary-color); /* Default background color */
+    transition: background-color 0.3s ease-in-out;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: var(--primary-color);
 }
 
-.dashboard-navbar a:hover {
-    background-color: var(--secondary-color); /* Highlight with secondary color on hover, same as active */
-    color: white; /* Ensure text is readable on highlight */
-    border-color: rgba(255, 255, 255, 0.4); /* Stronger border on hover, same as active */
-    font-weight: bold; /* Bold text on hover, same as active */
-    opacity: 1; /* added to ensure it's fully visible */
-}
-
+.dashboard-navbar a:hover,
 .dashboard-navbar a.active {
-    background-color: var(--secondary-color); /* Highlight with secondary color */
-    color: white; /* Ensure text is readable on highlight */
+    background-color: var(--secondary-color);
+    color: white;
     border-color: rgba(255, 255, 255, 0.4);
     font-weight: bold;
-    opacity: 1; /* added to ensure it's fully visible */
+    opacity: 1;
+}
+
+
+/* Media Queries */
+@media (min-width: 992px) {
+    .dashboard-navbar {
+        display: flex;
+        flex-direction: row;
+    }
+    .mobile-menu-btn {
+        display: none;
+    }
+}
+
+@media (max-width: 991px) {
+    .dashboard-navbar {
+        display: none;
+    }
+    .mobile-menu-btn {
+        display: block;
+    }
+    .sidebar {
+        width: 100%;
+    }
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+    }
 }
 
 /* Main Content */
@@ -382,69 +426,69 @@ th, td {
     border-radius: 10px;
     font-size: 0.8rem;
     margin-left: 5px;
-} 
+}
 
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.search-input {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-left: auto;
+    width: 200px;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    background: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification.info {
+    border-left: 4px solid var(--primary-color);
+}
+
+.notification.success {
+    border-left: 4px solid #28a745;
+}
+
+.notification.error {
+    border-left: 4px solid #dc3545;
+}
+
+@media (max-width: 768px) {
     .menu-toggle {
-        display: none;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: var(--primary-color);
-        cursor: pointer;
-        padding: 0.5rem;
+        display: block;
     }
 
-    .search-input {
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        margin-left: auto;
-        width: 200px;
-    }
-
-    .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 2rem;
-        border-radius: 5px;
-        background: white;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        transform: translateX(120%);
+    .sidebar {
+        transform: translateX(-100%);
         transition: transform 0.3s ease;
-        z-index: 1000;
     }
 
-    .notification.show {
+    .sidebar.active {
         transform: translateX(0);
     }
-
-    .notification.info {
-        border-left: 4px solid var(--primary-color);
-    }
-
-    .notification.success {
-        border-left: 4px solid #28a745;
-    }
-
-    .notification.error {
-        border-left: 4px solid #dc3545;
-    }
-
-    @media (max-width: 768px) {
-        .menu-toggle {
-            display: block;
-        }
-
-        .sidebar {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar.active {
-            transform: translateX(0);
-        }
-    }
+}
 
 /* Add to your existing admin.css */
 

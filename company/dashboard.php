@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
     <nav class="dashboard-nav">
         <div class="logo">
             <img src="../assets/img/logo.png" alt="Alumni Network Logo">
-            <span>Alumni Network</span>
+            <span>SRIMCA_BVPICS Alumni Network</span>
         </div>
         
         <button class="mobile-menu-btn" id="mobileMenuBtn">

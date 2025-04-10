@@ -15,14 +15,14 @@ if (isset($_SESSION['error'])) {
     <title>Alumni Registration</title>
     <link rel="stylesheet" href="../../assets/css/register.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-    <script src="../../assets/js/animations.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script> -->
+    <!-- <script src="../../assets/js/animations.js"></script> -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            hoverEffect('.next-btn');
-            hoverEffect('.submit-btn');
-            hoverEffect('.nav-links a');
-        });
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     hoverEffect('.next-btn');
+        //     hoverEffect('.submit-btn');
+        //     hoverEffect('.nav-links a');
+        // });
     </script>
 </head>
 <body>
@@ -33,9 +33,6 @@ if (isset($_SESSION['error'])) {
                 <img src="../../assets/img/logo.png" alt="Alumni Network Logo">
                 <span>Alumni Network</span>
             </a>
-        </div>
-        <div class="nav-links">
-            <a href="../../index.html" class="home-btn">Home</a>
         </div>
     </nav>
 

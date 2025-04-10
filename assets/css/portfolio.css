@@ -1,0 +1,277 @@
+/* CSS for view-portfolio.php navigation */
+
+/* Copied from assets/css/dashboard.css */
+:root {
+    --nav-height: 60px;
+    --primary-color: #3498db; /* Using dashboard's primary color for nav */
+    --text-color: #333;
+    --transition: all 0.3s ease;
+}
+
+/* Navigation */
+.dashboard-nav {
+    position: fixed; /* Changed from relative/static to fixed for consistency */
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    z-index: 1000;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo img {
+    height: 35px;
+    width: auto;
+}
+
+.logo span {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+/* Using .dashboard-navbar from admin.css as it seems to be the correct class in the HTML */
+.dashboard-navbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.dashboard-navbar a {
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.dashboard-navbar a:hover,
+.dashboard-navbar a.active {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--primary-color);
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+    display: none; /* Hide by default on larger screens */
+    background: transparent;
+    border: none;
+    font-size: 1.5rem; /* Adjusted size */
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.mobile-menu-btn:hover {
+    color: var(--primary-color);
+}
+
+/* Media Queries for Responsive Navigation */
+@media screen and (max-width: 991px) { /* Adjusted breakpoint to match admin.css */
+    .dashboard-navbar {
+        position: fixed; /* Changed to fixed */
+        top: var(--nav-height);
+        left: 0;
+        right: 0;
+        background: white;
+        display: none; /* Hide by default */
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.5rem;
+        gap: 0.25rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: var(--transition);
+        z-index: 999; /* Below main nav */
+    }
+
+    .dashboard-navbar.active { /* Style for when mobile menu is open */
+        display: flex;
+        animation: slideDown 0.3s ease;
+    }
+
+    .dashboard-navbar a {
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        width: 100%;
+        text-align: left; /* Align text left */
+    }
+
+    .mobile-menu-btn {
+        display: block; /* Show button on smaller screens */
+    }
+
+    .logo span {
+        font-size: 1.1rem;
+    }
+}
+
+/* Small phones */
+@media screen and (max-width: 480px) {
+    .dashboard-nav {
+        padding: 0 0.75rem;
+    }
+
+    .logo img {
+        height: 30px;
+    }
+
+    .logo span {
+        font-size: 1rem;
+    }
+
+    .dashboard-navbar a {
+        padding: 0.75rem;
+    }
+}
+
+/* Animation */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Adjust main content padding to account for fixed navbar */
+.admin-container .main-content {
+    padding-top: calc(var(--nav-height) + 2rem); /* Add nav height to top padding */
+    margin-left: 0; /* Remove sidebar margin if sidebar isn't used here */
+    width: 100%; /* Ensure main content takes full width */
+}
+
+/* Portfolio specific styles from admin.css (if needed) */
+.portfolio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.portfolio-content {
+    padding: 1rem;
+    max-width: 100%;
+    margin: 0;
+}
+
+.portfolio-content .card {
+    width: 100%;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.portfolio-content .card-body {
+    padding: 1.5rem;
+}
+
+.portfolio-content .row {
+    margin: 0;
+    width: 100%;
+}
+
+.portfolio-content .card-header {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.portfolio-content .card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.portfolio-content .card-header i {
+    margin-right: 0.5rem;
+    color: var(--primary-color); /* Use the defined primary color */
+}
+
+.portfolio-content .badge {
+    font-size: 0.9rem;
+    padding: 0.5em 1em;
+}
+
+.portfolio-content strong {
+    color: #495057;
+}
+
+/* Status badge specific styles */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    color: white; /* Default text color */
+}
+
+.status-badge.pending {
+    background: #F1C40F; /* Warning color */
+}
+
+.status-badge.verified {
+    background: #2ECC71; /* Success color */
+}
+
+/* Ensure Bootstrap badges are styled correctly if needed */
+.badge.bg-success {
+    background-color: #2ECC71 !important; /* Override Bootstrap if necessary */
+}
+
+.badge.bg-warning {
+    background-color: #F1C40F !important; /* Override Bootstrap if necessary */
+}
+
+/* Info item styling */
+.info-item {
+    margin-bottom: 1rem;
+}
+
+.info-item strong {
+    display: inline-block;
+    min-width: 150px; /* Adjust as needed for alignment */
+}
+
+.info-item i {
+    margin-right: 8px;
+    color: var(--primary-color); /* Use consistent icon color */
+}
+
+/* Responsive adjustments */
+@media (min-width: 1200px) {
+    .portfolio-content .card {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-container .main-content {
+        padding: 1rem;
+        padding-top: calc(var(--nav-height) + 1rem); /* Adjust padding for smaller screens */
+    }
+    .portfolio-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .portfolio-header h1 {
+        font-size: 1.5rem; /* Adjust heading size */
+    }
+}

@@ -162,15 +162,22 @@ try {
             }
         }
 
+        // Insert Career Goals
+        if (!empty($_POST['career_goals'])) {
+            $stmt = $conn->prepare("INSERT INTO career_goals (user_id, description) VALUES (?, ?)");
+            foreach ($_POST['career_goals'] as $goal) {
+                $stmt->execute([$userId, $goal['description']]);
+            }
+        }
+
         // Commit transaction
         $conn->commit();
 
         // Return success response
-        echo json_encode([
+echo json_encode([
             'status' => 'success',
-            'message' => 'User Registered Successfully. Redirecting to contact us page...'
+            'message' => 'User Registered Successfully'
         ]);
-        header("Location: ../../contactus.php");
         exit;
 
     } catch (Exception $e) {

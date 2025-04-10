@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Show success message
                         alert(data.message);
                         // Redirect to login page
-                        window.location.href = '../Login/login.php';
+                        window.location.href = '../../contactus.php';
                     } else {
                         // Show error message
                         throw new Error(data.message || 'Registration failed');
