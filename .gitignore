@@ -38,3 +38,4 @@ config/db_connection.php
 .Trashes
 ehthumbs.db
 Thumbs.db
+assets/certificates/
