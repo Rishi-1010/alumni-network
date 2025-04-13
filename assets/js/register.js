@@ -1,9 +1,10 @@
+console.log('register.js loaded');
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Script loaded');
 
     // Get all step elements
     const steps = document.querySelectorAll('.form-step');
-    const totalSteps = steps.length;
+    const totalSteps = steps.length; // This will now be 6 after removing step 7 from HTML
 
     // Get all navigation buttons
     const step1Next = document.getElementById('step1Next');
@@ -16,122 +17,91 @@ document.addEventListener('DOMContentLoaded', function() {
     const step5Prev = document.getElementById('step5Prev');
     const step5Next = document.getElementById('step5Next');
     const step6Prev = document.getElementById('step6Prev');
-    const step6Next = document.getElementById('step6Next');
-    const step7Prev = document.getElementById('step7Prev');
-    const submitBtn = document.getElementById('submitForm');
+    const submitBtn = document.getElementById('submitForm'); // This is now the "Next" button on step 6
 
     // Navigation functions
     function moveToStep(currentStep, nextStep) {
-        console.log(`Moving from step ${currentStep} to ${nextStep}`);
-        
+        console.log(`>>> Entering moveToStep: Moving from step ${currentStep} to ${nextStep}`); // Log entry
+
         const currentStepElement = document.getElementById(`step${currentStep}`);
         const nextStepElement = document.getElementById(`step${nextStep}`);
-        
+
         console.log('Current step element:', currentStepElement);
         console.log('Next step element:', nextStepElement);
 
-        if (currentStepElement && nextStepElement) {
+
+        if (currentStepElement) {
             if (nextStep > currentStep) {
+                console.log(`>>> Checking validation for step ${currentStep}`); // Log before validation
                 // Moving forward - validate
-                if (!validateStep(currentStep)) {
-                    return false;
+                const isValid = validateStep(currentStep); // Store result
+                console.log(`>>> validateStep(${currentStep}) returned: ${isValid}`); // Log result
+                if (!isValid) {
+                    return false; // Stop if invalid
                 }
             }
-            
-            // Hide current step with transition
-            currentStepElement.style.opacity = '0';
-            currentStepElement.style.transform = 'translateY(-20px)';
-            setTimeout(() => {
-                currentStepElement.style.display = 'none';
-                
-                // Show next step with transition
-                nextStepElement.style.display = 'block';
-                nextStepElement.style.opacity = '0';
-                nextStepElement.style.transform = 'translateY(20px)';
-                
-                // Force reflow to ensure transition starts from initial state
-                nextStepElement.offsetHeight; 
-                
-                nextStepElement.style.opacity = '1';
-                nextStepElement.style.transform = 'translateY(0)';
-            }, 300); // Wait for the opacity transition to complete (adjust as needed)
-            
-            // Update progress
-            updateProgress(nextStep);
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            return true;
+
+            // If moving from step 6, submit the form data first, then redirect
+            if (currentStep === 6 && nextStep === 7) { // Check if moving from step 6
+                console.log('Attempting to submit form data before redirecting...');
+                const form = document.getElementById('registrationForm');
+                const formData = new FormData(form);
+
+                // Add loading state to the button that triggered this
+                 const step6NextButton = document.getElementById('submitForm'); // Get the button
+                 if(step6NextButton){
+                    step6NextButton.disabled = true;
+                    step6NextButton.innerHTML = 'Processing...';
+                 }
+
+
+            }
+
+             // Handle normal step transitions (excluding step 7)
+             // The form will now submit normally, without AJAX
+             if (nextStepElement) {
+                // Hide current step with transition
+                currentStepElement.style.opacity = '0';
+                currentStepElement.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    currentStepElement.style.display = 'none';
+
+                    // Show next step with transition
+                    nextStepElement.style.display = 'block';
+                    nextStepElement.style.opacity = '0';
+                    nextStepElement.style.transform = 'translateY(20px)';
+
+                    // Force reflow to ensure transition starts from initial state
+                    nextStepElement.offsetHeight;
+
+                    nextStepElement.style.opacity = '1';
+                    nextStepElement.style.transform = 'translateY(0)';
+                }, 300); // Wait for the opacity transition to complete
+
+                // Update progress
+                updateProgress(nextStep);
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return true;
+             } else {
+                 console.error(`Next step element step${nextStep} not found.`);
+                 return false;
+             }
+
         } else {
-            console.error('Step elements not found:', 
-                         `step${currentStep}:`, currentStepElement, 
-                         `step${nextStep}:`, nextStepElement);
+            console.error(`Current step element step${currentStep} not found.`);
         }
         return false;
     }
 
-   function validateStep(step) {
-        const stepElement = document.getElementById(`step${step}`);
-        const requiredFields = stepElement ? stepElement.querySelectorAll('[required]') : [];
-        let isValid = true;
-
-        if (!stepElement) {
-            console.error(`Step element with id step${step} not found`);
-            return false;
-        }
-
-        for (let i = 0; i < requiredFields.length; i++) {
-            const field = requiredFields[i];
-
-            // Skip validation for fields that are not currently displayed
-            if (!field.offsetParent) {
-                continue;
-            }
-
-            const value = field.value ? field.value.trim() : '';
-            if (!value) {
-                isValid = false;
-                field.classList.add('error');
-                continue;
-            }
-
-            field.classList.remove('error');
-
-            if (field.id === 'enrollment_number_old') {
-                const course = document.getElementById('course').value;
-                let pattern;
-                if (course === 'BCA') {
-                    pattern = /^[0-9]{2}(BCA)[0-9]{3}$/;
-                } else if (course === 'MCA') {
-                    pattern = /^[0-9]{2}(MCA)[0-9]{3}$/;
-                }
-                if (pattern && !pattern.test(value)) {
-                    isValid = false;
-                    field.classList.add('error');
-                    alert('Please enter a valid old enrollment number (YYCourseNumber)');
-                }
-            } else if (field.id === 'enrollment_number') {
-                if (!/^[0-9]{15}$/.test(value)) {
-                    isValid = false;
-                    field.classList.add('error');
-                    alert('Please enter a valid 15-digit enrollment number');
-                }
-            } else if (field.tagName === 'SELECT' && field.value === '') {
-                isValid = false;
-                field.classList.add('error');
-            }
-        }
-
-        if (!isValid) {
-            alert('Please fill in all required fields correctly.');
-        }
-
-        return isValid;
-    }
+    // Note: The first validateStep function definition was removed as it was duplicated.
+    // The second definition below is the one being used.
 
     function updateProgress(step) {
-        const progress = ((step - 1) / (totalSteps - 1)) * 100;
+        // Adjust totalSteps since step 7 is removed from the visual flow
+        const adjustedTotalSteps = 6;
+        const progress = ((step - 1) / (adjustedTotalSteps - 1)) * 100;
         const progressBar = document.querySelector('.progress-bar');
         const indicators = document.querySelectorAll('.step-indicator');
 
@@ -153,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const status = document.getElementById('current_status').value;
         const fields = document.getElementById('employment-fields');
         const requiredInputs = fields.querySelectorAll('input');
-        
+
         if (status === 'employed') {
             fields.style.display = 'block';
             requiredInputs.forEach(input => input.required = true);
@@ -198,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update validation function to handle new enrollment fields
     function validateStep(step) {
+        console.log(`>>> Entering validateStep for step ${step}`); // Log entry
         const stepElement = document.getElementById(`step${step}`);
         const requiredFields = stepElement ? stepElement.querySelectorAll('[required]') : [];
         let isValid = true;
@@ -207,23 +178,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Skip validation for fields that are not currently displayed
             if (!field.offsetParent) {
+                console.log(`Skipping validation for hidden field: ${field.id || field.name}`);
                 continue;
             }
 
             const value = field.value ? field.value.trim() : '';
             if (!value) {
+                console.log(`Validation failed: Field ${field.id || field.name} is empty.`);
                 isValid = false;
                 field.classList.add('error');
-                continue;
+                // Don't continue here, check other fields too
+            } else {
+                 field.classList.remove('error'); // Remove error class if valid
             }
 
-            field.classList.remove('error');
-
-            if (field.id === 'enrollment_number_old') {
+            // Specific field validations (only if value is not empty)
+            if (value && field.id === 'enrollment_number_old') {
                 const course = document.getElementById('course').value;
                 const enrollmentNumber = field.value.toUpperCase();
 
                 if (!enrollmentNumber.includes(course)) {
+                    console.log(`Validation failed: Course mismatch for ${field.id}`);
                     isValid = false;
                     field.classList.add('error');
                     document.getElementById('course').classList.add('error');
@@ -237,25 +212,35 @@ document.addEventListener('DOMContentLoaded', function() {
                         pattern = /^[0-9]{2}(MCA)[0-9]{3}$/;
                     }
                     if (pattern && !pattern.test(value)) {
+                        console.log(`Validation failed: Pattern mismatch for ${field.id}`);
                         isValid = false;
                         field.classList.add('error');
                         alert('Please enter a valid old enrollment number (YYCourseNumber)');
                     }
                 }
-            } else if (field.id === 'enrollment_number') {
+            } else if (value && field.id === 'enrollment_number') {
                 if (!/^[0-9]{15}$/.test(value)) {
+                    console.log(`Validation failed: Pattern mismatch for ${field.id}`);
                     isValid = false;
                     field.classList.add('error');
                     alert('Please enter a valid 15-digit enrollment number');
                 }
-            } else if (field.tagName === 'SELECT' && field.value === '') {
+            } else if (value && field.tagName === 'SELECT' && field.value === '') {
+                 console.log(`Validation failed: Select field ${field.id || field.name} has no value.`);
+                 isValid = false;
+                 field.classList.add('error');
+            } else if (field.type === 'file' && field.files.length === 0) {
+                console.log(`Validation failed: File field ${field.id || field.name} has no file selected.`);
                 isValid = false;
                 field.classList.add('error');
             }
         }
 
         if (!isValid) {
+            console.log(`>>> validateStep for step ${step} returning false.`); // Log final result
             alert('Please fill in all required fields correctly.');
+        } else {
+             console.log(`>>> validateStep for step ${step} returning true.`); // Log final result
         }
 
         return isValid;
@@ -263,13 +248,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event Listeners
     if (step1Next) {
-        step1Next.addEventListener('click', () => moveToStep(1, 2));
+        console.log('Adding event listener to step1Next'); // Log listener setup
+        step1Next.addEventListener('click', () => {
+            console.log('step1Next button clicked!'); // Log click
+            moveToStep(1, 2);
+        });
+    } else {
+        console.error('step1Next button not found!');
     }
-    
+
     if (step2Prev) {
         step2Prev.addEventListener('click', () => moveToStep(2, 1));
     }
-    
+
     if (step2Next) {
         step2Next.addEventListener('click', () => moveToStep(2, 3));
     }
@@ -277,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (step3Prev) {
         step3Prev.addEventListener('click', () => moveToStep(3, 2));
     }
-    
+
     if (step3Next) {
         step3Next.addEventListener('click', () => moveToStep(3, 4));
     }
@@ -300,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="form-group">
                 <label>Technologies Used*</label>
-                <input type="text" name="projects[${projectCount}][technologies]" 
+                <input type="text" name="skills[${projectCount}][technologies]"
                        placeholder="e.g., PHP, MySQL, JavaScript" required>
             </div>
             <div class="form-group date-range">
@@ -310,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div>
                     <label>End Date</label>
-                    <input type="date" name="projects[${projectCount}][end_date]">
+                    <input type="date" name="projects[${projectCount}][end-date]">
                 </div>
             </div>
             <button type="button" class="remove-project" onclick="removeProject(this)">Remove Project</button>
@@ -327,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (step4Prev) {
         step4Prev.addEventListener('click', () => moveToStep(4, 3));
     }
-    
+
     if (step4Next) {
         step4Next.addEventListener('click', () => moveToStep(4, 5));
     }
@@ -342,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
         newSkill.innerHTML = `
             <div class="form-group">
                 <label>Skill Name*</label>
-                <input type="text" name="skills[${skillCount}][name]" required 
+                <input type="text" name="skills[${skillCount}][name]" required
                        placeholder="e.g., Java, Python, Web Development">
             </div>
             <div class="form-group">
@@ -369,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (step5Prev) {
         step5Prev.addEventListener('click', () => moveToStep(5, 4));
     }
-    
+
     if (step5Next) {
         step5Next.addEventListener('click', () => moveToStep(5, 6));
     }
@@ -402,57 +393,21 @@ document.addEventListener('DOMContentLoaded', function() {
         step6Prev.addEventListener('click', () => moveToStep(6, 5));
     }
 
-    if (step6Next) {
-        step6Next.addEventListener('click', () => moveToStep(6, 7));
-    }
-
-    // Add event listener for Step 7 Previous button
-    if (step7Prev) {
-        step7Prev.addEventListener('click', () => moveToStep(7, 6));
-    }
-
-    // Add event listener for form submission
+    // The submit button now acts as the "Next" button for step 6
     if (submitBtn) {
         submitBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            console.log('Submit button clicked');
-            
-            const form = document.getElementById('registrationForm');
-            
-            if (validateStep(7)) {
-                console.log('Final validation passed');
-                
-                // Add loading state
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = 'Submitting...';
-                
-                // Submit form using fetch
-                fetch('process_registration.php', {
-                    method: 'POST',
-                    body: new FormData(form)
-                })
-                .then(response => response.json())  // Parse response as JSON
-                .then(data => {
-                    console.log('Server response:', data);
-                    
-                    if (data.status === 'success') {
-                        // Show success message
-                        alert(data.message);
-                        // Redirect to login page
-                        window.location.href = '../../contactus.php';
-                    } else {
-                        // Show error message
-                        throw new Error(data.message || 'Registration failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Registration failed: ' + error.message);
-                    
-                    // Reset submit button
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Submit';
-                });
+            // e.preventDefault(); // Remove this line
+            console.log('Step 6 Next/Submit button clicked');
+
+            // Validate step 6 before proceeding
+            if (validateStep(6)) {
+                // Log a message before form submission
+                console.log('Form is valid, submitting...');
+                // Form will submit normally
+            } else {
+                 // Re-enable button if validation fails
+                 submitBtn.disabled = false;
+                 submitBtn.innerHTML = 'Submit';
             }
         });
     }

@@ -50,17 +50,21 @@
 
 .dashboard-navbar a {
     text-decoration: none;
-    color: var(--text-color);
+    background-color: white; /* Explicitly set background to white */
+    color: var(--text-color); /* Ensure text color is readable on white */
     padding: 0.5rem 1rem;
     border-radius: 6px;
     transition: var(--transition);
     font-weight: 500;
+    border: 1px solid #ddd; /* Optional: Add a light border for definition */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Optional: Add subtle shadow */
 }
 
 .dashboard-navbar a:hover,
 .dashboard-navbar a.active {
-    background-color: rgba(52, 152, 219, 0.1);
-    color: var(--primary-color);
+    background-color: #f8f9fa; /* Light grey background on hover/active */
+    color: var(--primary-color); /* Keep primary color for text */
+    border-color: #ccc; /* Darken border slightly */
 }
 
 /* Mobile Menu Button */

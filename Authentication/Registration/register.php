@@ -49,7 +49,7 @@ if (isset($_SESSION['error'])) {
                 <div class="step-indicator"></div>
                 <div class="step-indicator"></div>
                 <div class="step-indicator"></div>
-                <div class="step-indicator"></div>
+                
             </div>
 
             <!-- Form Steps -->
@@ -174,7 +174,7 @@ if (isset($_SESSION['error'])) {
                                 </div>
                                 <div>
                                     <label>End Date</label>
-                                    <input type="date" name="projects[0][end_date]">
+                                    <input type="date" name="projects[0][end-date]">
                                 </div>
                             </div>
                         </div>
@@ -228,37 +228,28 @@ if (isset($_SESSION['error'])) {
                         </div>
                     </div>
                     <button type="button" id="add-goal" class="btn-secondary">Add Another Goal</button>
-                    <div class="button-group">
-                        <button type="button" class="prev-btn" id="step6Prev">Previous</button>
-                        <button type="button" class="next-btn" id="step6Next">Next</button>
-                    </div>
-                </div>
 
-                <!-- Step 7: Certifications -->
-                <div class="form-step" id="step7" style="display: none;">
                     <h2>Certifications</h2>
                     <div id="certifications-container">
                         <div class="certification-entry">
                             <div class="form-group">
-                                <label for="cert_id">Credential ID</label>
-                                <input type="text" name="certifications[0][credential_id]">
-                            </div>
-                            <div class="form-group">
-                                <label for="cert_file">Upload Certificate*</label>
-                                <input type="file" name="certifications[0][certificate_file]" accept=".pdf, .jpg, .jpeg, .png" required>
+                                <label for="cert_file">Upload Certificate* (PDF, JPG, JPEG, PNG)</label>
+                                <input type="file" name="certifications[certificate_file]" accept=".pdf, .jpg, .jpeg, .png" required>
                             </div>
                         </div>
                     </div>
                     <button type="button" id="add-certification" class="btn-secondary">Add Another Certification</button>
+
                     <div class="button-group">
-                        <button type="button" class="prev-btn" id="step7Prev">Previous</button>
+                        <button type="button" class="prev-btn" id="step6Prev">Previous</button>
                         <button type="submit" class="submit-btn" id="submitForm">Submit</button>
                     </div>
                 </div>
+
             </form>
         </div>
     </div>
 
-    <script src="../../assets/js/register.js"></script>
+    <script src="../../assets/js/register.js"></script> <!-- Added script tag -->
 </body>
 </html>

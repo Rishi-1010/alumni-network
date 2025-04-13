@@ -47,6 +47,7 @@ if (filter_has_var(INPUT_POST, 'submit')) {
     <title>Contact Us</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/contactus.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
@@ -55,13 +56,8 @@ if (filter_has_var(INPUT_POST, 'submit')) {
     <!-- Navigation bar -->
     <nav class="navbar" style="background-color: var(--primary-color);">
         <div class="logo">
-            <a href="index.html" class="home-link">
-                <img src="assets/img/logo.png" alt="Alumni Network Logo">
-                <span>Alumni Network</span>
-            </a>
-        </div>
-        <div class="nav-links">
-            <a href="index.html" class="home-btn">Home</a>
+            <img src="assets/img/logo.png" alt="Alumni Network Logo">
+            <span>SRIMCA_BVPICS Alumni Network</span>
         </div>
     </nav>
 

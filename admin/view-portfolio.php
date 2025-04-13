@@ -48,15 +48,10 @@ try {
     $stmt->execute([$userId]);
     $careerGoals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch certifications (assuming certificate info is in users table for now)
-    $stmt = $conn->prepare("SELECT certificate_id, certificate_path FROM users WHERE user_id = ?");
+    // Fetch certifications from the new certifications table
+    $stmt = $conn->prepare("SELECT certificate_id, certificate_path, upload_date FROM certifications WHERE user_id = ? ORDER BY upload_date DESC");
     $stmt->execute([$userId]);
-    $certificateData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    $certifications = []; // Initialize certifications array
-    if ($certificateData) {
-        $certifications[] = $certificateData; // Add fetched data as a "certification"
-    }
+    $certifications = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all certifications
 
     if (!$userData) {
         die("Alumni not found");
@@ -236,19 +231,26 @@ try {
 
                         <h4>Certifications</h4>
                         <?php if (!empty($certifications)): ?>
-                            <?php $certification = $certifications[0]; // Assuming only one certificate for now ?>
-                            <p><strong>Certificate ID:</strong> <?php echo htmlspecialchars($certification['certificate_id'] ?? 'Not provided'); ?></p>
-                            <p><strong>Certificate:</strong> 
-                                <?php if ($certification['certificate_path']): ?>
-                                    <a href="<?php echo htmlspecialchars($certification['certificate_path']); ?>" target="_blank">View Certificate</a>
-                                <?php else: ?>
-                                    <span>No certificate uploaded</span>
-                                <?php endif; ?>
-                            </p>
+                            <ul class="list-group">
+                                <?php foreach ($certifications as $certification): ?>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>
+                                            <i class="fas fa-file-alt me-2"></i>
+                                            Uploaded on: <?php echo date('F j, Y, g:i a', strtotime($certification['upload_date'])); ?>
+                                        </span>
+                                        <?php if ($certification['certificate_path']): ?>
+                                            <a href="../<?php echo htmlspecialchars($certification['certificate_path']); ?>" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> View Certificate
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="text-muted">Path not available</span>
+                                        <?php endif; ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
                         <?php else: ?>
-                            <p>No certifications available.</p>
+                            <p>No certifications available for this user.</p>
                         <?php endif; ?>
-                        <!-- Add more fields as needed -->
                     </div>
                 </div>
             </div>

@@ -14,20 +14,22 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ └── view-portfolio.php
 ├── assets/
 │ ├── css/
-│ │ ├── admin-dark.css
 │ │ ├── admin.css
+│ │ ├── contactus.css # Added contactus.css if not already present
 │ │ ├── dashboard.css
+│ │ ├── portfolio.css # Added portfolio.css
 │ │ ├── register.css
 │ │ └── style.css
 │ ├── img/
 │ │ └── logo.png
-│ ├── js/
 │ │ ├── admin-login.js
 │ │ ├── admin.js
 │ │ ├── dashboard.js
 │ │ ├── enrollment-autocomplete.js
 │ │ ├── login.js
 │ │ └── register.js
+│ ├── certifications/
+│ │ └── [user_enrollment_number]/ (User-specific folders for storing certificates)
 ├── Authentication/
 │ ├── AdminLogin/
 │ │ ├── generate_hash.php
@@ -180,6 +182,128 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - User certifications
   - Issuing organization
   - Credential details
+- **User-Specific Certificate Uploads**: Certificates are now stored in user-specific directories based on their enrollment number.
+
+## Features
+- **Search Alumni**: Search for alumni by enrollment number.
+- **Send OTP**: Send OTP to alumni email for verification.
+- **View Statistics**: View total and verified alumni statistics.
+
+### Implemented Features
+- **Multi-step Registration Process**
+  - Basic Information
+  - Educational Details
+  - Professional Status
+  - Project Details
+  - Career Goals
+
+- **Secure Authentication System**
+  - Password hashing
+  - Session management
+
+- **Admin Panel**
+  - Secure admin login
+  - Dashboard analytics
+  - Alumni verification system
+  - User management
+  - Record deletion with confirmation
+  - Real-time UI updates
+  - Portfolio view
+  - Educational verifications
+  - **Total Alumni Count**: Admin dashboard now displays the total number of registered alumni in the system.
+  - **Verified Alumni Count**: Admin dashboard now displays the total number of verified alumni in the system.
+  - **Alumni Verification System**: Implemented a system for admins to verify alumni, including confirmation dialogs and real-time updates.
+
+- **Responsive Design**
+  - Mobile-friendly interface
+  - Modern UI components
+  - Smooth transitions
+  - Delete animations
+  - Card layouts
+  - Status badges
+
+### New Features Added
+- **Contact Us Page**
+  - Added a new page for users to contact the administrators.
+- **Portfolio View System**
+  - Detailed alumni information display
+
+### Under Development
+- **User Dashboard**
+  - User dashboard is now under development and not currently implemented.
+
+- **Professional Networking**
+  - Alumni connections
+  - Direct messaging
+  - Job sharing
+
+
+- **Event Management** (Under Development - To be decided later if needed)
+  - Alumni meetups
+  - Professional workshops
+  - University events
+
+- **Analytics Dashboard** (Under Development - To be decided later if needed)
+  - Employment statistics
+  - Alumni distribution
+  - Industry trends
+
+- **Email Notifications** (Under Development - To be decided later if needed)
+  - Verification updates
+  - Event reminders
+  - Connection requests
+
+## Database Structure
+
+### Tables
+- **users**
+  - Basic user information
+  - Authentication details
+  - Status tracking
+
+- **educational_details**
+  - University information
+  - Enrollment details
+  - Verification status
+  - Verification tracking
+
+- **professional_status**
+  - Current employment
+  - Company details
+  - Position
+  - Employment history
+
+- **status_history**
+  - Career progression tracking
+  - Timeline management
+
+- **admins**
+  - Role-based access
+  - Department assignment
+
+- **universities**
+  - Institution database
+  - Location tracking
+
+- **projects**
+  - User projects
+  - Technologies used
+  - Project duration
+
+- **skills**
+  - User skills
+  - Proficiency level
+  - Years of experience
+
+- **career_goals**
+  - User career goals
+  - Goal type and status
+  - Target date
+
+- **certifications**
+  - User certifications
+  - Issuing organization
+  - Credential details
 
 ## Tech Stack
 - PHP
@@ -204,6 +328,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - Added transaction-based deletions
 - Added GSAP to tech stack
 - Added Contact Us Page
+- Added consistent navigation bar to Admin Portfolio View page (`admin/view-portfolio.php`) using `assets/css/portfolio.css`.
 
 ## Setup Instructions
 1. Clone the repository

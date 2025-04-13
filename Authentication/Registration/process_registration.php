@@ -1,7 +1,10 @@
 <?php
-// Prevent any HTML output from error messages
+// Enable error reporting - Keep this for now, can be changed later if needed
 error_reporting(E_ALL);
-ini_set('display_errors', 0);
+ini_set('display_errors', 1); // Keep displaying errors for now
+
+// Start output buffering
+ob_start();
 
 // Ensure we're outputting JSON
 header('Content-Type: application/json');
@@ -68,41 +71,18 @@ try {
     $conn->beginTransaction();
 
     try {
-        // Insert User Basic Details
-        $stmt = $conn->prepare("INSERT INTO users (fullname, email, phone, password, certificate_id, certificate_path)
-                               VALUES (?, ?, ?, ?, ?, ?)");
+        // Insert User Basic Details (Remove certificate_path)
+        $stmt = $conn->prepare("INSERT INTO users (fullname, email, phone, password)
+                               VALUES (?, ?, ?, ?)");
         $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-        // Handle certificate upload
-        $certificateId = $_POST['certificate_id'] ?? null;
-        $certificatePath = null;
-        $certificateUpload = $_FILES['certificate_upload'] ?? null;
-
-        if ($certificateUpload && $certificateUpload['error'] == 0) {
-            $uploadDir = '../../assets/certificates/';
-            $certificateName = uniqid() . '_' . basename($certificateUpload['name']);
-            $certificatePath = $uploadDir . $certificateName;
-
-            if (!move_uploaded_file($certificateUpload['tmp_name'], $certificatePath)) {
-                error_log("Certificate upload failed"); // User ID not yet available
-                $certificatePath = null; // Set to null if upload fails
-            }
-        }
 
         $stmt->execute([
             $_POST['fullname'],
             $_POST['email'],
             $_POST['phone'],
-            $hashedPassword,
-            $certificateId,
-            $certificatePath
+            $hashedPassword
         ]);
-        $userId = $conn->lastInsertId();
-
-
-        // No need to update user table separately for certificate ID and path anymore
-        // They are inserted during user creation
-
+        $userId = $conn->lastInsertId(); // Get the user ID *after* inserting the user
 
         // Insert Educational Details
         $stmt = $conn->prepare("INSERT INTO educational_details
@@ -114,6 +94,72 @@ try {
             $enrollmentNumber,
             null // Graduation year is not collected in the form
         ]);
+
+         // Insert into certifications table
+        // Handle Certificate Uploads
+
+        if (!empty($_FILES['certifications'])) {
+            $target_dir = "../../assets/certificates/";
+            // Ensure the target directory exists and is writable
+            if (!file_exists($target_dir)) {
+                if (!mkdir($target_dir, 0777, true)) {
+                     throw new Exception("Failed to create certificate directory.");
+                }
+            } elseif (!is_writable($target_dir)) {
+                 throw new Exception("Certificate directory is not writable.");
+            }
+
+            $stmt_cert = $conn->prepare("INSERT INTO certifications (user_id, certificate_path) VALUES (?, ?)");
+
+            // Directly access the nested array based on var_export structure
+            // Check if the 'certificate_file' key exists in the sub-arrays and if the upload was successful
+            if (isset($_FILES['certifications']['error']['certificate_file']) && $_FILES['certifications']['error']['certificate_file'] === UPLOAD_ERR_OK) {
+
+                $name = $_FILES['certifications']['name']['certificate_file'];
+                $tmp_name = $_FILES['certifications']['tmp_name']['certificate_file'];
+                $size = $_FILES['certifications']['size']['certificate_file'];
+                $error = $_FILES['certifications']['error']['certificate_file']; // Already checked this is UPLOAD_ERR_OK
+
+                $original_name = basename($name);
+                $file_extension = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
+
+                // Sanitize the original filename (remove spaces and special characters)
+                $sanitized_original_name = preg_replace('/[^A-Za-z0-9.\-_]/', '_', pathinfo($original_name, PATHINFO_FILENAME));
+
+                // Generate a unique filename including user ID and sanitized original name
+                $unique_part = substr(uniqid(), -5); // Shorter unique part
+                $new_filename = "user_{$userId}_{$sanitized_original_name}_{$unique_part}.{$file_extension}";
+                $target_file = $target_dir . $new_filename;
+
+                // Validate file type and size
+                $allowed_types = ['pdf', 'jpg', 'jpeg', 'png'];
+                if (!in_array($file_extension, $allowed_types)) {
+                    throw new Exception("Invalid file type for certificate: $original_name. Only PDF, JPG, JPEG, PNG allowed.");
+                }
+                // Increased size limit to 5MB, adjust as needed
+                if ($size > 5000000) {
+                    throw new Exception("Certificate file is too large: $original_name. Max size 5MB.");
+                }
+
+                // Move the uploaded file
+                if (move_uploaded_file($tmp_name, $target_file)) {
+                    // Insert relative file path into database
+                    $relative_path = "assets/certificates/" . $new_filename; // Use the new filename
+                    if (!$stmt_cert->execute([$userId, $relative_path])) {
+                        // Explicitly check execute result and throw exception if false
+                        $errorInfo = $stmt_cert->errorInfo();
+                        throw new Exception("Failed to insert certificate path into database for $original_name. Error: " . ($errorInfo[2] ?? 'Unknown PDO error'));
+                    }
+                } else {
+                    // Throw exception if upload fails, triggering transaction rollback
+                    throw new Exception("Failed to upload certificate file: $original_name. Check directory permissions and PHP settings.");
+                }
+            } elseif (isset($_FILES['certifications']['error']['certificate_file']) && $_FILES['certifications']['error']['certificate_file'] !== UPLOAD_ERR_NO_FILE) {
+                // Handle other upload errors specifically, ignore UPLOAD_ERR_NO_FILE
+                 $original_name_for_error = isset($_FILES['certifications']['name']['certificate_file']) ? basename($_FILES['certifications']['name']['certificate_file']) : 'unknown file';
+                 throw new Exception("Error uploading certificate file: $original_name_for_error. Error code: " . $_FILES['certifications']['error']['certificate_file']);
+            }
+        } // Closing brace for if (!empty($_FILES['certifications']))
 
         // Insert Professional Status (using correct table name and columns)
         if (!empty($_POST['current_status'])) {
@@ -173,43 +219,75 @@ try {
         // Commit transaction
         $conn->commit();
 
-        // Return success response
-echo json_encode([
-            'status' => 'success',
-            'message' => 'User Registered Successfully'
-        ]);
+        // Clear any buffered output before redirect
+        ob_end_clean();
+
+        // Redirect to contactus.php on success
+        header('Location: ../../contactus.php'); // Adjust path as needed
         exit;
 
     } catch (Exception $e) {
+        // Get any buffered output
+        $output = ob_get_clean();
+
         // Rollback transaction in case of error
         if (isset($conn) && $conn->inTransaction()) {
             $conn->rollBack();
         }
 
-        // Log error
-        error_log("Registration Error: " . $e->getMessage());
+        // Log error with detailed information
+        $errorMessage = "Registration Error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine();
+        error_log($errorMessage); // Log to PHP error log
 
-        // Return error response
+        // Also log to debug.log - Keep this for now
+        $debugErrorMessage = "Caught Exception: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine() . "\n";
+        file_put_contents('debug.log', $debugErrorMessage, FILE_APPEND);
+
+
+        // Return error response as JSON (keep this for debugging/potential future use)
+        // Ensure output buffer is cleaned before sending JSON error
+        if (ob_get_level() > 0) {
+             ob_end_clean();
+        }
+        header('Content-Type: application/json'); // Ensure header is set for JSON
         echo json_encode([
             'status' => 'error',
-            'message' => $e->getMessage()
+            'message' => $e->getMessage(),
+            'output' => $output // Include buffered output in error response
         ]);
         exit;
     }
-
 } catch (Exception $e) {
-    // Rollback transaction in case of error
+     // Get any buffered output if available
+     if (ob_get_level() > 0) {
+        $output = ob_get_clean();
+     } else {
+        $output = '';
+     }
+
+    // Rollback transaction in case of error outside the inner try-catch
     if (isset($conn) && $conn->inTransaction()) {
         $conn->rollBack();
     }
 
-    // Log error
-    error_log("Registration Error: " . $e->getMessage());
+    // Log error with detailed information
+    $errorMessage = "Outer Catch Error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine();
+    error_log($errorMessage); // Log to PHP error log
 
-    // Return error response
+    // Also log to debug.log - Keep this for now
+    $debugErrorMessage = "Caught Outer Exception: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine() . "\n";
+    file_put_contents('debug.log', $debugErrorMessage, FILE_APPEND);
+
+    // Return error response as JSON (keep this for debugging/potential future use)
+    // Ensure output buffer is cleaned before sending JSON error
+    if (ob_get_level() > 0) {
+         ob_end_clean();
+    }
+    header('Content-Type: application/json'); // Ensure header is set for JSON
     echo json_encode([
         'status' => 'error',
-        'message' => $e->getMessage()
+        'message' => $e->getMessage(),
+        'output' => $output // Include buffered output if any
     ]);
     exit;
 }
