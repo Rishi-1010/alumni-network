@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_enrollment']))
 
 // Add this after the existing session checks
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
-    $alumniEmail = $_POST['alumni_email'];
+    $alumniEmail = $_POST['alumni_emails'];
     
     // Generate OTP
     $otp = sprintf("%06d", mt_rand(100000, 999999));
@@ -136,13 +136,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
         // Include PHPMailer function
         require_once '../send_otp/PHPMailerFunction.php';
         
+        $emails = explode(',', $alumniEmail);
+        $emails = array_map('trim', $emails); // Remove whitespace
+
         // Send OTP
-        $mailResult = sendInvitationEmail($alumniEmail, $otp);
-        
+        $mailResult = sendInvitationEmail($emails);
+
         if ($mailResult === true) {
-            $_SESSION['success'] = "OTP sent successfully to " . htmlspecialchars($alumniEmail);
+            $_SESSION['success'] = "OTP sent successfully.";
+        } elseif (is_string($mailResult)) {
+            $_SESSION['error'] = $mailResult;
         } else {
-            $_SESSION['error'] = "Failed to send Link: " . $mailResult;
+            $_SESSION['error'] = "Failed to send Link.";
         }
     } catch(Exception $e) {
         $_SESSION['error'] = "Error: " . $e->getMessage();
@@ -245,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
             <!-- Email OTP Form -->
             <form method="POST" class="search-form" id="sendOtpForm">
             <h2><li>New Alumni Student Email for Registration Link</li></h2>
-                <input type="email" name="alumni_email" placeholder="Enter Alumni Email" required>
+                <textarea name="alumni_emails" placeholder="Enter Alumni Emails (comma-separated)" rows="4" required></textarea>
                 <button type="submit" name="send_otp">Send Email</button>
             </form>
         </div>
