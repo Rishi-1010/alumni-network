@@ -99,14 +99,18 @@ try {
         // Handle Certificate Uploads
 
         if (!empty($_FILES['certifications'])) {
-            $target_dir = "../../assets/certificates/";
+            // Get enrollment number
+            $enrollmentNumber = $_POST['enrollment_format'] === 'old' ? $_POST['enrollment_number_old'] : $_POST['enrollment_number'];
+
+            $target_dir = "../../assets/certificates/" . $enrollmentNumber . "/";
+
             // Ensure the target directory exists and is writable
             if (!file_exists($target_dir)) {
                 if (!mkdir($target_dir, 0777, true)) {
-                     throw new Exception("Failed to create certificate directory.");
+                    throw new Exception("Failed to create certificate directory for enrollment number: " . $enrollmentNumber);
                 }
             } elseif (!is_writable($target_dir)) {
-                 throw new Exception("Certificate directory is not writable.");
+                throw new Exception("Certificate directory is not writable for enrollment number: " . $enrollmentNumber);
             }
 
             $stmt_cert = $conn->prepare("INSERT INTO certifications (user_id, certificate_path) VALUES (?, ?)");
@@ -124,11 +128,18 @@ try {
                 $file_extension = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
 
                 // Sanitize the original filename (remove spaces and special characters)
-                $sanitized_original_name = preg_replace('/[^A-Za-z0-9.\-_]/', '_', pathinfo($original_name, PATHINFO_FILENAME));
+                // Get the enrollment number to create the directory
+                $enrollmentNumber = $_POST['enrollment_format'] === 'old' ? $_POST['enrollment_number_old'] : $_POST['enrollment_number'];
+                $user_cert_dir = $target_dir . $enrollmentNumber . "/";
 
-                // Generate a unique filename including user ID and sanitized original name
-                $unique_part = substr(uniqid(), -5); // Shorter unique part
-                $new_filename = "user_{$userId}_{$sanitized_original_name}_{$unique_part}.{$file_extension}";
+                // Determine the next certificate number
+                $certificate_count = 1;
+                $existing_files = glob($user_cert_dir . 'certificate*.{pdf,jpg,jpeg,png}', GLOB_BRACE);
+                if ($existing_files) {
+                    $certificate_count = count($existing_files) + 1;
+                }
+
+                $new_filename = "certificate" . $certificate_count . "." . $file_extension;
                 $target_file = $target_dir . $new_filename;
 
                 // Validate file type and size
@@ -144,7 +155,7 @@ try {
                 // Move the uploaded file
                 if (move_uploaded_file($tmp_name, $target_file)) {
                     // Insert relative file path into database
-                    $relative_path = "assets/certificates/" . $new_filename; // Use the new filename
+                    $relative_path = "assets/certificates/" . $enrollmentNumber . "/" . $new_filename; // Use the new filename
                     if (!$stmt_cert->execute([$userId, $relative_path])) {
                         // Explicitly check execute result and throw exception if false
                         $errorInfo = $stmt_cert->errorInfo();

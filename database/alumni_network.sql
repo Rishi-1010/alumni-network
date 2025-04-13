@@ -74,26 +74,18 @@ CREATE TABLE skills (
 CREATE TABLE career_goals (
     goal_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    goal_year YEAR NOT NULL,
     goal_type ENUM('learning', 'career', 'other'),
     description TEXT NOT NULL,
     target_date DATE,
     status ENUM('planned', 'in_progress', 'achieved', 'cancelled') DEFAULT 'planned',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- Certifications table
 CREATE TABLE certifications (
-    certification_id INT PRIMARY KEY AUTO_INCREMENT,
+    certificate_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    title VARCHAR(200) NOT NULL,
-    issuing_organization VARCHAR(200) NOT NULL,
-    issue_date DATE NOT NULL,
-    expiry_date DATE,
-    credential_id VARCHAR(200),
-    credential_url VARCHAR(255),
     certificate_path VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    upload_date DATE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
