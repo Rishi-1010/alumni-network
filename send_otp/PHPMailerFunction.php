@@ -33,7 +33,7 @@ function sendInvitationEmail(array $toEmails) {
                 <p>Dear Alumni,</p>
                 <p>You are invited to join the <b>SRIMCA_BVPICS Alumni Network</b>! This is a platform to connect with fellow alumni, share your experiences, and stay updated on the latest news and events.</p>
                 <p>Please click the link below to complete your registration:</p>
-                <a href='http://localhost/alumni-network/authentication/Registration/register.php' style='background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;'>Register Now</a>
+                <a href='http://localhost/alumni-network/Authentication/Registration/register.php' style='background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;'>Register Now</a>
                 <p>Best regards,</p>
                 <p>The SRIMCA_BVPICS Alumni Team</p>
             ";
@@ -41,7 +41,7 @@ function sendInvitationEmail(array $toEmails) {
                 Dear Alumni,
                 You are invited to join the SRIMCA_BVPICS Alumni Network! This is a platform to connect with fellow alumni, share your experiences, and stay updated on the latest news and events.
                 Please click the link below to complete your registration:
-                http://localhost/alumni-network/authentication/Registration/register.php
+                http://localhost/alumni-network/Authentication/Registration/register.php
                 Best regards,
                 The SRIMCA_BVPICS Alumni Team
             ";

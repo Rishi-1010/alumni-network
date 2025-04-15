@@ -22,24 +22,6 @@ try {
         throw new Exception('Invalid request method');
     }
 
-    // Validate database connection
-    if (!$conn) {
-        throw new Exception('Database connection failed');
-    }
-
-    // Validate mandatory fields
-    $requiredFields = ['fullname', 'email', 'phone', 'password'];
-    foreach ($requiredFields as $field) {
-        if (empty($_POST[$field])) {
-            throw new Exception("Field '$field' is required");
-        }
-    }
-
-    // Validate email format
-    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-        throw new Exception('Invalid email format');
-    }
-
     // Validate phone number (10 digits)
     if (!preg_match('/^[0-9]{10}$/', $_POST['phone'])) {
         throw new Exception('Invalid phone number');
@@ -71,18 +53,31 @@ try {
     $conn->beginTransaction();
 
     try {
-        // Insert User Basic Details (Remove certificate_path)
-        $stmt = $conn->prepare("INSERT INTO users (fullname, email, phone, password)
-                               VALUES (?, ?, ?, ?)");
+        // Insert User Basic Details (Added dob)
+        $stmt = $conn->prepare("INSERT INTO users (fullname, email, phone, dob, password)
+                               VALUES (?, ?, ?, ?, ?)");
         $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
         $stmt->execute([
             $_POST['fullname'],
             $_POST['email'],
             $_POST['phone'],
+            $_POST['dob'],
             $hashedPassword
         ]);
-        $userId = $conn->lastInsertId(); // Get the user ID *after* inserting the user
+        $userId = $conn->lastInsertId();
+
+        // Insert Skills
+        if (!empty($_POST['skills'])) {
+            $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies, proficiency_level) VALUES (?, ?, ?, ?, ?)");
+            foreach ($_POST['skills'] as $skill) {
+                if (!empty($skill['language']) && !empty($skill['tools']) && !empty($skill['technologies']) && !empty($skill['level'])) {
+                    $stmt_skill->execute([$userId, $skill['language'], $skill['tools'], $skill['technologies'], $skill['level']]);
+                } else {
+                    error_log("Skipping incomplete skill entry for user ID: $userId");
+                }
+            }
+        }
 
         // Insert Educational Details
         $stmt = $conn->prepare("INSERT INTO educational_details
@@ -95,7 +90,25 @@ try {
             null // Graduation year is not collected in the form
         ]);
 
-         // Insert into certifications table
+        // Insert Projects (if any submitted)
+        if (isset($_POST['hasProjects']) && $_POST['hasProjects'] === 'yes' && !empty($_POST['projects'])) {
+            $stmt_proj = $conn->prepare("INSERT INTO projects (user_id, title, description, technologies_used) VALUES (?, ?, ?, ?)");
+            foreach ($_POST['projects'] as $project) {
+                // Basic validation for project fields within the loop
+                if (!empty($project['title']) && !empty($project['description']) && !empty($project['technologies'])) {
+                    $stmt_proj->execute([
+                        $userId,
+                        $project['title'],
+                        $project['description'],
+                        $project['technologies']
+                    ]);
+                } else {
+                    error_log("Skipping incomplete project entry for user ID: $userId");
+                }
+            }
+        }
+
+        // Insert into certifications table
         // Handle Certificate Uploads
 
         if (!empty($_FILES['certifications'])) {
@@ -169,61 +182,37 @@ try {
                 // Handle other upload errors specifically, ignore UPLOAD_ERR_NO_FILE
                  $original_name_for_error = isset($_FILES['certifications']['name']['certificate_file']) ? basename($_FILES['certifications']['name']['certificate_file']) : 'unknown file';
                  throw new Exception("Error uploading certificate file: $original_name_for_error. Error code: " . $_FILES['certifications']['error']['certificate_file']);
+            } elseif (isset($_FILES['certifications']['error']['certificate_file']) && $_FILES['certifications']['error']['certificate_file'] !== UPLOAD_ERR_NO_FILE) {
+                // Handle other upload errors specifically, ignore UPLOAD_ERR_NO_FILE
+                 $original_name_for_error = isset($_FILES['certifications']['name']['certificate_file']) ? basename($_FILES['certifications']['name']['certificate_file']) : 'unknown file';
+                 throw new Exception("Error uploading certificate file: $original_name_for_error. Error code: " . $_FILES['certifications']['error']['certificate_file']);
             }
+            // It's okay if no file was uploaded (UPLOAD_ERR_NO_FILE)
         } // Closing brace for if (!empty($_FILES['certifications']))
 
-        // Insert Professional Status (using correct table name and columns)
-        if (!empty($_POST['current_status'])) {
-            $stmt = $conn->prepare("INSERT INTO professional_status
-                                   (user_id, current_status, company_name, position, start_date, is_current)
-                                   VALUES (?, ?, ?, ?, ?, TRUE)");
-            $stmt->execute([
-                $userId,
-                $_POST['current_status'],
-                $_POST['company_name'] ?? null,
-                $_POST['position'] ?? null,
-                $_POST['start_date'] ?? null
-            ]);
-        }
 
-        // Insert Projects (using correct column names)
-        if (!empty($_POST['projects'])) {
-            $stmt = $conn->prepare("INSERT INTO projects
-                                   (user_id, title, description, technologies_used, start_date, end_date)
-                                   VALUES (?, ?, ?, ?, ?, ?)");
-            foreach ($_POST['projects'] as $project) {
-                $stmt->execute([
-                    $userId,
-                    $project['title'],
-                    $project['description'],
-                    $project['technologies'],
-                    $project['start_date'],
-                    $project['end_date'] ?? null
-                ]);
-            }
-        }
-
-        // Insert Skills (using correct column names)
+        // Insert Skills
         if (!empty($_POST['skills'])) {
-            $stmt = $conn->prepare("INSERT INTO skills
-                                   (user_id, skill_name, proficiency_level)
-                                   VALUES (?, ?, ?)");
+            $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, skill_name, proficiency_level) VALUES (?, ?, ?)");
             foreach ($_POST['skills'] as $skill) {
-                // Convert proficiency level to match ENUM values
-                $proficiencyLevel = strtolower($skill['level']);
-                $stmt->execute([
-                    $userId,
-                    $skill['name'],
-                    $proficiencyLevel
-                ]);
+                if (!empty($skill['name']) && !empty($skill['level'])) {
+                    $stmt_skill->execute([$userId, $skill['name'], $skill['level']]);
+                } else {
+                    error_log("Skipping incomplete skill entry for user ID: $userId");
+                }
             }
         }
+
 
         // Insert Career Goals
         if (!empty($_POST['career_goals'])) {
-            $stmt = $conn->prepare("INSERT INTO career_goals (user_id, description) VALUES (?, ?)");
+            $stmt_goal = $conn->prepare("INSERT INTO career_goals (user_id, description) VALUES (?, ?)");
             foreach ($_POST['career_goals'] as $goal) {
-                $stmt->execute([$userId, $goal['description']]);
+                if (!empty($goal['description'])) {
+                    $stmt_goal->execute([$userId, $goal['description']]);
+                } else {
+                    error_log("Skipping empty career goal entry for user ID: $userId");
+                }
             }
         }
 

@@ -70,7 +70,7 @@ try {
     <div class="dashboard-container">
         <!-- Welcome Section -->
         <div class="welcome-section">
-            <h1>Welcome, <?php echo htmlspecialchars($user['fullname']); ?>!</h1>
+            <h1>Hi, <?php echo htmlspecialchars($user['fullname']); ?>!</h1>
             <p>Last login: <?php echo $user['last_login']; ?></p>
         </div>
 

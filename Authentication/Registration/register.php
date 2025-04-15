@@ -70,6 +70,10 @@ if (isset($_SESSION['error'])) {
                         <input type="tel" id="phone" name="phone" required>
                     </div>
                     <div class="form-group">
+                        <label for="dob">Date of Birth*</label>
+                        <input type="date" id="dob" name="dob" required>
+                    </div>
+                    <div class="form-group">
                         <label for="password">Password*</label>
                         <input type="password" id="password" name="password" required>
                     </div>
@@ -149,52 +153,77 @@ if (isset($_SESSION['error'])) {
                     </div>
                 </div>
 
-                <!-- Step 4: Projects -->
+                <!-- Step 4: Project Question -->
                 <div class="form-step" id="step4" style="display: none;">
-                    <h2>Projects</h2>
-                    <div id="projects-container">
-                        <div class="project-entry">
-                            <div class="form-group">
-                                <label for="project_title">Project Title*</label>
-                                <input type="text" name="projects[0][title]" required>
+                    <h2>Do you have any projects?</h2>
+                    <div class="form-group">
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="hasProjectsYes" name="hasProjects" value="yes">
+                                <label for="hasProjectsYes">Yes</label>
                             </div>
-                            <div class="form-group">
-                                <label for="project_description">Description*</label>
-                                <textarea name="projects[0][description]" rows="3" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="project_technologies">Technologies Used*</label>
-                                <input type="text" name="projects[0][technologies]" 
-                                       placeholder="e.g., PHP, MySQL, JavaScript" required>
-                            </div>
-                            <div class="form-group date-range">
-                                <div>
-                                    <label>Start Date*</label>
-                                    <input type="date" name="projects[0][start_date]" required>
-                                </div>
-                                <div>
-                                    <label>End Date</label>
-                                    <input type="date" name="projects[0][end-date]">
-                                </div>
+                            <div class="radio-item">
+                                <input type="radio" id="hasProjectsNo" name="hasProjects" value="no" checked>
+                                <label for="hasProjectsNo">No</label>
                             </div>
                         </div>
                     </div>
-                    <button type="button" id="add-project" class="btn-secondary">Add Another Project</button>
+                    <!-- Removed project count input -->
                     <div class="button-group">
                         <button type="button" class="prev-btn" id="step4Prev">Previous</button>
                         <button type="button" class="next-btn" id="step4Next">Next</button>
                     </div>
                 </div>
 
-                <!-- Step 5: Skills -->
+                <!-- Step 5: Projects -->
                 <div class="form-step" id="step5" style="display: none;">
-                    <h2>Skills & Expertise</h2>
+                    <h2>Projects</h2>
+                    <div id="projects-container">
+                        <!-- Initial Project Entry -->
+                        <div class="project-entry">
+                             <h4>Project 1</h4>
+                             <div class="form-group">
+                                 <label for="project_title_0">Project Title*</label>
+                                 <input type="text" id="project_title_0" name="projects[0][title]" required>
+                             </div>
+                             <div class="form-group">
+                                 <label for="project_description_0">Description*</label>
+                                 <textarea id="project_description_0" name="projects[0][description]" rows="3" required></textarea>
+                             </div>
+                             <div class="form-group">
+                                 <label for="project_technologies_0">Technologies Used*</label>
+                                 <input type="text" id="project_technologies_0" name="projects[0][technologies]"
+                                        placeholder="e.g., PHP, MySQL, JavaScript" required>
+                             </div>
+                             <!-- Remove button will be added dynamically for subsequent projects -->
+                        </div>
+                    </div>
+                    <button type="button" id="add-project" class="btn-secondary">Add Another Project</button>
+                    <div class="button-group">
+                        <button type="button" class="prev-btn" id="step5Prev">Previous</button>
+                        <button type="button" class="next-btn" id="step5Next">Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 6: Skills -->
+                <div class="form-step" id="step6" style="display: none;">
+                    <h2>Language Specialization, Tools & Technologies</h2>
                     <div id="skills-container">
                         <div class="skill-entry">
                             <div class="form-group">
-                                <label for="skill_name">Skill Name*</label>
-                                <input type="text" name="skills[0][name]" required 
-                                       placeholder="e.g., Java, Python, Web Development">
+                                <label for="language_specialization">Language Specialization*</label>
+                                <input type="text" name="skills[0][language]" required 
+                                       placeholder="e.g., Java, Python">
+                            </div>
+                            <div class="form-group">
+                                <label for="tools">Tools*</label>
+                                <input type="text" name="skills[0][tools]" required 
+                                       placeholder="e.g., Git, Docker">
+                            </div>
+                            <div class="form-group">
+                                <label for="technologies">Technologies*</label>
+                                <input type="text" name="skills[0][technologies]" required 
+                                       placeholder="e.g., React, Node.js">
                             </div>
                             <div class="form-group">
                                 <label for="skill_level">Proficiency Level*</label>
@@ -210,13 +239,13 @@ if (isset($_SESSION['error'])) {
                     </div>
                     <button type="button" id="add-skill" class="btn-secondary">Add Another Skill</button>
                     <div class="button-group">
-                        <button type="button" class="prev-btn" id="step5Prev">Previous</button>
-                        <button type="button" class="next-btn" id="step5Next">Next</button>
+                    <button type="button" class="prev-btn" id="step6Prev">Previous</button>
+                    <button type="button" class="next-btn" id="step6Next">Next</button>
                     </div>
                 </div>
 
-                <!-- Step 6: Career Goals -->
-                <div class="form-step" id="step6" style="display: none;">
+                <!-- Step 7: Career Goals & Certifications -->
+                <div class="form-step" id="step7" style="display: none;">
                     <h2>Career Goals</h2>
                     <div id="goals-container">
                         <div class="goal-entry">
@@ -241,7 +270,7 @@ if (isset($_SESSION['error'])) {
                     <button type="button" id="add-certification" class="btn-secondary">Add Another Certification</button>
 
                     <div class="button-group">
-                        <button type="button" class="prev-btn" id="step6Prev">Previous</button>
+                        <button type="button" class="prev-btn" id="step7Prev">Previous</button>
                         <button type="submit" class="submit-btn" id="submitForm">Submit</button>
                     </div>
                 </div>

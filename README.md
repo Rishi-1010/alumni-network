@@ -74,6 +74,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Professional Status
   - Project Details
   - Career Goals
+  - Language Specialization, Tools & Technologies
 
 - **Secure Authentication System**
   - Password hashing
@@ -169,9 +170,11 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Project duration
 
 - **skills**
-  - User skills
-  - Proficiency level
-  - Years of experience
+  - user_id (INT)
+  - language_specialization (VARCHAR(255))
+  - tools (VARCHAR(255))
+  - technologies (VARCHAR(255))
+  - proficiency_level (ENUM('beginner','intermediate','advanced','expert'))
 
 - **career_goals**
   - User career goals
