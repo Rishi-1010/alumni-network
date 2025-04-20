@@ -106,29 +106,6 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Card layouts
   - Status badges
 
-## Recent Updates
-- Enhanced Skills Management System
-  - Modified skills table structure with language specialization, tools, technologies, and proficiency levels
-  - Removed redundant "Add Another Skill" functionality
-  - Improved skills display in portfolio view
-
-- Improved Educational Details System
-  - Enhanced educational_details table structure
-  - Added course information display in graduation section
-  - Streamlined educational data management
-
-- Enhanced Certificate Management
-  - Improved certificate upload and storage system
-  - Added certificate count display in portfolio
-  - Enhanced certificate directory structure
-  - Improved certificate deletion handling
-
-- Robust Alumni Management
-  - Implemented secure alumni deletion system with directory cleanup
-  - Added transaction-based deletions for data integrity
-  - Enhanced file system management for user assets
-  - Improved user data cleanup processes
-
 ### Under Development
 - **User Dashboard**
   - User dashboard is now under development and not currently implemented.
@@ -336,20 +313,27 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - jQuery 3.7.1
 
 ## Recent Updates
-- Updated project directory structure in README.md
-- Added portfolio view for admin
-- Implemented project display section
-- Enhanced verification system
-- Improved responsive design
-- Added status badges
-- Implemented educational details verification
-- Added OTP verification system
-- Enhanced delete confirmation system
-- Improved search functionality
-- Added transaction-based deletions
-- Added GSAP to tech stack
-- Added Contact Us Page
-- Added consistent navigation bar to Admin Portfolio View page (`admin/view-portfolio.php`) using `assets/css/portfolio.css`.
+- Enhanced Skills Management System
+  - Modified skills table structure with language specialization, tools, technologies, and proficiency levels
+  - Removed redundant "Add Another Skill" functionality
+  - Improved skills display in portfolio view
+
+- Improved Educational Details System
+  - Enhanced educational_details table structure
+  - Added course information display in graduation section
+  - Streamlined educational data management
+
+- Enhanced Certificate Management
+  - Improved certificate upload and storage system
+  - Added certificate count display in portfolio
+  - Enhanced certificate directory structure
+  - Improved certificate deletion handling
+
+- Robust Alumni Management
+  - Implemented secure alumni deletion system with directory cleanup
+  - Added transaction-based deletions for data integrity
+  - Enhanced file system management for user assets
+  - Improved user data cleanup processes
 
 ## Setup Instructions
 1. Clone the repository
