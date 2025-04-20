@@ -24,6 +24,63 @@ if (isset($_SESSION['error'])) {
         //     hoverEffect('.nav-links a');
         // });
     </script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <!-- Add this CSS for Select2 styling -->
+    <style>
+        .select2-container {
+            width: 100% !important;
+            margin-bottom: 10px;
+        }
+        .select2-selection--multiple {
+            border: 1px solid #ced4da !important;
+            border-radius: 4px !important;
+        }
+        .select2-error {
+            border-color: #dc3545 !important;
+        }
+        .select2-container--classic .select2-selection--multiple .select2-selection__choice {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        .select2-container--classic .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+        }
+        
+        /* Additional Select2 styling for better search visibility */
+        .select2-container--classic .select2-search--dropdown .select2-search__field {
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 16px;
+            width: 100%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .select2-container--classic .select2-search--dropdown .select2-search__field:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        
+        .select2-container--classic .select2-results__option--highlighted[aria-selected] {
+            background-color: #007bff;
+        }
+        
+        .select2-container--classic .select2-results__option {
+            padding: 8px 12px;
+        }
+        
+        .help-text {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+    </style>
 </head>
 <body>
     <!-- Add navigation bar -->
@@ -76,6 +133,16 @@ if (isset($_SESSION['error'])) {
                     <div class="form-group">
                         <label for="password">Password*</label>
                         <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="password-strength-meter">
+                        <div class="meter"></div>
+                        <p class="password-requirements">
+                            Password must contain:
+                            - At least 8 characters
+                            - One uppercase letter
+                            - One number
+                            - One special character
+                        </p>
                     </div>
                     <button type="button" id="step1Next" class="next-btn">Next</button>
                 </div>
@@ -212,21 +279,25 @@ if (isset($_SESSION['error'])) {
                         <div class="skill-entry">
                             <div class="form-group">
                                 <label for="language_specialization">Language Specialization*</label>
-                                <input type="text" name="skills[language]" required 
-                                       placeholder="e.g., Java, Python">
+                                <select class="select2-multiple" name="skills[language][]" multiple="multiple" required>
+                                    <!-- Options will be populated via JavaScript -->
+                                </select>
+                                <small class="help-text">Type to search or add custom languages</small>
                             </div>
                             <div class="form-group">
                                 <label for="tools">Tools*</label>
-                                <input type="text" name="skills[tools]" required 
-                                       placeholder="e.g., Git, Docker">
+                                <select class="select2-multiple" name="skills[tools][]" multiple="multiple" required>
+                                    <!-- Options will be populated via JavaScript -->
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="technologies">Technologies*</label>
-                                <input type="text" name="skills[technologies]" required 
-                                       placeholder="e.g., React, Node.js">
+                                <select class="select2-multiple" name="skills[technologies][]" multiple="multiple" required>
+                                    <!-- Options will be populated via JavaScript -->
+                                </select>
                             </div>
                             <div class="form-group">
-                                <label for="skill_level">Proficiency Level*</label>
+                                <label for="skill_level">Overall Proficiency Level*</label>
                                 <select name="skills[level]" required>
                                     <option value="">Select Level</option>
                                     <option value="beginner">Beginner</option>
@@ -281,5 +352,21 @@ if (isset($_SESSION['error'])) {
     </div>
 
     <script src="../../assets/js/register.js"></script> <!-- Added script tag -->
+
+    <!-- Add tooltips for form fields -->
+    <div class="tooltip" data-tooltip="Enter your official university enrollment number">?</div>
+
+    <script>
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+        if (this.files[0].size > MAX_FILE_SIZE) {
+            alert('File size must be less than 5MB');
+            this.value = '';
+        }
+    });
+    </script>
+
+    <!-- Add preview for uploaded certificates -->
+    <div class="certificate-preview"></div>
 </body>
 </html>

@@ -313,10 +313,15 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - jQuery 3.7.1
 
 ## Recent Updates
-- Enhanced Skills Management System
+- **Enhanced Skills Management System**
   - Modified skills table structure with language specialization, tools, technologies, and proficiency levels
-  - Removed redundant "Add Another Skill" functionality
-  - Improved skills display in portfolio view
+  - Implemented multi-select functionality for tools and technologies
+  - Added JSON storage for multiple selections in the database
+  - Improved skills display in portfolio view with badge-based visualization
+  - Enhanced UI for skills selection with better organization and visual hierarchy
+  - Added hover effects and consistent styling for skill badges
+  - Centralized styling in portfolio.css for better maintainability
+  - Removed redundant "Add Another Skill" functionality for a more streamlined experience
 
 - Improved Educational Details System
   - Enhanced educational_details table structure

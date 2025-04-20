@@ -69,19 +69,24 @@ try {
 
         // Insert Skills
         if (!empty($_POST['skills'])) {
-            $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies, proficiency_level) VALUES (?, ?, ?, ?, ?)");
-            
-            // Now handling single skill entry
-            if (!empty($_POST['skills']['language']) && 
-                !empty($_POST['skills']['tools']) && 
-                !empty($_POST['skills']['technologies']) && 
+            // Check if we have arrays for language, tools, and technologies
+            if (is_array($_POST['skills']['language']) && 
+                is_array($_POST['skills']['tools']) && 
+                is_array($_POST['skills']['technologies']) && 
                 !empty($_POST['skills']['level'])) {
+                
+                // Convert arrays to JSON strings for storage
+                $languageJSON = json_encode($_POST['skills']['language']);
+                $toolsJSON = json_encode($_POST['skills']['tools']);
+                $technologiesJSON = json_encode($_POST['skills']['technologies']);
+                
+                $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies, proficiency_level) VALUES (?, ?, ?, ?, ?)");
                 
                 $stmt_skill->execute([
                     $userId,
-                    $_POST['skills']['language'],
-                    $_POST['skills']['tools'],
-                    $_POST['skills']['technologies'],
+                    $languageJSON,
+                    $toolsJSON,
+                    $technologiesJSON,
                     $_POST['skills']['level']
                 ]);
             } else {

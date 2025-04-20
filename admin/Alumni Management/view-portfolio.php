@@ -360,8 +360,7 @@ try {
                                         <div class="skill-card">
                                             <div class="skill-header">
                                                 <h5 class="mb-2">
-                                                    <i class="fas fa-code"></i> 
-                                                    <?php echo htmlspecialchars($skill['language_specialization']); ?>
+                                                    <i class="fas fa-code"></i> Language Specialization
                                                 </h5>
                                                 <span class="badge bg-<?php 
                                                     switch($skill['proficiency_level']) {
@@ -377,12 +376,48 @@ try {
                                             </div>
                                             <div class="skill-details">
                                                 <p>
+                                                    <span class="tech-badge">
+                                                    <?php 
+                                                        $languages = json_decode($skill['language_specialization'], true);
+                                                        if (is_array($languages)) {
+                                                            foreach ($languages as $lang) {
+                                                                echo '<span class="badge bg-info me-1">' . htmlspecialchars($lang) . '</span>';
+                                                            }
+                                                        } else {
+                                                            echo htmlspecialchars($skill['language_specialization']);
+                                                        }
+                                                    ?>
+                                                    </span>
+                                                </p>
+                                                <p>
                                                     <strong><i class="fas fa-tools"></i> Tools:</strong><br>
-                                                    <span class="tech-badge"><?php echo htmlspecialchars($skill['tools']); ?></span>
+                                                    <span class="tech-badge">
+                                                    <?php 
+                                                        $tools = json_decode($skill['tools'], true);
+                                                        if (is_array($tools)) {
+                                                            foreach ($tools as $tool) {
+                                                                echo '<span class="badge bg-info me-1">' . htmlspecialchars($tool) . '</span>';
+                                                            }
+                                                        } else {
+                                                            echo htmlspecialchars($skill['tools']);
+                                                        }
+                                                    ?>
+                                                    </span>
                                                 </p>
                                                 <p>
                                                     <strong><i class="fas fa-laptop-code"></i> Technologies:</strong><br>
-                                                    <span class="tech-badge"><?php echo htmlspecialchars($skill['technologies']); ?></span>
+                                                    <span class="tech-badge">
+                                                    <?php 
+                                                        $technologies = json_decode($skill['technologies'], true);
+                                                        if (is_array($technologies)) {
+                                                            foreach ($technologies as $tech) {
+                                                                echo '<span class="badge bg-info me-1">' . htmlspecialchars($tech) . '</span>';
+                                                            }
+                                                        } else {
+                                                            echo htmlspecialchars($skill['technologies']);
+                                                        }
+                                                    ?>
+                                                    </span>
                                                 </p>
                                             </div>
                                         </div>

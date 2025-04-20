@@ -1,4 +1,102 @@
 console.log('register.js loaded');
+
+// Language, Tools, and Technologies Lists
+const languageSpecializations = [
+    "Python",
+    "JavaScript",
+    "Java",
+    "C++",
+    "C#",
+    "PHP",
+    "Ruby",
+    "Swift",
+    "Kotlin",
+    "Go",
+    "TypeScript",
+    "R",
+    "MATLAB",
+    "Scala",
+    "Rust",
+    "Dart",
+    "HTML/CSS",
+    "SQL",
+    "Shell Scripting",
+    "Perl"
+];
+
+const tools = [
+    "Git",
+    "Docker",
+    "Jenkins",
+    "Visual Studio Code",
+    "IntelliJ IDEA",
+    "Eclipse",
+    "PyCharm",
+    "Sublime Text",
+    "Postman",
+    "JIRA",
+    "Kubernetes",
+    "Maven",
+    "npm",
+    "Gradle",
+    "Webpack",
+    "Android Studio",
+    "Xcode",
+    "GitHub Desktop",
+    "Azure DevOps",
+    "GitLab CI/CD"
+];
+
+const technologies = [
+    // Frontend
+    "React.js",
+    "Angular",
+    "Vue.js",
+    "Next.js",
+    "Bootstrap",
+    "Tailwind CSS",
+    "jQuery",
+    
+    // Backend
+    "Node.js",
+    "Django",
+    "Flask",
+    "Laravel",
+    "Spring Boot",
+    "Express.js",
+    "ASP.NET Core",
+    
+    // Databases
+    "MySQL",
+    "PostgreSQL",
+    "MongoDB",
+    "Redis",
+    "SQLite",
+    "Oracle",
+    "Microsoft SQL Server",
+    
+    // Cloud Platforms
+    "AWS",
+    "Google Cloud",
+    "Azure",
+    "Heroku",
+    "DigitalOcean",
+    
+    // Mobile
+    "React Native",
+    "Flutter",
+    "iOS Development",
+    "Android Development",
+    
+    // Other
+    "GraphQL",
+    "REST APIs",
+    "WebSockets",
+    "Machine Learning",
+    "Artificial Intelligence",
+    "Blockchain"
+];
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Script loaded');
 
@@ -396,4 +494,72 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize first step
     updateProgress(1);
-});
+
+    // Initialize Select2 dropdowns for skills
+    if (typeof jQuery !== 'undefined' && typeof jQuery.fn.select2 !== 'undefined') {
+        // Initialize language specialization dropdown
+        $('select[name="skills[language][]"]').select2({
+            placeholder: "Search and select programming languages...",
+            tags: true,
+            data: languageSpecializations.map(lang => ({
+                id: lang,
+                text: lang
+            })),
+            maximumSelectionLength: 5, // Optional: limit selections
+            theme: "classic",
+            width: '100%',
+            dropdownParent: $('#skills-container'),
+            closeOnSelect: false,
+            allowClear: true,
+            language: {
+                noResults: function() {
+                    return "No languages found. Type to add a custom language.";
+                },
+                searching: function() {
+                    return "Searching...";
+                }
+            }
+        });
+
+        // Initialize tools dropdown
+        $('select[name="skills[tools][]"]').select2({
+            placeholder: "Select or type to search tools",
+            tags: true,
+            data: tools.map(tool => ({
+                id: tool,
+                text: tool
+            })),
+            maximumSelectionLength: 8, // Optional: limit selections
+            theme: "classic"
+        });
+
+        // Initialize technologies dropdown
+        $('select[name="skills[technologies][]"]').select2({
+            placeholder: "Select or type to search technologies",
+            tags: true,
+            data: technologies.map(tech => ({
+                id: tech,
+                text: tech
+            })),
+            maximumSelectionLength: 10, // Optional: limit selections
+            theme: "classic"
+        });
+
+        // Add error handling for Select2 initialization
+        console.log('Select2 dropdowns initialized');
+    } else {
+        console.error('jQuery or Select2 is not loaded. Please check your dependencies.');
+    }
+
+    // Add validation for Select2 fields
+    function validateSelect2Fields() {
+        const select2Fields = document.querySelectorAll('.select2-hidden-accessible');
+        select2Fields.forEach(field => {
+            if (field.required && !field.value) {
+                const select2Container = field.nextElementSibling;
+                select2Container.classList.add('select2-error');
+            }
+        });
+    }
+
+}); // This is the closing bracket for DOMContentLoaded
