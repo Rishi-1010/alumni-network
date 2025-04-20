@@ -85,24 +85,8 @@ $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_enrollment'])) {
     $enrollmentNumber = $_POST['search_enrollment'];
 
-    // Validate enrollment number format
-    if (preg_match('/^\d{15}$/', $enrollmentNumber)) {
-        $enrolledYear = substr($enrollmentNumber, 0, 4);
-        $courseCode = substr($enrollmentNumber, 7, 4);
-        $uniqueNumber = substr($enrollmentNumber, 12, 3);
-
-        $courseDetails = getCourseDetails($courseCode);
-
-        if ($courseDetails) {
-            $graduationYear = intval($enrolledYear) + $courseDetails['duration'];
-            $parsedInfo = [
-                "course" => $courseDetails['course'],
-                "department" => $courseDetails['department'],
-                "enrolled_year" => $enrolledYear,
-                "graduation_year" => $graduationYear,
-            ];
-        }
-
+    // Update the validation to be more flexible
+    if (!empty($enrollmentNumber)) {
         try {
             $stmt = $conn->prepare("
                 SELECT u.*, ed.*, ps.*
@@ -113,11 +97,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_enrollment']))
             ");
             $stmt->execute([$enrollmentNumber]);
             $alumni = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$alumni) {
+                $error = "No alumni found with this enrollment number.";
+            }
         } catch(PDOException $e) {
             die("Error: " . $e->getMessage());
         }
     } else {
-        $error = "Invalid enrollment number format. It must be a 15-digit number.";
+        $error = "Please enter an enrollment number.";
     }
 }
 
@@ -167,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/portfolio.css"> <!-- Added portfolio CSS for consistent nav -->
-    
+
     <style>
         /* Keep existing inline styles for notifications etc. */
         .notification {
@@ -296,7 +284,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
                     <?php endif; ?>
                     <script>
                         function confirmVerification(userId) {
-                            return confirm('Are you sure you want to verify this user?');
+                            customConfirm('Are you sure you want to verify this user?', () => {
+                                // Add your verification logic here
+                                return true;
+                            });
+                            return false; // Prevent form submission until confirmation
                         }
                     </script>
                     <button class="btn delete-alumni" data-id="<?php echo $alumni['user_id']; ?>">Remove</button>
@@ -334,13 +326,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/modal.js"></script>
     <script src="../assets/js/dashboard.js"></script>
     <script src="../assets/js/rollnumformat.js"></script>
     <script src="../assets/js/enrollment-autocomplete.js"></script>
     <script>
-        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('active');
-        });
+        // document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+        //     document.getElementById('navLinks').classList.toggle('active');
+        // });
 
         // Hide success message after a few seconds
         setTimeout(function() {
@@ -349,6 +342,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
                 successMessage.style.display = 'none';
             }
         }, 5000); // 5000 milliseconds = 5 seconds
+
+        $(document).ready(function() {
+            $("#enrollmentSearch").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "search_enrollment.php",
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function(data) {
+                            if (data.error) {
+                                console.error(data.error);
+                                return;
+                            }
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 2, // Start searching after 2 characters
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $(this).val(ui.item.value);
+                    // Optionally, you can auto-submit the form here
+                    // $("#enrollmentSearchForm").submit();
+                }
+            }).autocomplete("instance")._renderItem = function(ul, item) {
+                // Custom rendering of each item in the dropdown
+                var status = item.verification_status === 'verified' 
+                    ? '<span class="badge badge-success">Verified</span>' 
+                    : '<span class="badge badge-warning">Pending</span>';
+                    
+                return $("<li>")
+                    .append("<div>" + item.label + " " + status + "</div>")
+                    .appendTo(ul);
+            };
+        });
     </script>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmation</h4>
+                <button type="button" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="modalCancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

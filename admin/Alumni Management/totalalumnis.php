@@ -133,6 +133,7 @@ try {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/portfolio.css">
+    <link rel="stylesheet" href="../../assets/css/modal.css"> <!-- Added modal CSS -->
     <style>
         .alumni-table {
             width: 100%;
@@ -243,6 +244,23 @@ try {
     </style>
 </head>
 <body>
+    <!-- Custom Modal -->
+    <div id="customModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmation</h4>
+                <button type="button" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="modalCancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation and other dashboard components -->
     <nav class="dashboard-nav">
         <div class="logo">
@@ -262,6 +280,9 @@ try {
             <a href="../../Authentication/AdminLogin/logout.php">Logout</a>
         </div>
     </nav>
+
+    <!-- Add this after the nav section -->
+    <div id="alertContainer"></div>
 
     <!-- Main Content -->
     <div class="dashboard-container container-fluid">
@@ -466,8 +487,37 @@ try {
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/modal.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-alumni');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.dataset.id;
+                    customConfirm('Are you sure you want to remove this alumni?', () => {
+                        fetch('delete_alumni.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `user_id=${userId}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                showNotification('Alumni removed successfully', 'success');
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                showNotification('Error: ' + data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showNotification('An error occurred while removing the alumni', 'error');
+                        });
+                    });
+                });
+            });
             // Check if mobile menu button exists before adding event listener
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             if (mobileMenuBtn) {
@@ -660,48 +710,49 @@ try {
         }
         
         function deleteAlumni(userId) {
-            if (confirm('Are you sure you want to delete this alumni? This will permanently delete all their data including certificates.')) {
-                $.ajax({
-                    url: 'delete_alumni.php',
-                    type: 'POST',
-                    data: { user_id: userId },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            alert(response.message);
-                            location.reload();
-                        } else {
-                            alert('Error: ' + response.message);
-                        }
+            customConfirm('Are you sure you want to delete this alumni? This will permanently delete all their data including certificates.', () => {
+                fetch('delete_alumni.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    error: function(xhr, status, error) {
-                        console.error('Error details:', xhr.responseText);
-                        alert('An error occurred while deleting the alumni. Please check the console for details.');
+                    body: `user_id=${userId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showNotification('Alumni removed successfully', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showNotification('Error: ' + data.message, 'error');
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('An error occurred while removing the alumni', 'error');
                 });
-            }
-            return false;
+            });
         }
 
         function verifyAlumni(userId) {
-            if (!confirm('Are you sure you want to verify this alumni?')) return;
-
-            $.ajax({
-                url: 'verify_alumni.php',
-                method: 'POST',
-                data: { user_id: userId },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.error) {
-                        showAlert('error', response.error);
-                    } else {
-                        showAlert('success', 'Alumni verified successfully');
-                        updateSearchResults(currentPage);
+            customConfirm('Are you sure you want to verify this alumni?', () => {
+                $.ajax({
+                    url: 'verify_alumni.php',
+                    method: 'POST',
+                    data: { user_id: userId },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.error) {
+                            showAlert('error', response.error);
+                        } else {
+                            showAlert('success', 'Alumni verified successfully');
+                            updateSearchResults(currentPage);
+                        }
+                    },
+                    error: function() {
+                        showAlert('error', 'An error occurred while verifying the alumni');
                     }
-                },
-                error: function() {
-                    showAlert('error', 'An error occurred while verifying the alumni');
-                }
+                });
             });
         }
 
