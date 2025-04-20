@@ -212,35 +212,34 @@ if (isset($_SESSION['error'])) {
                         <div class="skill-entry">
                             <div class="form-group">
                                 <label for="language_specialization">Language Specialization*</label>
-                                <input type="text" name="skills[0][language]" required 
+                                <input type="text" name="skills[language]" required 
                                        placeholder="e.g., Java, Python">
                             </div>
                             <div class="form-group">
                                 <label for="tools">Tools*</label>
-                                <input type="text" name="skills[0][tools]" required 
+                                <input type="text" name="skills[tools]" required 
                                        placeholder="e.g., Git, Docker">
                             </div>
                             <div class="form-group">
                                 <label for="technologies">Technologies*</label>
-                                <input type="text" name="skills[0][technologies]" required 
+                                <input type="text" name="skills[technologies]" required 
                                        placeholder="e.g., React, Node.js">
                             </div>
                             <div class="form-group">
                                 <label for="skill_level">Proficiency Level*</label>
-                                <select name="skills[0][level]" required>
+                                <select name="skills[level]" required>
                                     <option value="">Select Level</option>
-                                    <option value="Beginner">Beginner</option>
-                                    <option value="Intermediate">Intermediate</option>
-                                    <option value="Advanced">Advanced</option>
-                                    <option value="Expert">Expert</option>
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate">Intermediate</option>
+                                    <option value="advanced">Advanced</option>
+                                    <option value="expert">Expert</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                    <button type="button" id="add-skill" class="btn-secondary">Add Another Skill</button>
                     <div class="button-group">
-                    <button type="button" class="prev-btn" id="step6Prev">Previous</button>
-                    <button type="button" class="next-btn" id="step6Next">Next</button>
+                        <button type="button" class="prev-btn" id="step6Prev">Previous</button>
+                        <button type="button" class="next-btn" id="step6Next">Next</button>
                     </div>
                 </div>
 
@@ -251,23 +250,25 @@ if (isset($_SESSION['error'])) {
                         <div class="goal-entry">
                             <div class="form-group">
                                 <label for="goal_description">Career Goal*</label>
-                                <textarea name="career_goals[0][description]" rows="3" required
+                                <textarea name="career_goals[description]" rows="3" required
                                           placeholder="Describe your career goal"></textarea>
                             </div>
                         </div>
                     </div>
-                    <button type="button" id="add-goal" class="btn-secondary">Add Another Goal</button>
 
                     <h2>Certifications</h2>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Note: You can add more certificates and update your profile information later through your dashboard.
+                    </div>
                     <div id="certifications-container">
                         <div class="certification-entry">
                             <div class="form-group">
                                 <label for="cert_file">Upload Certificate* (PDF, JPG, JPEG, PNG)</label>
-                                <input type="file" name="certifications[certificate_file]" accept=".pdf, .jpg, .jpeg, .png" required>
+                                <input type="file" name="certifications[0][certificate_file]" accept=".pdf, .jpg, .jpeg, .png" required>
                             </div>
                         </div>
                     </div>
-                    <button type="button" id="add-certification" class="btn-secondary">Add Another Certification</button>
+                    <button type="button" id="add-certification" class="btn-secondary">Add Another Certificate</button>
 
                     <div class="button-group">
                         <button type="button" class="prev-btn" id="step7Prev">Previous</button>

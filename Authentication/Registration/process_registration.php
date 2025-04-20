@@ -70,12 +70,22 @@ try {
         // Insert Skills
         if (!empty($_POST['skills'])) {
             $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies, proficiency_level) VALUES (?, ?, ?, ?, ?)");
-            foreach ($_POST['skills'] as $skill) {
-                if (!empty($skill['language']) && !empty($skill['tools']) && !empty($skill['technologies']) && !empty($skill['level'])) {
-                    $stmt_skill->execute([$userId, $skill['language'], $skill['tools'], $skill['technologies'], $skill['level']]);
-                } else {
-                    error_log("Skipping incomplete skill entry for user ID: $userId");
-                }
+            
+            // Now handling single skill entry
+            if (!empty($_POST['skills']['language']) && 
+                !empty($_POST['skills']['tools']) && 
+                !empty($_POST['skills']['technologies']) && 
+                !empty($_POST['skills']['level'])) {
+                
+                $stmt_skill->execute([
+                    $userId,
+                    $_POST['skills']['language'],
+                    $_POST['skills']['tools'],
+                    $_POST['skills']['technologies'],
+                    $_POST['skills']['level']
+                ]);
+            } else {
+                error_log("Incomplete skill entry for user ID: $userId");
             }
         }
 
@@ -90,31 +100,73 @@ try {
             null // Graduation year is not collected in the form
         ]);
 
+        // Insert Professional Status
+        if (!empty($_POST['current_status'])) {
+            $stmt = $conn->prepare("INSERT INTO professional_status
+                                   (user_id, current_status, company_name, position)
+                                   VALUES (?, ?, ?, ?)");
+            $stmt->execute([
+                $userId,
+                $_POST['current_status'],
+                $_POST['company_name'] ?? null,
+                $_POST['position'] ?? null
+            ]);
+        }
+
         // Insert Projects (if any submitted)
         if (isset($_POST['hasProjects']) && $_POST['hasProjects'] === 'yes' && !empty($_POST['projects'])) {
+            // Maximum number of projects allowed
+            $MAX_PROJECTS = 10;
+            
+            if (count($_POST['projects']) > $MAX_PROJECTS) {
+                throw new Exception("Maximum number of projects ($MAX_PROJECTS) exceeded");
+            }
+            
             $stmt_proj = $conn->prepare("INSERT INTO projects (user_id, title, description, technologies_used) VALUES (?, ?, ?, ?)");
+            $projectCount = 0;
+            
             foreach ($_POST['projects'] as $project) {
-                // Basic validation for project fields within the loop
-                if (!empty($project['title']) && !empty($project['description']) && !empty($project['technologies'])) {
+                // Enhanced validation
+                if (empty($project['title']) || empty($project['description']) || empty($project['technologies'])) {
+                    error_log("Skipping incomplete project entry for user ID: $userId");
+                    continue;
+                }
+                
+                // Sanitize inputs
+                $title = htmlspecialchars(trim($project['title']), ENT_QUOTES, 'UTF-8');
+                $description = htmlspecialchars(trim($project['description']), ENT_QUOTES, 'UTF-8');
+                $technologies = htmlspecialchars(trim($project['technologies']), ENT_QUOTES, 'UTF-8');
+                
+                // Validate length
+                if (strlen($title) > 255 || strlen($technologies) > 255) {
+                    throw new Exception("Project title or technologies exceed maximum length");
+                }
+                
+                try {
                     $stmt_proj->execute([
                         $userId,
-                        $project['title'],
-                        $project['description'],
-                        $project['technologies']
+                        $title,
+                        $description,
+                        $technologies
                     ]);
-                } else {
-                    error_log("Skipping incomplete project entry for user ID: $userId");
+                    $projectCount++;
+                } catch (PDOException $e) {
+                    error_log("Failed to insert project for user ID: $userId. Error: " . $e->getMessage());
+                    throw new Exception("Failed to save project information");
                 }
+            }
+            
+            // Log success
+            if ($projectCount > 0) {
+                error_log("Successfully inserted $projectCount projects for user ID: $userId");
             }
         }
 
         // Insert into certifications table
         // Handle Certificate Uploads
-
         if (!empty($_FILES['certifications'])) {
             // Get enrollment number
             $enrollmentNumber = $_POST['enrollment_format'] === 'old' ? $_POST['enrollment_number_old'] : $_POST['enrollment_number'];
-
             $target_dir = "../../assets/certificates/" . $enrollmentNumber . "/";
 
             // Ensure the target directory exists and is writable
@@ -128,68 +180,51 @@ try {
 
             $stmt_cert = $conn->prepare("INSERT INTO certifications (user_id, certificate_path) VALUES (?, ?)");
 
-            // Directly access the nested array based on var_export structure
-            // Check if the 'certificate_file' key exists in the sub-arrays and if the upload was successful
-            if (isset($_FILES['certifications']['error']['certificate_file']) && $_FILES['certifications']['error']['certificate_file'] === UPLOAD_ERR_OK) {
-
-                $name = $_FILES['certifications']['name']['certificate_file'];
-                $tmp_name = $_FILES['certifications']['tmp_name']['certificate_file'];
-                $size = $_FILES['certifications']['size']['certificate_file'];
-                $error = $_FILES['certifications']['error']['certificate_file']; // Already checked this is UPLOAD_ERR_OK
-
-                $original_name = basename($name);
-                $file_extension = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
-
-                // Sanitize the original filename (remove spaces and special characters)
-                // Get the enrollment number to create the directory
-                $enrollmentNumber = $_POST['enrollment_format'] === 'old' ? $_POST['enrollment_number_old'] : $_POST['enrollment_number'];
-                $user_cert_dir = $target_dir . $enrollmentNumber . "/";
-
-                // Determine the next certificate number
-                $certificate_count = 1;
-                $existing_files = glob($user_cert_dir . 'certificate*.{pdf,jpg,jpeg,png}', GLOB_BRACE);
-                if ($existing_files) {
-                    $certificate_count = count($existing_files) + 1;
-                }
-
-                $new_filename = "certificate" . $certificate_count . "." . $file_extension;
-                $target_file = $target_dir . $new_filename;
-
-                // Validate file type and size
-                $allowed_types = ['pdf', 'jpg', 'jpeg', 'png'];
-                if (!in_array($file_extension, $allowed_types)) {
-                    throw new Exception("Invalid file type for certificate: $original_name. Only PDF, JPG, JPEG, PNG allowed.");
-                }
-                // Increased size limit to 5MB, adjust as needed
-                if ($size > 5000000) {
-                    throw new Exception("Certificate file is too large: $original_name. Max size 5MB.");
-                }
-
-                // Move the uploaded file
-                if (move_uploaded_file($tmp_name, $target_file)) {
-                    // Insert relative file path into database
-                    $relative_path = "assets/certificates/" . $enrollmentNumber . "/" . $new_filename; // Use the new filename
-                    if (!$stmt_cert->execute([$userId, $relative_path])) {
-                        // Explicitly check execute result and throw exception if false
-                        $errorInfo = $stmt_cert->errorInfo();
-                        throw new Exception("Failed to insert certificate path into database for $original_name. Error: " . ($errorInfo[2] ?? 'Unknown PDO error'));
+            // Loop through each uploaded certificate
+            foreach ($_FILES['certifications']['name'] as $key => $name) {
+                if ($_FILES['certifications']['error'][$key]['certificate_file'] === UPLOAD_ERR_OK) {
+                    $tmp_name = $_FILES['certifications']['tmp_name'][$key]['certificate_file'];
+                    $original_name = basename($name['certificate_file']);
+                    $file_extension = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
+                    
+                    // Validate file type
+                    $allowed_types = ['pdf', 'jpg', 'jpeg', 'png'];
+                    if (!in_array($file_extension, $allowed_types)) {
+                        error_log("Invalid file type for certificate: $original_name");
+                        continue;
                     }
-                } else {
-                    // Throw exception if upload fails, triggering transaction rollback
-                    throw new Exception("Failed to upload certificate file: $original_name. Check directory permissions and PHP settings.");
-                }
-            } elseif (isset($_FILES['certifications']['error']['certificate_file']) && $_FILES['certifications']['error']['certificate_file'] !== UPLOAD_ERR_NO_FILE) {
-                // Handle other upload errors specifically, ignore UPLOAD_ERR_NO_FILE
-                 $original_name_for_error = isset($_FILES['certifications']['name']['certificate_file']) ? basename($_FILES['certifications']['name']['certificate_file']) : 'unknown file';
-                 throw new Exception("Error uploading certificate file: $original_name_for_error. Error code: " . $_FILES['certifications']['error']['certificate_file']);
-            } elseif (isset($_FILES['certifications']['error']['certificate_file']) && $_FILES['certifications']['error']['certificate_file'] !== UPLOAD_ERR_NO_FILE) {
-                // Handle other upload errors specifically, ignore UPLOAD_ERR_NO_FILE
-                 $original_name_for_error = isset($_FILES['certifications']['name']['certificate_file']) ? basename($_FILES['certifications']['name']['certificate_file']) : 'unknown file';
-                 throw new Exception("Error uploading certificate file: $original_name_for_error. Error code: " . $_FILES['certifications']['error']['certificate_file']);
-            }
-            // It's okay if no file was uploaded (UPLOAD_ERR_NO_FILE)
-        } // Closing brace for if (!empty($_FILES['certifications']))
 
+                    // Validate file size (5MB limit)
+                    if ($_FILES['certifications']['size'][$key]['certificate_file'] > 5000000) {
+                        error_log("File too large: $original_name");
+                        continue;
+                    }
+
+                    // Create unique filename
+                    $certificate_count = count(glob($target_dir . 'certificate*.{pdf,jpg,jpeg,png}', GLOB_BRACE)) + 1;
+                    $new_filename = "certificate" . $certificate_count . "." . $file_extension;
+                    $target_file = $target_dir . $new_filename;
+
+                    // Move the uploaded file
+                    if (move_uploaded_file($tmp_name, $target_file)) {
+                        // Store relative path in database
+                        $relative_path = "assets/certificates/" . $enrollmentNumber . "/" . $new_filename;
+                        try {
+                            $stmt_cert->execute([$userId, $relative_path]);
+                        } catch (PDOException $e) {
+                            error_log("Failed to insert certificate into database: " . $e->getMessage());
+                            // Continue with next certificate even if this one fails
+                            continue;
+                        }
+                    } else {
+                        error_log("Failed to move uploaded file: $original_name");
+                    }
+                } elseif ($_FILES['certifications']['error'][$key]['certificate_file'] !== UPLOAD_ERR_NO_FILE) {
+                    // Log any upload errors except "no file"
+                    error_log("Error uploading certificate: " . $_FILES['certifications']['error'][$key]['certificate_file']);
+                }
+            }
+        }
 
         // Insert Skills
         if (!empty($_POST['skills'])) {
@@ -203,16 +238,13 @@ try {
             }
         }
 
-
         // Insert Career Goals
         if (!empty($_POST['career_goals'])) {
             $stmt_goal = $conn->prepare("INSERT INTO career_goals (user_id, description) VALUES (?, ?)");
-            foreach ($_POST['career_goals'] as $goal) {
-                if (!empty($goal['description'])) {
-                    $stmt_goal->execute([$userId, $goal['description']]);
-                } else {
-                    error_log("Skipping empty career goal entry for user ID: $userId");
-                }
+            if (!empty($_POST['career_goals']['description'])) {
+                $stmt_goal->execute([$userId, $_POST['career_goals']['description']]);
+            } else {
+                error_log("Empty career goal entry for user ID: $userId");
             }
         }
 
@@ -242,7 +274,6 @@ try {
         // Also log to debug.log - Keep this for now
         $debugErrorMessage = "Caught Exception: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine() . "\n";
         file_put_contents('debug.log', $debugErrorMessage, FILE_APPEND);
-
 
         // Return error response as JSON (keep this for debugging/potential future use)
         // Ensure output buffer is cleaned before sending JSON error

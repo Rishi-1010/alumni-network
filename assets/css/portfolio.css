@@ -279,3 +279,260 @@
         font-size: 1.5rem; /* Adjust heading size */
     }
 }
+
+/* Project Card Styles */
+.project-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    height: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease-in-out;
+    background: white;
+    margin-bottom: 20px;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.project-header {
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+}
+
+.project-title {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.project-body {
+    color: #555;
+}
+
+.project-description {
+    margin-bottom: 15px;
+}
+
+.description-text {
+    padding-left: 10px;
+    border-left: 3px solid var(--primary-color);
+    margin-top: 5px;
+}
+
+.tech-stack {
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    margin-top: 5px;
+}
+
+.project-technologies {
+    margin-top: 15px;
+}
+
+/* Project section responsive adjustments */
+@media (max-width: 768px) {
+    .project-card {
+        margin-bottom: 15px;
+    }
+}
+
+/* Skill Card Styles */
+.skill-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.skill-header h5 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.skill-header i {
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+
+.skill-details p {
+    margin-bottom: 10px;
+}
+
+.tech-badge {
+    display: inline-block;
+    background-color: #f8f9fa;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 5px;
+}
+
+/* Proficiency Level Badge Colors */
+.badge.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.badge.bg-primary {
+    background-color: #007bff !important;
+}
+
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+/* Common card styling for all sections */
+.info-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Basic Information styling */
+.basic-info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.basic-info-item i {
+    width: 30px;
+    color: var(--primary-color);
+}
+
+/* Educational Details styling */
+.education-card {
+    padding: 15px;
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Professional Status styling */
+.professional-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* Career Goals styling */
+.goal-card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 4px solid #28a745;
+    border-radius: 4px;
+}
+
+/* Certification styling */
+.certification-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.certification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Certificate Styling */
+.certification-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    height: 100%;
+}
+
+.cert-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.cert-header h5 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.cert-header h5 i {
+    color: #ffc107;
+    margin-right: 8px;
+}
+
+.cert-date {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+.cert-date i {
+    margin-right: 5px;
+}
+
+.cert-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.cert-actions .btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.cert-actions .btn-primary {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.cert-actions .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.cert-actions .btn:hover {
+    opacity: 0.9;
+}
+
+.cert-actions i {
+    font-size: 0.9rem;
+}

@@ -266,54 +266,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const hasProjectsNoRadio = document.getElementById('hasProjectsNo');
             let previousStepTarget = null;
 
-            // Determine the correct previous step based on the 'hasProjects' choice
             if (hasProjectsNoRadio && hasProjectsNoRadio.checked) {
-                 console.log("Step 6 Prev clicked. User selected 'No' for projects. Targeting step 4.");
-                 previousStepTarget = 4; // Go back to the question step
+                previousStepTarget = 4;
             } else {
-                 console.log("Step 6 Prev clicked. User selected 'Yes' for projects. Targeting step 5.");
-                 previousStepTarget = 5; // Go back to the project details step
+                previousStepTarget = 5;
             }
 
-            // Move to the determined previous step
             if (previousStepTarget !== null) {
-                 moveToStep(6, previousStepTarget);
-            } else {
-                 console.error("Could not determine previous step target from step 6.");
-                 // Fallback or default behavior if needed, e.g., go to step 4
-                 // moveToStep(6, 4);
+                moveToStep(6, previousStepTarget);
             }
         });
     }
-    // if (step5Next) step5Next.addEventListener('click', () => moveToStep(5, 6)); // Projects -> Skills - Redundant, removed
-
-    // Step 6 Prev logic (already adjusted, seems correct)
-    if (step6Prev) {
-        step6Prev.addEventListener('click', () => {
-            const hasProjectsNoRadio = document.getElementById('hasProjectsNo');
-            let previousStepTarget = null;
-
-            // Determine the correct previous step based on the 'hasProjects' choice
-            if (hasProjectsNoRadio && hasProjectsNoRadio.checked) {
-                 console.log("Step 6 Prev clicked. User selected 'No' for projects. Targeting step 4.");
-                 previousStepTarget = 4; // Go back to the question step
-            } else {
-                 console.log("Step 6 Prev clicked. User selected 'Yes' for projects. Targeting step 5.");
-                 previousStepTarget = 5; // Go back to the project details step
-            }
-
-            // Move to the determined previous step
-            if (previousStepTarget !== null) {
-                 moveToStep(6, previousStepTarget);
-            } else {
-                 console.error("Could not determine previous step target from step 6.");
-                 // Fallback or default behavior if needed, e.g., go to step 4
-                 // moveToStep(6, 4);
-            }
-        });
+    if (step6Next) {
+        step6Next.addEventListener('click', () => moveToStep(6, 7));
     }
-    if (step6Next) step6Next.addEventListener('click', () => moveToStep(6, 7)); // Skills -> Career Goals
-    if (step7Prev) step7Prev.addEventListener('click', () => moveToStep(7, 6)); // Career Goals -> Skills
 
     // --- Project Question Logic --- (Simplified)
     if (hasProjectsYes && hasProjectsNo && projectsContainer) {
@@ -395,150 +361,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Generic remove function for dynamic entries (projects, skills, goals)
+    // --- Add/Remove Certificate Functionality ---
+    const addCertificationButton = document.getElementById('add-certification');
+    const certificationsContainer = document.getElementById('certifications-container');
+
+    if (addCertificationButton && certificationsContainer) {
+        addCertificationButton.addEventListener('click', function() {
+            const newCertification = document.createElement('div');
+            newCertification.className = 'certification-entry';
+            const currentIndex = certificationsContainer.querySelectorAll('.certification-entry').length;
+            
+            newCertification.innerHTML = `
+                <div class="form-group">
+                    <label for="cert_file_${currentIndex}">Upload Certificate* (PDF, JPG, JPEG, PNG)</label>
+                    <input type="file" name="certifications[${currentIndex}][certificate_file]" 
+                           accept=".pdf, .jpg, .jpeg, .png" required>
+                    <button type="button" class="remove-certification btn-secondary" onclick="removeEntry(this)">
+                        Remove Certificate
+                    </button>
+                </div>
+            `;
+            certificationsContainer.appendChild(newCertification);
+        });
+    }
+
+    // Update the removeEntry function to include certification-entry
     window.removeEntry = function(button) {
-        const entryToRemove = button.closest('.project-entry, .skill-entry, .goal-entry, .certification-entry');
+        const entryToRemove = button.closest('.project-entry, .certification-entry');
         if (entryToRemove) {
             entryToRemove.remove();
-            // Optional: Re-index remaining entries if necessary, though often backend can handle gaps.
-            // Re-indexing is complex and prone to errors, avoid if possible.
-            // If re-indexing: update labels (<h4>), input IDs, and names.
+            // Optionally renumber remaining entries if needed
         }
     };
-
-
-    // --- Skills Add/Remove ---
-    let skillCount = 0; // Initialized based on existing entries later
-    const addSkillButton = document.getElementById('add-skill');
-    const skillsContainer = document.getElementById('skills-container');
-
-    if (addSkillButton && skillsContainer) {
-        // Initialize skillCount based on existing entries if any (e.g., if server pre-populates)
-        skillCount = skillsContainer.querySelectorAll('.skill-entry').length;
-
-        addSkillButton.addEventListener('click', function() {
-            const newSkill = document.createElement('div');
-            newSkill.className = 'skill-entry';
-            // Use index based on current count for name attribute
-            const currentIndex = skillsContainer.querySelectorAll('.skill-entry').length;
-            newSkill.innerHTML = `
-                <div class="form-group">
-                    <label for="skill_name_${currentIndex}">Skill Name*</label>
-                    <input type="text" id="skill_name_${currentIndex}" name="skills[${currentIndex}][name]" required
-                           placeholder="e.g., Java, Python, Web Development">
-                </div>
-                <div class="form-group">
-                    <label for="skill_level_${currentIndex}">Proficiency Level*</label>
-                    <select id="skill_level_${currentIndex}" name="skills[${currentIndex}][level]" required>
-                        <option value="">Select Level</option>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                        <option value="Expert">Expert</option>
-                    </select>
-                </div>
-                <button type="button" class="remove-skill btn-secondary" onclick="removeEntry(this)">Remove Skill</button>
-            `;
-            skillsContainer.appendChild(newSkill);
-            // No need to increment skillCount here, index is based on current count
-        });
-    }
-    // Removed redundant removeSkill function, using generic removeEntry
-
-    // Add event listeners for Step 5 (Projects)
-    if (step5Prev) {
-        step5Prev.addEventListener('click', () => moveToStep(5, 4)); // Go back to Project Question
-    }
-    if (step5Next) {
-         step5Next.addEventListener('click', () => moveToStep(5, 6)); // Go to Step 6 (Skills) - Validation happens in moveToStep
-    }
-
-
-    // Skills functionality (Step 6) - Simplified add logic
-    const addSkillBtn = document.getElementById('add-skill'); // Ensure correct ID if changed
-    const skillsCont = document.getElementById('skills-container'); // Ensure correct ID
-
-    if (addSkillBtn && skillsCont) {
-        addSkillBtn.addEventListener('click', function() {
-            const container = skillsCont; // Use cached variable
-            const newSkill = document.createElement('div');
-            newSkill.className = 'skill-entry';
-            const currentIndex = container.querySelectorAll('.skill-entry').length;
-            newSkill.innerHTML = `
-                <div class="form-group">
-                    <label for="skill_name_${currentIndex}">Skill Name*</label>
-                    <input type="text" id="skill_name_${currentIndex}" name="skills[${currentIndex}][name]" required
-                           placeholder="e.g., Java, Python, Web Development">
-                </div>
-                <div class="form-group">
-                    <label for="skill_level_${currentIndex}">Proficiency Level*</label>
-                    <select id="skill_level_${currentIndex}" name="skills[${currentIndex}][level]" required>
-                        <option value="">Select Level</option>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                        <option value="Expert">Expert</option>
-                    </select>
-                </div>
-                <button type="button" class="remove-skill btn-secondary" onclick="removeEntry(this)">Remove Skill</button>
-            `;
-            container.appendChild(newSkill);
-        });
-    }
-    // Removed redundant removeSkill function
-
-    // Add event listeners for Step 6 (Skills)
-    // Step 6 Prev logic handled earlier (correctly goes to 4 or 5)
-    if (step6Next) {
-        step6Next.addEventListener('click', () => moveToStep(6, 7)); // Go to Step 7 (Career Goals)
-    }
-
-
-    // Career Goals functionality (Step 7) - Simplified add logic
-    const addGoalButton = document.getElementById('add-goal');
-    const goalsContainer = document.getElementById('goals-container');
-
-    if (addGoalButton && goalsContainer) {
-        // Initialize goalCount based on existing entries if any
-        goalCount = goalsContainer.querySelectorAll('.goal-entry').length;
-
-        addGoalButton.addEventListener('click', function() {
-            const container = goalsContainer;
-            const newGoal = document.createElement('div');
-            newGoal.className = 'goal-entry';
-            const currentIndex = container.querySelectorAll('.goal-entry').length;
-            newGoal.innerHTML = `
-                <div class="form-group">
-                    <label for="goal_description_${currentIndex}">Career Goal*</label>
-                    <textarea id="goal_description_${currentIndex}" name="career_goals[${currentIndex}][description]" rows="3" required
-                              placeholder="Describe your career goal"></textarea>
-                </div>
-                <button type="button" class="remove-goal btn-secondary" onclick="removeEntry(this)">Remove Goal</button>
-            `;
-            container.appendChild(newGoal);
-        });
-    }
-    // Removed redundant removeGoal function
-
-    // Add event listeners for Step 7 (Career Goals)
-    if (step7Prev) {
-        step7Prev.addEventListener('click', () => moveToStep(7, 6)); // Go back to Step 6 (Skills)
-    }
-
-    // The submit button is on Step 7
-    if (submitBtn) {
-        submitBtn.addEventListener('click', function (e) {
-            console.log('Step 7 Submit button clicked');
-            // Validate step 7 before allowing default form submission
-            if (!validateStep(7)) {
-                 e.preventDefault(); // Prevent form submission if validation fails
-                 console.log('Step 7 validation failed. Preventing submission.');
-            } else {
-                console.log('Form is valid, submitting...');
-                // Allow default form submission
-            }
-        });
-    }
 
     // Initialize first step
     updateProgress(1);

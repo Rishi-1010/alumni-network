@@ -211,15 +211,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
             <span>SRIMCA_BVPICS Alumni Network</span>
         </div>
         
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <!-- <button class="mobile-menu-btn" id="mobileMenuBtn">
             <i class="fas fa-bars"></i>
-        </button>
+        </button> -->
         <div class="dashboard-navbar" id="navLinks">
             <a href="#" class="active">Dashboard</a>
             <a href="profile.php">Profile</a>
             <!-- <a href="connections.php">Connections</a>
             <a href="jobs.php">Jobs</a> -->
-            <a href="totalalumnis.php">Total Alumni</a>
+            <a href="Alumni Management/totalalumnis.php">Total Alumni</a>
             <a href="../Authentication/AdminLogin/logout.php">Logout</a>
         </div>
     </nav>
