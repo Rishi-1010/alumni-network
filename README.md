@@ -5,14 +5,20 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 ## Project Structure
 ```
 ├── admin/
+│ ├── AdminLogin/
+│ │ ├── delete_alumni.php
+│ | ├── export_alumni.php
+│ | ├── get_employed_count.php
+│ | ├── search_alumni.php
+│ | ├── totalalumnis.php
+| │ ├── verify_alumni.php
+│ | └── view-portfolio.php
 │ ├── alumni-network.code-workspace
 │ ├── dashboard.php
-│ ├── delete_alumni.php
 │ ├── search_enrollment.php
-│ ├── totalalumnis.php
-│ ├── verify_alumni.php
-│ └── view-portfolio.php
 ├── assets/
+│ ├── certifications/
+│ │ └── [user_enrollment_number]/ (User-specific folders for storing certificates)
 │ ├── css/
 │ │ ├── admin.css
 │ │ ├── contactus.css # Added contactus.css if not already present
@@ -22,14 +28,14 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ │ └── style.css
 │ ├── img/
 │ │ └── logo.png
+│ ├── js/
 │ │ ├── admin-login.js
 │ │ ├── admin.js
 │ │ ├── dashboard.js
 │ │ ├── enrollment-autocomplete.js
 │ │ ├── login.js
-│ │ └── register.js
-│ ├── certifications/
-│ │ └── [user_enrollment_number]/ (User-specific folders for storing certificates)
+│ │ ├── register.js
+│ │ └── rollnumformat.js
 ├── Authentication/
 │ ├── AdminLogin/
 │ │ ├── generate_hash.php
@@ -58,8 +64,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 ├── composer.lock
 ├── dashboard.php
 ├── index.html
-├── README.md
-└── send_otp/resend_otp.php
+└── README.md
 ```
 
 ## Features
@@ -101,11 +106,28 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
   - Card layouts
   - Status badges
 
-### New Features Added
-- **Contact Us Page**
-  - Added a new page for users to contact the administrators.
-- **Portfolio View System**
-  - Detailed alumni information display
+## Recent Updates
+- Enhanced Skills Management System
+  - Modified skills table structure with language specialization, tools, technologies, and proficiency levels
+  - Removed redundant "Add Another Skill" functionality
+  - Improved skills display in portfolio view
+
+- Improved Educational Details System
+  - Enhanced educational_details table structure
+  - Added course information display in graduation section
+  - Streamlined educational data management
+
+- Enhanced Certificate Management
+  - Improved certificate upload and storage system
+  - Added certificate count display in portfolio
+  - Enhanced certificate directory structure
+  - Improved certificate deletion handling
+
+- Robust Alumni Management
+  - Implemented secure alumni deletion system with directory cleanup
+  - Added transaction-based deletions for data integrity
+  - Enhanced file system management for user assets
+  - Improved user data cleanup processes
 
 ### Under Development
 - **User Dashboard**
@@ -179,13 +201,9 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - **career_goals**
   - User career goals
   - Goal type and status
-  - Target date
 
 - **certifications**
   - User certifications
-  - Issuing organization
-  - Credential details
-- **User-Specific Certificate Uploads**: Certificates are now stored in user-specific directories based on their enrollment number.
 
 ## Features
 - **Search Alumni**: Search for alumni by enrollment number.
