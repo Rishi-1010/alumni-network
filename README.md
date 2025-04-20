@@ -5,7 +5,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 ## Project Structure
 ```
 ├── admin/
-│ ├── AdminLogin/
+│ ├── Alumni Management/
 │ │ ├── delete_alumni.php
 │ | ├── export_alumni.php
 │ | ├── get_employed_count.php
