@@ -1,0 +1,158 @@
+/* Navigation styles for the Alumni Network */
+
+:root {
+    --nav-height: 60px;
+    --primary-color: #3498db;
+    --text-color: #333;
+    --transition: all 0.3s ease;
+}
+
+/* Navigation */
+.dashboard-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    z-index: 1000;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo img {
+    height: 35px;
+    width: auto;
+}
+
+.logo span {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.dashboard-navbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.dashboard-navbar a {
+    text-decoration: none;
+    background-color: white;
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: var(--transition);
+    font-weight: 500;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.dashboard-navbar a:hover,
+.dashboard-navbar a.active {
+    background-color: #f8f9fa;
+    color: var(--primary-color);
+    border-color: #ccc;
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.mobile-menu-btn:hover {
+    color: var(--primary-color);
+}
+
+/* Media Queries for Responsive Navigation */
+@media screen and (max-width: 991px) {
+    .dashboard-navbar {
+        position: fixed;
+        top: var(--nav-height);
+        left: 0;
+        right: 0;
+        background: white;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.5rem;
+        gap: 0.25rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: var(--transition);
+        z-index: 999;
+    }
+
+    .dashboard-navbar.active {
+        display: flex;
+        animation: slideDown 0.3s ease;
+    }
+
+    .dashboard-navbar a {
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        width: 100%;
+        text-align: left;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .logo span {
+        font-size: 1.1rem;
+    }
+}
+
+/* Small phones */
+@media screen and (max-width: 480px) {
+    .dashboard-nav {
+        padding: 0 0.75rem;
+    }
+
+    .logo img {
+        height: 30px;
+    }
+
+    .logo span {
+        font-size: 1rem;
+    }
+
+    .dashboard-navbar a {
+        padding: 0.75rem;
+    }
+}
+
+/* Animation */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Adjust main content padding to account for fixed navbar */
+.main-content {
+    padding-top: calc(var(--nav-height) + 2rem);
+    margin-left: 0;
+    width: 100%;
+} 

@@ -1,64 +1,75 @@
 class CustomModal {
     constructor() {
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.initialize());
-        } else {
-            this.initialize();
-        }
-    }
-
-    initialize() {
+        console.log('Modal constructor called');
         this.modal = document.getElementById('customModal');
-        if (!this.modal) {
-            console.error('Modal element not found');
-            return;
-        }
-        
         this.messageElement = document.getElementById('modalMessage');
         this.confirmBtn = document.getElementById('modalConfirm');
         this.cancelBtn = document.getElementById('modalCancel');
         this.closeBtn = this.modal.querySelector('.close-modal');
         
-        if (this.closeBtn) {
-            this.closeBtn.addEventListener('click', () => this.hide());
-        }
-        if (this.cancelBtn) {
-            this.cancelBtn.addEventListener('click', () => this.hide());
-        }
+        console.log('Modal elements:', {
+            modal: this.modal,
+            messageElement: this.messageElement,
+            confirmBtn: this.confirmBtn,
+            cancelBtn: this.cancelBtn,
+            closeBtn: this.closeBtn
+        });
         
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        console.log('Setting up event listeners');
+        
+        // Close button
+        this.closeBtn.addEventListener('click', () => {
+            console.log('Close button clicked');
+            this.hide();
+        });
+        
+        // Cancel button
+        this.cancelBtn.addEventListener('click', () => {
+            console.log('Cancel button clicked');
+            this.hide();
+        });
+        
+        // Click outside modal
         window.addEventListener('click', (e) => {
             if (e.target === this.modal) {
+                console.log('Clicked outside modal');
                 this.hide();
             }
         });
     }
 
     show(message, onConfirm) {
-        if (!this.modal || !this.messageElement) {
-            console.error('Modal not properly initialized');
-            return;
-        }
-        
+        console.log('Showing modal with message:', message);
         this.messageElement.textContent = message;
         this.modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         
-        if (this.confirmBtn) {
-            this.confirmBtn.replaceWith(this.confirmBtn.cloneNode(true));
-            this.confirmBtn = document.getElementById('modalConfirm');
-            
-            this.confirmBtn.addEventListener('click', () => {
-                this.hide();
-                if (typeof onConfirm === 'function') {
-                    onConfirm();
-                }
-            });
-        }
+        // Remove any existing click handlers from confirm button
+        console.log('Replacing confirm button');
+        const newConfirmBtn = this.confirmBtn.cloneNode(true);
+        this.confirmBtn.parentNode.replaceChild(newConfirmBtn, this.confirmBtn);
+        this.confirmBtn = newConfirmBtn;
+        
+        // Add new click handler
+        console.log('Adding new click handler to confirm button');
+        this.confirmBtn.onclick = () => {
+            console.log('Confirm button clicked');
+            this.hide();
+            if (typeof onConfirm === 'function') {
+                console.log('Executing confirm callback');
+                onConfirm();
+            } else {
+                console.log('No confirm callback provided');
+            }
+        };
     }
 
     hide() {
-        if (!this.modal) return;
+        console.log('Hiding modal');
         this.modal.style.display = 'none';
         document.body.style.overflow = '';
     }
@@ -66,33 +77,35 @@ class CustomModal {
 
 // Create global modal instance
 let customModal;
+
+// Initialize modal when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded - Initializing modal');
     customModal = new CustomModal();
 });
 
-// Replace default confirm with custom modal
+// Global confirm function
 window.customConfirm = function(message, onConfirm) {
-    if (!customModal) {
+    console.log('customConfirm called with message:', message);
+    if (customModal) {
+        customModal.show(message, onConfirm);
+    } else {
         console.error('Modal not initialized');
-        return false;
     }
-    customModal.show(message, onConfirm);
-    return false;
 };
 
+// Alumni verification function
 function verifyAlumni(userId) {
-    if (!customModal) {
-        console.error('Modal not initialized');
-        return;
-    }
-    
+    console.log('verifyAlumni called for user:', userId);
     customConfirm('Are you sure you want to verify this alumni?', () => {
+        console.log('Verification confirmed, making AJAX call');
         $.ajax({
             url: 'verify_alumni.php',
             method: 'POST',
             data: { user_id: userId },
             dataType: 'json',
             success: function(response) {
+                console.log('Verification response:', response);
                 if (response.error) {
                     showAlert('error', response.error);
                 } else {

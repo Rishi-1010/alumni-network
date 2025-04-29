@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $db->loginUser($email, $password);
 
         if ($result['status'] === 'success') {
-            header("Location: ../../dashboard.php");
+            header("Location: ../../alumni_dashboard.php");
             exit();
         } else {
             $_SESSION['error'] = $result['message'];

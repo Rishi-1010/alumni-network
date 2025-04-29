@@ -376,6 +376,7 @@ try {
                                             </div>
                                             <div class="skill-details">
                                                 <p>
+                                                    <strong><i class="fas fa-code"></i> Language Specialization:</strong><br>
                                                     <span class="tech-badge">
                                                     <?php 
                                                         $languages = json_decode($skill['language_specialization'], true);
@@ -388,6 +389,9 @@ try {
                                                         }
                                                     ?>
                                                     </span>
+                                                    <?php if (!empty($skill['other_language'])): ?>
+                                                        <br><strong>Other Languages:</strong> <?php echo htmlspecialchars($skill['other_language']); ?>
+                                                    <?php endif; ?>
                                                 </p>
                                                 <p>
                                                     <strong><i class="fas fa-tools"></i> Tools:</strong><br>
@@ -403,6 +407,9 @@ try {
                                                         }
                                                     ?>
                                                     </span>
+                                                    <?php if (!empty($skill['other_tools'])): ?>
+                                                        <br><strong>Other Tools:</strong> <?php echo htmlspecialchars($skill['other_tools']); ?>
+                                                    <?php endif; ?>
                                                 </p>
                                                 <p>
                                                     <strong><i class="fas fa-laptop-code"></i> Technologies:</strong><br>
@@ -418,6 +425,9 @@ try {
                                                         }
                                                     ?>
                                                     </span>
+                                                    <?php if (!empty($skill['other_technologies'])): ?>
+                                                        <br><strong>Other Technologies:</strong> <?php echo htmlspecialchars($skill['other_technologies']); ?>
+                                                    <?php endif; ?>
                                                 </p>
                                             </div>
                                         </div>

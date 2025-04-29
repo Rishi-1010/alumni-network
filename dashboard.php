@@ -55,6 +55,9 @@ try {
             <a href="profile.php">Profile</a>
             <!-- <a href="connections.php">Connections</a>
             <a href="jobs.php">Jobs</a> -->
+            <a href="Authentication/Login/logout.php" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
             <div class="user-menu">
                 <img src="<?php echo $user['profile_picture'] ?? 'assets/img/default-avatar.png'; ?>" 
                      alt="Profile" class="profile-pic">

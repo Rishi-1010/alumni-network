@@ -42,36 +42,34 @@ try {
         
         // Educational Details
         'E1' => 'Educational Details',
-        'E2' => 'University Name',
-        'F2' => 'Course',
-        'G2' => 'Graduation Year',
+        'E2' => 'Course',
+        'F2' => 'Graduation Year',
         
         // Professional Status
-        'H1' => 'Professional Status',
-        'H2' => 'Current Status',
-        'I2' => 'Company Name',
-        'J2' => 'Position',
+        'G1' => 'Professional Status',
+        'G2' => 'Current Status',
+        'H2' => 'Company Name',
+        'I2' => 'Position',
         
         // Technical Skills
-        'K1' => 'Technical Skills',
-        'K2' => 'Language/Technology',
-        'L2' => 'Tools',
-        'M2' => 'Technologies',
-        'N2' => 'Proficiency Level',
+        'J1' => 'Technical Skills',
+        'J2' => 'Languages/Technologies',
+        'K2' => 'Tools',
+        'L2' => 'Technologies',
+        'M2' => 'Proficiency Level',
         
         // Projects Count (simple column)
-        'O1' => 'Projects',
-        'O2' => 'Total Projects',
+        'N1' => 'Projects',
+        'N2' => 'Total Projects',
         
         // Career Goals
-        'P1' => 'Career Goals',
-        'P2' => 'Goals'
+        'O1' => 'Career Goals',
+        'O2' => 'Goals'
     ];
 
     // Modified SQL query to include course
     $sql = "SELECT 
             u.*,
-            ed.university_name,
             ed.graduation_year,
             ed.enrollment_number,
             ps.current_status,
@@ -83,6 +81,15 @@ try {
             CASE 
                 WHEN ed.enrollment_number REGEXP '^[0-9]{2}BCA[0-9]+$' THEN 'BCA'
                 WHEN ed.enrollment_number REGEXP '^[0-9]{2}MCA[0-9]+$' THEN 'MCA'
+                WHEN ed.enrollment_number REGEXP '^[0-9]{2}BSC[0-9]+$' THEN 'BSC'
+                WHEN ed.enrollment_number REGEXP '^[0-9]{2}MSC[0-9]+$' THEN 'MSC'
+                WHEN ed.enrollment_number REGEXP '^[0-9]{2}BCOM[0-9]+$' THEN 'BCOM'
+                WHEN ed.enrollment_number REGEXP '^[0-9]{2}MCOM[0-9]+$' THEN 'MCOM'
+                WHEN ed.enrollment_number REGEXP '^[0-9]{2}BE[0-9]+$' THEN 'BE'
+                WHEN ed.enrollment_number REGEXP '^[0-9]{2}ME[0-9]+$' THEN 'ME'
+                WHEN ed.enrollment_number REGEXP '^[0-9]{2}BTECH[0-9]+$' THEN 'BTECH'
+                WHEN ed.enrollment_number REGEXP '^[0-9]{2}MTECH[0-9]+$' THEN 'MTECH'
+                WHEN ed.enrollment_number IS NOT NULL AND ed.enrollment_number != '' THEN 'Other'
                 ELSE 'Unknown'
             END as course
             FROM users u 
@@ -104,11 +111,11 @@ try {
 
     // Merge main header cells
     $sheet->mergeCells("A1:D1"); // Basic Information
-    $sheet->mergeCells("E1:G1"); // Educational Details
-    $sheet->mergeCells("H1:J1"); // Professional Status
-    $sheet->mergeCells("K1:N1"); // Technical Skills
-    $sheet->mergeCells("O1:O2"); // Projects (single column)
-    $sheet->mergeCells("P1:P2"); // Career Goals
+    $sheet->mergeCells("E1:F1"); // Educational Details
+    $sheet->mergeCells("G1:I1"); // Professional Status
+    $sheet->mergeCells("J1:M1"); // Technical Skills
+    $sheet->mergeCells("N1:N2"); // Projects (single column)
+    $sheet->mergeCells("O1:O2"); // Career Goals
 
     // Add data rows
     $row = 3;
@@ -120,35 +127,48 @@ try {
         $sheet->setCellValue('D' . $row, $record['dob'] ?? 'N/A');
         
         // Educational Details
-        $sheet->setCellValue('E' . $row, $record['university_name'] ?? 'N/A');
-        $sheet->setCellValue('F' . $row, $record['course'] ?? 'N/A');
-        $sheet->setCellValue('G' . $row, $record['graduation_year'] ?? 'N/A');
+        $sheet->setCellValue('E' . $row, strtoupper($record['course'] ?? 'N/A'));
+        $sheet->setCellValue('F' . $row, $record['graduation_year'] ?? 'N/A');
         
         // Professional Status
-        $sheet->setCellValue('H' . $row, $record['current_status'] ?? 'N/A');
-        $sheet->setCellValue('I' . $row, $record['company_name'] ?? 'N/A');
-        $sheet->setCellValue('J' . $row, $record['position'] ?? 'N/A');
+        $sheet->setCellValue('G' . $row, $record['current_status'] ?? 'N/A');
+        $sheet->setCellValue('H' . $row, $record['company_name'] ?? 'N/A');
+        $sheet->setCellValue('I' . $row, $record['position'] ?? 'N/A');
         
         // Technical Skills
         if (!empty($record['skills'])) {
             $skillsArray = explode(';;', $record['skills']);
-            $skillData = explode('|', $skillsArray[0]); // Get first skill set
-            $sheet->setCellValue('K' . $row, $skillData[0] ?? 'N/A'); // Language
-            $sheet->setCellValue('L' . $row, $skillData[1] ?? 'N/A'); // Tools
-            $sheet->setCellValue('M' . $row, $skillData[2] ?? 'N/A'); // Technologies
-            $sheet->setCellValue('N' . $row, $skillData[3] ?? 'N/A'); // Proficiency
+            
+            // Collect all languages/technologies
+            $languages = [];
+            $tools = [];
+            $technologies = [];
+            $proficiencyLevels = [];
+            
+            foreach ($skillsArray as $skillSet) {
+                $skillData = explode('|', $skillSet);
+                if (!empty($skillData[0])) $languages[] = $skillData[0];
+                if (!empty($skillData[1])) $tools[] = $skillData[1];
+                if (!empty($skillData[2])) $technologies[] = $skillData[2];
+                if (!empty($skillData[3])) $proficiencyLevels[] = $skillData[3];
+            }
+            
+            $sheet->setCellValue('J' . $row, implode(', ', $languages) ?: 'N/A'); // All Languages
+            $sheet->setCellValue('K' . $row, implode(', ', $tools) ?: 'N/A'); // All Tools
+            $sheet->setCellValue('L' . $row, implode(', ', $technologies) ?: 'N/A'); // All Technologies
+            $sheet->setCellValue('M' . $row, implode(', ', $proficiencyLevels) ?: 'N/A'); // All Proficiency Levels
         } else {
+            $sheet->setCellValue('J' . $row, 'N/A');
             $sheet->setCellValue('K' . $row, 'N/A');
             $sheet->setCellValue('L' . $row, 'N/A');
             $sheet->setCellValue('M' . $row, 'N/A');
-            $sheet->setCellValue('N' . $row, 'N/A');
         }
         
         // Projects Count
-        $sheet->setCellValue('O' . $row, ($record['project_count'] ?? '0') . ' Projects');
+        $sheet->setCellValue('N' . $row, ($record['project_count'] ?? '0') . ' Projects');
         
         // Career Goals
-        $sheet->setCellValue('P' . $row, $record['career_goals'] ?? 'N/A');
+        $sheet->setCellValue('O' . $row, $record['career_goals'] ?? 'N/A');
         
         $row++;
     }
@@ -175,25 +195,25 @@ try {
     ];
 
     // Apply styles to all headers
-    $sheet->getStyle("A1:P2")->applyFromArray($headerStyle);
+    $sheet->getStyle("A1:O2")->applyFromArray($headerStyle);
 
     // Set column widths
-    foreach (range('A', 'P') as $col) {
+    foreach (range('A', 'O') as $col) {
         $sheet->getColumnDimension($col)->setAutoSize(true);
     }
 
     // Add alternating row colors
     for ($i = 3; $i <= $row; $i++) {
         if ($i % 2 == 0) {
-            $sheet->getStyle("A{$i}:P{$i}")->getFill()
+            $sheet->getStyle("A{$i}:O{$i}")->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->setStartColor(new Color('F5F5F5'));
         }
     }
 
     // Enable text wrapping for cells that might contain long content
-    $sheet->getStyle('M3:M' . $row)->getAlignment()->setWrapText(true); // Technologies
-    $sheet->getStyle('P3:P' . $row)->getAlignment()->setWrapText(true); // Career Goals
+    $sheet->getStyle('L3:L' . $row)->getAlignment()->setWrapText(true); // Technologies
+    $sheet->getStyle('O3:O' . $row)->getAlignment()->setWrapText(true); // Career Goals
 
     // Set the filename to be more company-focused
     header('Content-Disposition: attachment;filename="alumni_professional_profiles_' . date('Y-m-d') . '.xlsx"');

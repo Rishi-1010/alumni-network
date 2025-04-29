@@ -75,10 +75,31 @@ try {
                 is_array($_POST['skills']['technologies']) && 
                 !empty($_POST['skills']['level'])) {
                 
+                // Handle "Other" options
+                $language = $_POST['skills']['language'];
+                $tools = $_POST['skills']['tools'];
+                $technologies = $_POST['skills']['technologies'];
+                
+                // Replace "other" with user-provided values if they exist
+                if (in_array('other', $language) && !empty($_POST['skills']['other_language'])) {
+                    $language = array_diff($language, ['other']);
+                    $language[] = $_POST['skills']['other_language'];
+                }
+                
+                if (in_array('other', $tools) && !empty($_POST['skills']['other_tools'])) {
+                    $tools = array_diff($tools, ['other']);
+                    $tools[] = $_POST['skills']['other_tools'];
+                }
+                
+                if (in_array('other', $technologies) && !empty($_POST['skills']['other_technologies'])) {
+                    $technologies = array_diff($technologies, ['other']);
+                    $technologies[] = $_POST['skills']['other_technologies'];
+                }
+                
                 // Convert arrays to JSON strings for storage
-                $languageJSON = json_encode($_POST['skills']['language']);
-                $toolsJSON = json_encode($_POST['skills']['tools']);
-                $technologiesJSON = json_encode($_POST['skills']['technologies']);
+                $languageJSON = json_encode(array_values($language));
+                $toolsJSON = json_encode(array_values($tools));
+                $technologiesJSON = json_encode(array_values($technologies));
                 
                 $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies, proficiency_level) VALUES (?, ?, ?, ?, ?)");
                 
@@ -260,7 +281,7 @@ try {
         ob_end_clean();
 
         // Redirect to contactus.php on success
-        header('Location: ../../contactus.php'); // Adjust path as needed
+        header('Location: ../Login/login.php'); // Adjust path as needed
         exit;
 
     } catch (Exception $e) {

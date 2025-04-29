@@ -151,11 +151,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/invite.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="../assets/css/portfolio.css"> -->
-    <link rel="stylesheet" href="../assets/css/navigation.css">
+    <link rel="stylesheet" href="../assets/css/portfolio.css">
     
     <!-- jQuery UI CSS -->
     <link rel="stylesheet" href="../assets/js/jquery-ui/jquery-ui.min.css">
@@ -167,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
     <script src="../assets/js/jquery-ui/jquery-ui.min.js"></script>
 
     <style>
-        /* Only keep notification styles */
+        /* Keep existing inline styles for notifications etc. */
         .notification {
             position: fixed;
             top: 20px;
@@ -180,11 +179,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
             opacity: 0;
             animation: fadeIn 0.5s forwards;
         }
-        .notification.success { background-color: #4caf50; }
-        .notification.error { background-color: #f44336; }
-        .notification.fade-out { animation: fadeOut 0.5s forwards; }
-        @keyframes fadeIn { to { opacity: 1; } }
-        @keyframes fadeOut { to { opacity: 0; } }
+        .notification.success {
+            background-color: #4caf50;
+        }
+        .notification.error {
+            background-color: #f44336;
+        }
+        .notification.fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -203,90 +216,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
             <a href="profile.php">Profile</a>
             <!-- <a href="connections.php">Connections</a>
             <a href="jobs.php">Jobs</a> -->
-            <!-- <a href="Alumni Management/totalalumnis.php">Total Alumni</a> -->
+            <a href="Alumni Management/totalalumnis.php">Total Alumni</a>
             <a href="../Authentication/AdminLogin/logout.php">Logout</a>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="dashboard-container">
+    <div class="dashboard-container container-fluid">
         <!-- Welcome Section -->
         <div class="welcome-section">
             <h1>Welcome, Admin!</h1>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <i class="fas fa-user-graduate"></i>
-                <h3>Total Alumni</h3>
-                <p><?php echo $totalAlumni; ?></p>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-user-check"></i>
-                <h3>Verified Alumni</h3>
-                <p><?php echo $verifiedAlumni; ?></p>
-            </div>
-        </div>
+        <!-- Search Forms Container -->
+        <div class="search-forms-container">
+            <form method="POST" class="search-form" id="enrollmentSearchForm">
+            <h2><li>Search Student by its Enrollment Number</li></h2>
+                <div class="search-input-container">
+                    <input type="text" 
+                           name="search_enrollment" 
+                           id="enrollmentSearch"
+                           placeholder="Enter Enrollment Number" 
+                           autocomplete="off"
+                           required>
+                    <div id="suggestionBox" class="suggestion-box"></div>
+                </div>
+                <button type="submit">Search</button>
+            </form>
 
-        <!-- Section Title -->
-        <h2 class="section-title">Quick Actions</h2>
-
-        <!-- Action Cards -->
-        <div class="action-cards">
-            <a href="Invite Alumni/invite.php" class="action-card">
-                <i class="fas fa-user-plus"></i>
-                <h3>Invite Alumni</h3>
-                <p>Send invitations to new alumni members</p>
-            </a>
-
-            <a href="Alumni Management/totalalumnis.php" class="action-card">
-                <i class="fas fa-users"></i>
-                <h3>Manage Alumni</h3>
-                <p>View, verify, search and manage all alumni records</p>
-            </a>
-
-            <a href="Analytics/reports.php" class="action-card">
-                <i class="fas fa-chart-bar"></i>
-                <h3>Reports & Analytics</h3>
-                <p>View statistics and generate reports about alumni data</p>
-            </a>
-
-            <a href="Events/events.php" class="action-card">
-                <i class="fas fa-calendar-alt"></i>
-                <h3>Events Management</h3>
-                <p>Create and manage alumni events, reunions, and meetups</p>
-            </a>
-
-            <a href="jobs/manage.php" class="action-card">
-                <i class="fas fa-briefcase"></i>
-                <h3>Job Portal</h3>
-                <p>Manage job postings and career opportunities for alumni</p>
-            </a>
-
-            <a href="news/manage.php" class="action-card">
-                <i class="fas fa-newspaper"></i>
-                <h3>News & Updates</h3>
-                <p>Post and manage alumni news, achievements and updates</p>
-            </a>
-
-            <a href="communications/manage.php" class="action-card">
-                <i class="fas fa-envelope"></i>
-                <h3>Communications</h3>
-                <p>Send newsletters and manage alumni communications</p>
-            </a>
-
-            <a href="gallery/manage.php" class="action-card">
-                <i class="fas fa-images"></i>
-                <h3>Gallery</h3>
-                <p>Manage photos and media from alumni events</p>
-            </a>
-
-            <a href="settings/manage.php" class="action-card">
-                <i class="fas fa-cog"></i>
-                <h3>Settings</h3>
-                <p>Configure system settings and manage admin accounts</p>
-            </a>
+            <!-- Email OTP Form -->
+            <form method="POST" class="search-form" id="sendOtpForm">
+            <h2><li>New Alumni Student Email for Registration Link</li></h2>
+                <textarea name="alumni_emails" placeholder="Enter Alumni Emails (comma-separated)" rows="4" required></textarea>
+                <button type="submit" name="send_otp">Send Email</button>
+            </form>
         </div>
 
         <!-- Message Container -->
@@ -353,6 +316,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
                 <p><?php echo htmlspecialchars($error); ?></p>
             </div>
         <?php endif; ?>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-user-graduate"></i>
+                <h3>Total Alumni</h3>
+                <p><?php echo $totalAlumni; ?></p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-briefcase"></i>
+                <h3>Verified Alumni</h3>
+                <p><?php echo $verifiedAlumni; ?></p>
+            </div>
+            <!-- Add more stat cards as needed -->
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

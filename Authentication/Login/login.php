@@ -21,9 +21,6 @@ require_once '../../config/db_connection.php';
                 <span>Alumni Network</span>
             </a>
         </div>
-        <div class="nav-links">
-            <a href="../../index.html" class="home-btn">Home</a>
-        </div>  
     </nav>
 
     <div class="register-container">

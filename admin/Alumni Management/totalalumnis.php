@@ -132,7 +132,8 @@ try {
     <link rel="stylesheet" href="../../assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/portfolio.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/portfolio.css"> -->
+    <link rel="stylesheet" href="../../assets/css/navigation.css">
     <link rel="stylesheet" href="../../assets/css/modal.css"> <!-- Added modal CSS -->
     <style>
         .alumni-table {
@@ -276,7 +277,7 @@ try {
             <a href="../profile.php">Profile</a>
             <!-- <a href="../connections.php">Connections</a>
             <a href="../jobs.php">Jobs</a> -->
-            <a href="totalalumnis.php" class="active">Total Alumni</a>
+            <!-- <a href="totalalumnis.php" class="active">Total Alumni</a> -->
             <a href="../../Authentication/AdminLogin/logout.php">Logout</a>
         </div>
     </nav>
@@ -722,7 +723,22 @@ try {
                 .then(data => {
                     if (data.status === 'success') {
                         showNotification('Alumni removed successfully', 'success');
-                        setTimeout(() => location.reload(), 1000);
+                        // Remove the deleted row from the table
+                        $(`tr:has(button[onclick="deleteAlumni(${userId})"])`).fadeOut(300, function() {
+                            $(this).remove();
+                            // Update the total count
+                            const totalCount = parseInt($('.stat-card:first-child p').text()) - 1;
+                            $('.stat-card:first-child p').text(totalCount);
+                            
+                            // Update the record count
+                            const totalRecords = parseInt($('#totalRecords').text()) - 1;
+                            $('#totalRecords').text(totalRecords);
+                            
+                            // If no records left, show a message
+                            if (totalRecords === 0) {
+                                $('#alumniTableBody').html('<tr><td colspan="8" class="text-center">No alumni records found</td></tr>');
+                            }
+                        });
                     } else {
                         showNotification('Error: ' + data.message, 'error');
                     }

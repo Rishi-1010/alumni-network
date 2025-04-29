@@ -136,13 +136,6 @@ if (isset($_SESSION['error'])) {
                     </div>
                     <div class="password-strength-meter">
                         <div class="meter"></div>
-                        <p class="password-requirements">
-                            Password must contain:
-                            - At least 8 characters
-                            - One uppercase letter
-                            - One number
-                            - One special character
-                        </p>
                     </div>
                     <button type="button" id="step1Next" class="next-btn">Next</button>
                 </div>
@@ -222,7 +215,7 @@ if (isset($_SESSION['error'])) {
 
                 <!-- Step 4: Project Question -->
                 <div class="form-step" id="step4" style="display: none;">
-                    <h2>Do you have any projects?</h2>
+                    <h2>Would you happen to have any completed projects?</h2>
                     <div class="form-group">
                         <div class="radio-group">
                             <div class="radio-item">
@@ -283,18 +276,27 @@ if (isset($_SESSION['error'])) {
                                     <!-- Options will be populated via JavaScript -->
                                 </select>
                                 <small class="help-text">Type to search or add custom languages</small>
+                                <div id="other_language_container" style="display: none; margin-top: 10px;">
+                                    <input type="text" id="other_language" name="skills[other_language]" placeholder="Enter other language specialization">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="tools">Tools*</label>
                                 <select class="select2-multiple" name="skills[tools][]" multiple="multiple" required>
                                     <!-- Options will be populated via JavaScript -->
                                 </select>
+                                <div id="other_tools_container" style="display: none; margin-top: 10px;">
+                                    <input type="text" id="other_tools" name="skills[other_tools]" placeholder="Enter other tools">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="technologies">Technologies*</label>
                                 <select class="select2-multiple" name="skills[technologies][]" multiple="multiple" required>
                                     <!-- Options will be populated via JavaScript -->
                                 </select>
+                                <div id="other_technologies_container" style="display: none; margin-top: 10px;">
+                                    <input type="text" id="other_technologies" name="skills[other_technologies]" placeholder="Enter other technologies">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="skill_level">Overall Proficiency Level*</label>
@@ -334,8 +336,8 @@ if (isset($_SESSION['error'])) {
                     <div id="certifications-container">
                         <div class="certification-entry">
                             <div class="form-group">
-                                <label for="cert_file">Upload Certificate* (PDF, JPG, JPEG, PNG)</label>
-                                <input type="file" name="certifications[0][certificate_file]" accept=".pdf, .jpg, .jpeg, .png" required>
+                                <label for="cert_file">Upload Certificate (Optional) (PDF, JPG, JPEG, PNG)</label>
+                                <input type="file" name="certifications[0][certificate_file]" accept=".pdf, .jpg, .jpeg, .png">
                             </div>
                         </div>
                     </div>
@@ -353,8 +355,6 @@ if (isset($_SESSION['error'])) {
 
     <script src="../../assets/js/register.js"></script> <!-- Added script tag -->
 
-    <!-- Add tooltips for form fields -->
-    <div class="tooltip" data-tooltip="Enter your official university enrollment number">?</div>
 
     <script>
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -363,6 +363,102 @@ if (isset($_SESSION['error'])) {
             alert('File size must be less than 5MB');
             this.value = '';
         }
+    });
+
+    // Handle "Other" option in specialization dropdowns
+    document.addEventListener('DOMContentLoaded', function() {
+        // Language Specialization
+        $('select[name="skills[language][]"]').on('change', function() {
+            const selectedOptions = $(this).val();
+            if (selectedOptions && selectedOptions.includes('other')) {
+                $('#other_language_container').show();
+                // Make the other language input required when "Other" is selected
+                $('#other_language').prop('required', true);
+            } else {
+                $('#other_language_container').hide();
+                // Remove required attribute when "Other" is not selected
+                $('#other_language').prop('required', false);
+            }
+        });
+
+        // Tools
+        $('select[name="skills[tools][]"]').on('change', function() {
+            const selectedOptions = $(this).val();
+            if (selectedOptions && selectedOptions.includes('other')) {
+                $('#other_tools_container').show();
+                // Make the other tools input required when "Other" is selected
+                $('#other_tools').prop('required', true);
+            } else {
+                $('#other_tools_container').hide();
+                // Remove required attribute when "Other" is not selected
+                $('#other_tools').prop('required', false);
+            }
+        });
+
+        // Technologies
+        $('select[name="skills[technologies][]"]').on('change', function() {
+            const selectedOptions = $(this).val();
+            if (selectedOptions && selectedOptions.includes('other')) {
+                $('#other_technologies_container').show();
+                // Make the other technologies input required when "Other" is selected
+                $('#other_technologies').prop('required', true);
+            } else {
+                $('#other_technologies_container').hide();
+                // Remove required attribute when "Other" is not selected
+                $('#other_technologies').prop('required', false);
+            }
+        });
+
+        // Add "Other" option to all specialization dropdowns
+        function addOtherOption(selectElement) {
+            // Check if "Other" option already exists
+            let hasOtherOption = false;
+            $(selectElement).find('option').each(function() {
+                if ($(this).val() === 'other') {
+                    hasOtherOption = true;
+                    return false; // Break the loop
+                }
+            });
+
+            // Add "Other" option if it doesn't exist
+            if (!hasOtherOption) {
+                $(selectElement).append(new Option('Other', 'other'));
+            }
+        }
+
+        // Add "Other" option to all specialization dropdowns
+        addOtherOption('select[name="skills[language][]"]');
+        addOtherOption('select[name="skills[tools][]"]');
+        addOtherOption('select[name="skills[technologies][]"]');
+
+        // Form submission handling
+        $('#registrationForm').on('submit', function(e) {
+            // Check if "Other" is selected but no value is provided
+            const languageSelected = $('select[name="skills[language][]"]').val();
+            const toolsSelected = $('select[name="skills[tools][]"]').val();
+            const technologiesSelected = $('select[name="skills[technologies][]"]').val();
+            
+            let isValid = true;
+            
+            if (languageSelected && languageSelected.includes('other') && !$('#other_language').val()) {
+                alert('Please enter your other language specialization');
+                isValid = false;
+            }
+            
+            if (toolsSelected && toolsSelected.includes('other') && !$('#other_tools').val()) {
+                alert('Please enter your other tools');
+                isValid = false;
+            }
+            
+            if (technologiesSelected && technologiesSelected.includes('other') && !$('#other_technologies').val()) {
+                alert('Please enter your other technologies');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
     });
     </script>
 

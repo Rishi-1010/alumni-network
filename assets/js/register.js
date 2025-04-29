@@ -356,8 +356,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (step4Prev) step4Prev.addEventListener('click', () => moveToStep(4, 3));
     // Step 4 Next handled below
     if (step5Prev) step5Prev.addEventListener('click', () => moveToStep(5, 4));
-    // Step 5 Next is handled below within its own logic if needed, or directly moves to step 6
-    // if (step5Next) step5Next.addEventListener('click', () => moveToStep(5, 6)); // Projects -> Skills
+    // Add step 5 Next button event listener
+    if (step5Next) step5Next.addEventListener('click', () => moveToStep(5, 6)); // Projects -> Skills
 
     if (step6Prev) {
         step6Prev.addEventListener('click', () => {
