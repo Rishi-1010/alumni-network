@@ -13,9 +13,14 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ | ├── totalalumnis.php
 | │ ├── verify_alumni.php
 │ | └── view-portfolio.php
-│ ├── alumni-network.code-workspace
+| ├── Analytics/
+│ | └── reports.php
+| ├── Events/
+│ | ├── events.php
+│ | └── get_event.php
+| ├── Invite Alumni/
+│ | └── invite.php
 │ ├── dashboard.php
-│ ├── search_enrollment.php
 ├── assets/
 │ ├── certifications/
 │ │ └── [user_enrollment_number]/ (User-specific folders for storing certificates)
@@ -23,6 +28,9 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ │ ├── admin.css
 │ │ ├── contactus.css # Added contactus.css if not already present
 │ │ ├── dashboard.css
+│ │ ├── invite.css
+│ │ ├── modal.css
+│ │ ├── navigation.css
 │ │ ├── portfolio.css # Added portfolio.css
 │ │ ├── register.css
 │ │ └── style.css
@@ -34,6 +42,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ │ ├── dashboard.js
 │ │ ├── enrollment-autocomplete.js
 │ │ ├── login.js
+│ │ ├── modal.js
 │ │ ├── register.js
 │ │ └── rollnumformat.js
 ├── Authentication/
@@ -47,21 +56,29 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ │ └── process_login.php
 │ ├── Login/
 │ │ ├── login.php
+│ │ ├── logout.php
 │ │ └── process_login.php
 │ └── Registration/
-│   ├── otpverification.php
-│   ├── process_registration.php
-│   └── register.php
+│ │ ├── otpverification.php
+│ │ ├── process_registration.php
+│ │ └── register.php
 ├── company/
 │ └── dashboard.php
 ├── config/
+│ ├── db_connection.php
 ├── database/
 ├── send_otp/
 │ ├── PHPMailerFunction.php
 │ └── verify_otp.php
+├── user/
+│ ├── Events/
+│ | ├── events.php
+│ │ └── verify_otp.php
+├── alumni_dashboard.php
 ├── .gitignore
 ├── composer.json
 ├── composer.lock
+├── contactus.php
 ├── dashboard.php
 ├── index.html
 └── README.md
