@@ -102,10 +102,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_invitation'])) {
             <span>SRIMCA_BVPICS Alumni Network</span>
         </div>
         <div class="dashboard-navbar">
-            <a href="../../dashboard.php">Dashboard</a>
-            <a href="../../profile.php">Profile</a>
-            <a href="../../Alumni Management/totalalumnis.php">Total Alumni</a>
-            <a href="../../Authentication/AdminLogin/logout.php">Logout</a>
+            <a href="../dashboard.php">Dashboard</a>
+            <a href="../profile.php">Profile</a>
+            <!-- <a href="../Alumni Management/totalalumnis.php">Total Alumni</a> -->
+            <a href="../Authentication/AdminLogin/logout.php">Logout</a>
         </div>
     </nav>
 

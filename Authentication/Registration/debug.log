@@ -1,0 +1,51 @@
+Certifications file input is not empty.
+FILES['certifications'] structure: array (
+  'name' => 
+  array (
+    'certificate_file' => 'WhatsApp Image 2025-04-01 at 8.01.34 PM.jpeg',
+  ),
+  'full_path' => 
+  array (
+    'certificate_file' => 'WhatsApp Image 2025-04-01 at 8.01.34 PM.jpeg',
+  ),
+  'type' => 
+  array (
+    'certificate_file' => 'image/jpeg',
+  ),
+  'tmp_name' => 
+  array (
+    'certificate_file' => 'C:\\xampp\\tmp\\php18B8.tmp',
+  ),
+  'error' => 
+  array (
+    'certificate_file' => 0,
+  ),
+  'size' => 
+  array (
+    'certificate_file' => 265706,
+  ),
+)
+Processing certificate file (using direct access).
+move_uploaded_file SUCCESS for WhatsApp Image 2025-04-01 at 8.01.34 PM.jpeg.
+Certificate path inserted successfully for WhatsApp Image 2025-04-01 at 8.01.34 PM.jpeg with path: assets/certificates/cert_67fb722b34be67.54196466.jpeg
+
+
+
+
+instead of making this format, make a new folder named of their own enrollment number (15 digit enrollment number if it is the new enrollment format or the alpha numeric format if it is old enrollment) folders for the specific user and in that let us add a certification nameCaught Exception: Failed to upload certificate file: WhatsApp Image 2025-04-01 at 8.01.34 PM.jpeg. Check directory permissions and PHP settings. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 166
+Caught Exception: Failed to upload certificate file: WhatsApp Image 2025-04-01 at 8.01.34 PM.jpeg. Check directory permissions and PHP settings. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 166
+Caught Exception: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'start_date' in 'field list' in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 195
+Caught Outer Exception: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'user_id' cannot be null in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 30
+Caught Outer Exception: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'title' cannot be null in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 78
+Caught Outer Exception: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'title' cannot be null in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 81
+Caught Outer Exception: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'title' cannot be null in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 81
+Caught Outer Exception: Invalid request method in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 22
+Caught Outer Exception: User with this email already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 52
+Caught Outer Exception: User with this email already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 52
+Caught Outer Exception: User with this email already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 34
+Caught Outer Exception: User with this email already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 34
+Caught Outer Exception: User with this email already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 34
+Caught Outer Exception: User with this enrollment number already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 49
+Caught Outer Exception: User with this enrollment number already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 49
+Caught Outer Exception: Invalid phone number in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 27
+Caught Outer Exception: User with this email already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 34
