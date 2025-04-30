@@ -134,6 +134,12 @@ document.addEventListener('DOMContentLoaded', function() {
             updateStepIndicators(4);
         });
     });
+
+    // Initialize the fields based on current selection
+    toggleEmploymentFields();
+    
+    // Add change event listener to status dropdown
+    document.getElementById('current_status').addEventListener('change', toggleEmploymentFields);
 });
 
 // Phone Validation
@@ -210,6 +216,7 @@ function initializeEmailValidation() {
     const emailError = document.createElement('div');
     emailError.className = 'error-message';
     emailError.textContent = 'Please enter a valid email address';
+    emailError.style.display = 'none';
     emailContainer.appendChild(emailError);
 
     emailInput.addEventListener('input', function() {
@@ -793,55 +800,55 @@ function removeFieldError(field) {
 
 // Select2 Initialization
 function initializeSelect2Dropdowns() {
-    if (typeof jQuery === 'undefined' || typeof jQuery.fn.select2 === 'undefined') {
-        console.error('jQuery or Select2 is not loaded');
-        return;
-    }
+    // Language options
+    const languageOptions = [
+        { id: 'php', text: 'PHP' },
+        { id: 'javascript', text: 'JavaScript' },
+        { id: 'python', text: 'Python' },
+        { id: 'java', text: 'Java' },
+        { id: 'c++', text: 'C++' },
+        { id: 'other', text: 'Other' }
+    ];
 
-    // Initialize language specialization dropdown
+    // Tools options
+    const toolsOptions = [
+        { id: 'git', text: 'Git' },
+        { id: 'docker', text: 'Docker' },
+        { id: 'vscode', text: 'VS Code' },
+        { id: 'phpstorm', text: 'PhpStorm' },
+        { id: 'other', text: 'Other' }
+    ];
+
+    // Technologies options
+    const technologiesOptions = [
+        { id: 'laravel', text: 'Laravel' },
+        { id: 'react', text: 'React' },
+        { id: 'vue', text: 'Vue.js' },
+        { id: 'angular', text: 'Angular' },
+        { id: 'mysql', text: 'MySQL' },
+        { id: 'other', text: 'Other' }
+    ];
+
+    // Initialize Select2 for each dropdown
     $('select[name="skills[language][]"]').select2({
-        placeholder: "Search and select programming languages...",
+        data: languageOptions,
         tags: true,
-        data: languageSpecializations.map(lang => ({ id: lang, text: lang })),
-        maximumSelectionLength: 5,
-        theme: "classic",
-        width: '100%',
-        closeOnSelect: false,
+        placeholder: 'Select or type languages',
         allowClear: true
     });
 
-    // Initialize tools dropdown
     $('select[name="skills[tools][]"]').select2({
-        placeholder: "Select or type to search tools",
+        data: toolsOptions,
         tags: true,
-        data: tools.map(tool => ({ id: tool, text: tool })),
-        maximumSelectionLength: 8,
-        theme: "classic",
-        width: '100%',
-        closeOnSelect: false,
+        placeholder: 'Select or type tools',
         allowClear: true
     });
 
-    // Initialize technologies dropdown
     $('select[name="skills[technologies][]"]').select2({
-        placeholder: "Select or type to search technologies",
+        data: technologiesOptions,
         tags: true,
-        data: technologies.map(tech => ({ id: tech, text: tech })),
-        maximumSelectionLength: 10,
-        theme: "classic",
-        width: '100%',
-        closeOnSelect: false,
+        placeholder: 'Select or type technologies',
         allowClear: true
-    });
-
-    // Add validation for select2 multiple selects
-    $('select[name="skills[language][]"], select[name="skills[tools][]"], select[name="skills[technologies][]"]').on('change', function() {
-        const selected = $(this).val();
-        if (!selected || selected.length === 0) {
-            $(this).next('.select2-container').addClass('error');
-    } else {
-            $(this).next('.select2-container').removeClass('error');
-        }
     });
 }
 
@@ -1171,66 +1178,29 @@ function toggleEmploymentFields() {
     const employmentFields = document.getElementById('employment-fields');
     const freelancerFields = document.getElementById('freelancer-fields');
     
-    // Hide all fields first
-    employmentFields.style.display = 'none';
-    freelancerFields.style.display = 'none';
+    employmentFields.style.display = status === 'employed' ? 'block' : 'none';
+    freelancerFields.style.display = status === 'freelancer' ? 'block' : 'none';
     
-    // Remove required attribute from all fields
-    const employedInputs = employmentFields.querySelectorAll('input, select');
-    const freelancerInputs = freelancerFields.querySelectorAll('input, select');
+    // Reset form validation when fields are hidden
+    if (status !== 'employed') {
+        document.getElementById('company_name').required = false;
+        document.getElementById('position').required = false;
+    } else {
+        document.getElementById('company_name').required = true;
+        document.getElementById('position').required = true;
+    }
     
-    employedInputs.forEach(input => input.required = false);
-    freelancerInputs.forEach(input => {
-        input.required = false;
-        // Destroy any existing Select2 instances
-        if ($(input).hasClass('select2-hidden-accessible')) {
-            $(input).select2('destroy');
-        }
-    });
-    
-    // Show and make required based on status
-    if (status === 'employed') {
-        employmentFields.style.display = 'block';
-        employedInputs.forEach(input => input.required = true);
-    } else if (status === 'freelancer') {
-        freelancerFields.style.display = 'block';
-        
-        // Initialize Select2 for platforms
-        $('#platforms').select2({
-            placeholder: "Select freelancing platforms",
-            tags: true,
-            theme: "classic",
-            width: '100%',
-            closeOnSelect: false,
-            allowClear: true,
-            minimumResultsForSearch: 0
-        }).on('change', function() {
-            validateSelect2Field($(this), 'Please select at least one platform');
-        });
-
-        // Initialize Select2 for expertise areas
-        $('#expertise_areas').select2({
-            placeholder: "Select areas of expertise",
-            tags: true,
-            theme: "classic",
-            width: '100%',
-            closeOnSelect: false,
-            allowClear: true,
-            minimumResultsForSearch: 0
-        }).on('change', function() {
-            validateSelect2Field($(this), 'Please select at least one area of expertise');
-        });
-
-        // Make non-Select2 fields required
-        freelancerInputs.forEach(input => {
-            if (!$(input).hasClass('select2-hidden-accessible')) {
-                input.required = true;
-            }
-        });
-
-        // Trigger initial validation for Select2 fields
-        validateSelect2Field($('#platforms'), 'Please select at least one platform');
-        validateSelect2Field($('#expertise_areas'), 'Please select at least one area of expertise');
+    // Reset form validation for freelancer fields
+    if (status !== 'freelancer') {
+        document.getElementById('freelance_title').required = false;
+        document.getElementById('platforms').required = false;
+        document.getElementById('expertise_areas').required = false;
+        document.getElementById('experience_years').required = false;
+    } else {
+        document.getElementById('freelance_title').required = true;
+        document.getElementById('platforms').required = true;
+        document.getElementById('expertise_areas').required = true;
+        document.getElementById('experience_years').required = true;
     }
 }
 
@@ -1285,10 +1255,41 @@ function showFormError(message) {
     // Create new error message element
     const errorDiv = document.createElement('div');
     errorDiv.className = 'form-error-message';
+
+    // Check if the message contains specific keywords to add navigation buttons
+    let navigationButton = '';
+    
+    if (message.includes('email') && message.includes('already registered')) {
+        navigationButton = `
+            <button class="error-nav-btn" onclick="navigateToLogin()">
+                <i class="fas fa-sign-in-alt"></i> Go to Login
+            </button>
+        `;
+    } else if (message.toLowerCase().includes('email')) {
+        navigationButton = `
+            <button class="error-nav-btn" onclick="scrollToField('email')">
+                <i class="fas fa-envelope"></i> Go to Email Field
+            </button>
+        `;
+    } else if (message.toLowerCase().includes('phone')) {
+        navigationButton = `
+            <button class="error-nav-btn" onclick="scrollToField('phone')">
+                <i class="fas fa-phone"></i> Go to Phone Field
+            </button>
+        `;
+    } else if (message.toLowerCase().includes('enrollment')) {
+        navigationButton = `
+            <button class="error-nav-btn" onclick="scrollToField('enrollment_number')">
+                <i class="fas fa-id-card"></i> Go to Enrollment Field
+            </button>
+        `;
+    }
+
     errorDiv.innerHTML = `
         <div class="error-content">
             <div class="error-icon">⚠️</div>
             <div class="error-text">${message}</div>
+            ${navigationButton}
             <button class="error-close" onclick="this.parentElement.parentElement.remove()">×</button>
         </div>
     `;
@@ -1300,12 +1301,29 @@ function showFormError(message) {
     // Scroll to error message
     errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Auto-hide after 5 seconds
+    // Auto-hide after 10 seconds (increased from 5 to give more time to use the navigation button)
     setTimeout(() => {
         if (errorDiv.parentElement) {
             errorDiv.remove();
         }
-    }, 5000);
+    }, 10000);
+}
+
+// Add these new helper functions
+function scrollToField(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.focus();
+        field.classList.add('highlight-field');
+        setTimeout(() => {
+            field.classList.remove('highlight-field');
+        }, 2000);
+    }
+}
+
+function navigateToLogin() {
+    window.location.href = '../Login/login.php';
 }
 
 // Add these styles to your CSS
@@ -1397,3 +1415,231 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Add this to your existing JavaScript
+function initializeStepNavigation() {
+    console.log('Initializing step navigation...');
+    
+    const steps = document.querySelectorAll('.step');
+    const formSteps = document.querySelectorAll('.form-step');
+    let currentStep = 1;
+
+    console.log('Found steps:', steps.length);
+    console.log('Found form steps:', formSteps.length);
+
+    steps.forEach((step, index) => {
+        step.addEventListener('click', (e) => {
+            console.log('Step clicked:', index + 1);
+            const targetStep = index + 1;
+            
+            // Allow direct navigation to any step
+            navigateToStep(targetStep);
+            
+            // Mark all previous steps as completed
+            steps.forEach((s, i) => {
+                if (i < index) {
+                    s.classList.add('completed');
+                }
+            });
+        });
+    });
+
+    function navigateToStep(stepNumber) {
+        console.log('Navigating to step:', stepNumber);
+        
+        // Hide all steps
+        formSteps.forEach((step, idx) => {
+            step.classList.remove('active');
+            step.style.display = 'none';
+        });
+
+        // Show target step
+        formSteps[stepNumber - 1].classList.add('active');
+        formSteps[stepNumber - 1].style.display = 'block';
+        
+        // Update step indicators
+        updateStepIndicators(stepNumber);
+        
+        // Update progress bar
+        updateProgressBar(stepNumber);
+        
+        // Smooth scroll to top of form
+        const form = document.querySelector('.registration-form');
+        if (form) {
+            form.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
+        // Add animation to the new step
+        formSteps[stepNumber - 1].style.animation = 'slideIn 0.5s ease forwards';
+        
+        currentStep = stepNumber;
+    }
+
+    function updateStepIndicators(activeStep) {
+        console.log('Updating step indicators for active step:', activeStep);
+        steps.forEach((step, index) => {
+            const stepNumber = index + 1;
+            console.log('Processing indicator:', stepNumber);
+            
+            if (stepNumber < activeStep) {
+                console.log('Marking step as completed:', stepNumber);
+                step.classList.add('completed');
+                step.classList.remove('active');
+            } else if (stepNumber === activeStep) {
+                console.log('Marking step as active:', stepNumber);
+                step.classList.add('active');
+                step.classList.remove('completed');
+            } else {
+                console.log('Resetting step:', stepNumber);
+                step.classList.remove('completed', 'active');
+            }
+        });
+    }
+
+    function updateProgressBar(step) {
+        const progress = document.querySelector('.step-progress');
+        if (progress) {
+            const totalSteps = steps.length;
+            const progressWidth = ((step - 1) / (totalSteps - 1)) * 100;
+            console.log('Updating progress bar to:', progressWidth + '%');
+            progress.style.width = `${progressWidth}%`;
+        } else {
+            console.log('Progress bar element not found');
+        }
+    }
+
+    function validateCurrentStep(step) {
+        console.log('Validating step:', step);
+        const currentFormStep = formSteps[step - 1];
+        
+        if (!currentFormStep) {
+            console.log('Form step not found:', step);
+            return false;
+        }
+
+        const requiredFields = currentFormStep.querySelectorAll('[required]');
+        console.log('Required fields found:', requiredFields.length);
+        
+        let isValid = true;
+
+        requiredFields.forEach((field, index) => {
+            console.log(`Checking field ${index + 1}:`, field.name || field.id);
+            if (!field.value) {
+                console.log(`Field ${field.name || field.id} is empty`);
+                isValid = false;
+                field.classList.add('error');
+                showFieldError(field, 'This field is required');
+            } else {
+                console.log(`Field ${field.name || field.id} is valid`);
+                field.classList.remove('error');
+                removeFieldError(field);
+            }
+        });
+
+        console.log('Step validation result:', isValid);
+        if (!isValid) {
+            showFormError('Please fill in all required fields before proceeding');
+        }
+
+        return isValid;
+    }
+
+    function showFieldError(field, message) {
+        console.log('Showing error for field:', field.name || field.id);
+        let errorDiv = field.parentElement.querySelector('.field-error');
+        if (!errorDiv) {
+            console.log('Creating new error div');
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'field-error';
+            field.parentElement.appendChild(errorDiv);
+        }
+        errorDiv.textContent = message;
+    }
+
+    function removeFieldError(field) {
+        console.log('Removing error for field:', field.name || field.id);
+        const errorDiv = field.parentElement.querySelector('.field-error');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+    }
+
+    // Log initial state
+    console.log('Initial current step:', currentStep);
+    console.log('Step navigation initialized');
+}
+
+// Call this function when the document is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+    initializeStepNavigation();
+});
+
+// Add this to help debug the structure
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Analyzing form structure...');
+    
+    const form = document.querySelector('.registration-form');
+    if (form) {
+        console.log('Form found');
+        console.log('Form children:', form.children.length);
+        
+        const steps = document.querySelectorAll('.step');
+        console.log('Step elements:', steps.length);
+        steps.forEach((step, index) => {
+            console.log(`Step ${index + 1} classes:`, step.classList.toString());
+        });
+        
+        const formSteps = document.querySelectorAll('.form-step');
+        console.log('Form step elements:', formSteps.length);
+        formSteps.forEach((step, index) => {
+            console.log(`Form step ${index + 1} display:`, window.getComputedStyle(step).display);
+        });
+    } else {
+        console.log('Form not found');
+    }
+});
+
+// Initialize Select2 for freelancing fields
+$(document).ready(function() {
+    // Initialize Select2 for platforms
+    $('#platforms').select2({
+        placeholder: 'Select platforms',
+        allowClear: true,
+        tags: true,
+        width: '100%'
+    });
+
+    // Initialize Select2 for expertise areas
+    $('#expertise_areas').select2({
+        placeholder: 'Select areas of expertise',
+        allowClear: true,
+        tags: true,
+        width: '100%'
+    });
+
+    // Show/hide freelancer fields based on status selection
+    $('#current_status').on('change', function() {
+        if ($(this).val() === 'freelancer') {
+            $('#freelancer-fields').show();
+            // Reinitialize Select2 when showing the fields
+            $('#platforms').select2('destroy').select2({
+                placeholder: 'Select platforms',
+                allowClear: true,
+                tags: true,
+                width: '100%'
+            });
+            $('#expertise_areas').select2('destroy').select2({
+                placeholder: 'Select areas of expertise',
+                allowClear: true,
+                tags: true,
+                width: '100%'
+            });
+        } else {
+            $('#freelancer-fields').hide();
+        }
+    });
+});

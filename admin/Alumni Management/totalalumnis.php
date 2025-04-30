@@ -35,7 +35,7 @@ try {
     $stmt = $conn->query("SELECT COUNT(*) AS verified FROM educational_details WHERE verification_status = 'verified'");
     $verifiedAlumni = $stmt->fetch(PDO::FETCH_ASSOC)['verified'];
 
-    // Base query for alumni details with all necessary joins
+    // Modify the base query to include department
     $baseQuery = "
         SELECT 
             u.*,
@@ -61,7 +61,7 @@ try {
         $searchTerm = $_POST['searchTerm'] ?? '';
         $verificationFilter = $_POST['verificationFilter'] ?? '';
         $employmentFilter = $_POST['employmentFilter'] ?? '';
-        $sortBy = $_POST['sortBy'] ?? 'fullname';
+        $sortBy = $_POST['sortBy'] ?? '';
 
         if ($searchTerm !== '') {
             switch($searchCategory) {
@@ -96,6 +96,19 @@ try {
             $whereConditions[] = "ps.current_status = ?";
             $params[] = $employmentFilter;
         }
+
+        // Add department filter
+        if ($sortBy !== '') {
+            $departmentMapping = [
+                'SRIMCA' => 'Shrimad Rajchandra Institute Of Management And Computer Application',
+                'BVPICS' => 'Bhulabhai VanmaliBhai Patel Institute Of Computer Science'
+            ];
+            
+            if (isset($departmentMapping[$sortBy])) {
+                $whereConditions[] = "ed.department = ?";
+                $params[] = $departmentMapping[$sortBy];
+            }
+        }
     }
 
     // Add WHERE clause if conditions exist
@@ -103,14 +116,9 @@ try {
         $baseQuery .= " WHERE " . implode(" AND ", $whereConditions);
     }
 
-    // Add GROUP BY to handle the GROUP_CONCAT
+    // Remove the old sorting code and replace with this
     $baseQuery .= " GROUP BY u.user_id";
-
-    // Add ORDER BY
-    $sortBy = $_POST['sortBy'] ?? 'fullname';
-    $baseQuery .= " ORDER BY " . ($sortBy === 'registration_date' ? 'u.registration_date' : 
-                   ($sortBy === 'graduation_year' ? 'ed.graduation_year' : 'u.fullname')) . 
-                   ($sortBy === 'registration_date' ? ' DESC' : ' ASC');
+    $baseQuery .= " ORDER BY u.fullname ASC"; // Default sorting by name
 
     $stmt = $conn->prepare($baseQuery);
     $stmt->execute($params);
@@ -275,17 +283,46 @@ try {
         .sortable {
             cursor: pointer;
             position: relative;
+            user-select: none;
         }
         .sortable:hover {
-            background-color: #e9ecef;
+            background-color: rgba(0, 0, 0, 0.05);
         }
         .sortable i {
             margin-left: 5px;
-            font-size: 0.8em;
+            transition: transform 0.2s;
         }
         .sortable.asc i.fa-sort-up,
         .sortable.desc i.fa-sort-down {
             color: #007bff;
+        }
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .loading:after {
+            content: 'Loading...';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.8);
+            padding: 10px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .alumni-table thead th {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .alumni-table thead th.sortable:hover {
+            background-color: #e9ecef;
+        }
+        .table-responsive {
+            max-height: 70vh;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -406,9 +443,9 @@ try {
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="reset" class="btn btn-secondary w-100">
-                        <i class="fas fa-undo"></i> Reset
-                    </button>
+                    <a href="../Birthdays/wish_birthdays.php" class="btn btn-primary w-100">
+                        <i class="fas fa-birthday-cake"></i> Send Birthday Wishes
+                    </a>
                 </div>
             </form>
         </div>
@@ -440,25 +477,19 @@ try {
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <select class="form-select" id="sortBy" name="sortBy">
-                        <option value="fullname">Sort by Name</option>
-                        <option value="registration_date">Sort by Registration Date</option>
-                        <option value="graduation_year">Sort by Graduation Year</option>
+                    <select class="form-select" id="departmentFilter" name="departmentFilter">
+                        <option value="">All Departments</option>
+                        <option value="SRIMCA">SRIMCA</option>
+                        <option value="BVPICS">BVPICS</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <select class="form-select" id="recordsPerPage" name="recordsPerPage">
-                        <option value="5" selected>5 Records</option>
-                        <option value="10">10 Records</option>
+                        <option value="10" selected>10 Records</option>
                         <option value="25">25 Records</option>
                         <option value="50">50 Records</option>
                         <option value="100">100 Records</option>
                     </select>
-                </div>
-                <div class="col-md-2">
-                    <a href="../Birthdays/wish_birthdays.php" class="btn btn-primary w-100">
-                        <i class="fas fa-birthday-cake"></i> Send Birthday Wishes
-                    </a>
                 </div>
             </div>
         </div>
@@ -468,84 +499,30 @@ try {
             <table class="alumni-table">
                 <thead>
                     <tr>
-                        <th class="sortable" data-sort="fullname">Name <i class="fas fa-sort"></i></th>
-                        <th class="sortable" data-sort="email">Email <i class="fas fa-sort"></i></th>
-                        <th class="sortable" data-sort="enrollment_number">Enrollment Number <i class="fas fa-sort"></i></th>
-                        <th class="sortable" data-sort="graduation_year">Graduation Year <i class="fas fa-sort"></i></th>
-                        <th class="sortable" data-sort="current_status">Professional Status <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="fullname">
+                            Name <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="email">
+                            Email <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="enrollment_number">
+                            Enrollment Number <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="graduation_year">
+                            Graduation Year <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable" data-sort="current_status">
+                            Professional Status <i class="fas fa-sort"></i>
+                        </th>
                         <th>Skills</th>
-                        <th>Verification</th>
+                        <th class="sortable" data-sort="verification_status">
+                            Verification <i class="fas fa-sort"></i>
+                        </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="alumniTableBody">
-                        <?php foreach ($alumniMembers as $alumni): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($alumni['fullname']); ?></td>
-                                <td><?php echo htmlspecialchars($alumni['email']); ?></td>
-                                <td><?php echo htmlspecialchars($alumni['enrollment_number']); ?></td>
-                        <td><?php echo htmlspecialchars($alumni['graduation_year'] ?? 'N/A'); ?></td>
-                        <td>
-                            <?php if ($alumni['current_status'] === 'employed'): ?>
-                                <div class="employment-info">
-                                    <span class="badge bg-success">Employed</span>
-                                    <div class="tooltip-content">
-                                        Company: <?php echo htmlspecialchars($alumni['company_name']); ?><br>
-                                        Position: <?php echo htmlspecialchars($alumni['position']); ?>
-                                    </div>
-                                </div>
-                                    <?php else: ?>
-                                <span class="badge bg-secondary"><?php echo ucfirst(htmlspecialchars($alumni['current_status'] ?? 'N/A')); ?></span>
-                                    <?php endif; ?>
-                                </td>
-                        <td>
-                            <div class="skills-list">
-                                <?php
-                                if ($alumni['languages']) {
-                                    $languages = explode(',', $alumni['languages']);
-                                    foreach ($languages as $language) {
-                                        // Check if language is a JSON array
-                                        $decodedLanguages = json_decode($language, true);
-                                        if (json_last_error() === JSON_ERROR_NONE && is_array($decodedLanguages)) {
-                                            // Handle array of languages
-                                            foreach ($decodedLanguages as $singleLanguage) {
-                                                echo "<span class='badge bg-primary me-1'>" . htmlspecialchars(trim($singleLanguage)) . "</span>";
-                                            }
-                                        } else {
-                                            // Handle single language
-                                            echo "<span class='badge bg-primary me-1'>" . htmlspecialchars(trim($language)) . "</span>";
-                                        }
-                                    }
-                                } else {
-                                    echo "No languages listed";
-                                }
-                                ?>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge <?php echo $alumni['verification_status'] === 'verified' ? 'badge-verified' : 'badge-pending'; ?>">
-                                <?php echo ucfirst($alumni['verification_status']); ?>
-                            </span>
-                        </td>
-                                <td class="alumni-actions">
-                            <a href="view-portfolio.php?id=<?php echo $alumni['user_id']; ?>" 
-                               class="btn btn-primary btn-sm" title="View Portfolio">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <?php if ($alumni['verification_status'] !== 'verified'): ?>
-                                <button onclick="verifyAlumni(<?php echo $alumni['user_id']; ?>)" 
-                                        class="btn btn-success btn-sm" title="Verify Alumni">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                            <?php endif; ?>
-                            <button type="button" class="btn btn-danger btn-sm delete-alumni" 
-                                    data-user-id="<?php echo $alumni['user_id']; ?>" 
-                                    title="Delete Alumni">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
+                    <!-- Content will be loaded here -->
                 </tbody>
             </table>
             
@@ -610,7 +587,7 @@ try {
 
         // Define these functions in the global scope
         let currentPage = 1;
-        let itemsPerPage = 5; // Changed default from 10 to 5
+        let itemsPerPage = 10; // Changed from 5 to 10
         let isSearching = false;
         let searchTimeout;
         let currentSortColumn = 'fullname';
@@ -627,6 +604,7 @@ try {
                 verificationFilter: $('#verificationFilter').val(),
                 employmentFilter: $('#employmentFilter').val(),
                 enrollmentFormatFilter: $('#enrollmentFormatFilter').val(),
+                departmentFilter: $('#departmentFilter').val(),
                 sortBy: currentSortColumn,
                 sortOrder: currentSortOrder,
                 page: page,
@@ -638,6 +616,9 @@ try {
                 method: 'POST',
                 data: searchData,
                 dataType: 'json',
+                beforeSend: function() {
+                    $('#alumniTableBody').addClass('loading');
+                },
                 success: function(response) {
                     if (response.error) {
                         showAlert('error', response.error);
@@ -648,12 +629,21 @@ try {
                     updatePagination(response.pagination);
                     updateRecordInfo(response.pagination);
                     
-                    currentPage = page;
-                    isSearching = false;
+                    // Update sort indicators
+                    $('.sortable').removeClass('asc desc');
+                    $('.sortable i').removeClass('fa-sort-up fa-sort-down').addClass('fa-sort');
+                    
+                    const $currentSortHeader = $(`.sortable[data-sort="${currentSortColumn}"]`);
+                    $currentSortHeader.addClass(currentSortOrder.toLowerCase());
+                    $currentSortHeader.find('i')
+                        .removeClass('fa-sort')
+                        .addClass(currentSortOrder === 'ASC' ? 'fa-sort-up' : 'fa-sort-down');
                 },
                 error: function(xhr, status, error) {
-                    console.error('Search error:', xhr.responseText, status, error);
                     showAlert('error', 'An error occurred while searching. Please try again.');
+                },
+                complete: function() {
+                    $('#alumniTableBody').removeClass('loading');
                     isSearching = false;
                 }
             });
@@ -683,7 +673,7 @@ try {
             $pagination.empty();
             
             if (totalPages <= 1) {
-                return; // Don't show pagination if there's only one page
+                return;
             }
             
             // Previous button
@@ -772,7 +762,7 @@ try {
                 `);
             }
             
-            // Add click event to pagination links
+            // Update pagination click handler to include sort information
             $pagination.find('.page-link').on('click', function(e) {
                 e.preventDefault();
                 const page = $(this).data('page');
@@ -783,81 +773,42 @@ try {
         }
         
         function deleteAlumni(userId) {
-            console.log('DEBUG: Starting deleteAlumni function with userId:', userId);
-            customConfirm('Are you sure you want to delete this alumni? This will permanently delete all their data including certificates.', () => {
-                console.log('DEBUG: User confirmed deletion, making fetch request');
-                fetch('delete_alumni.php', {
+            if (confirm('Are you sure you want to delete this alumni?')) {
+                $.ajax({
+                    url: 'delete_alumni.php',
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `user_id=${userId}`
-                })
-                .then(response => {
-                    console.log('DEBUG: Received response from server');
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('DEBUG: Parsed response data:', data);
-                    if (data.status === 'success') {
-                        console.log('DEBUG: Success response received');
-                        showAlert('success', 'Alumni removed successfully');
-                        // Remove the deleted row from the table
-                        const deleteButton = document.querySelector(`button[data-user-id="${userId}"]`);
-                        console.log('DEBUG: Found delete button:', deleteButton);
-                        if (deleteButton) {
-                            const row = deleteButton.closest('tr');
-                            console.log('DEBUG: Found row to delete:', row);
-                            if (row) {
-                                console.log('DEBUG: Starting row removal animation');
-                                row.style.transition = 'opacity 0.3s';
-                                row.style.opacity = '0';
-                                setTimeout(() => {
-                                    console.log('DEBUG: Removing row from DOM');
-                                    row.remove();
-                                    // Update the total count
-                                    const totalCountElement = document.querySelector('.stat-card:first-child p');
-                                    console.log('DEBUG: Found total count element:', totalCountElement);
-                                    if (totalCountElement) {
-                                        const totalCount = parseInt(totalCountElement.textContent) - 1;
-                                        console.log('DEBUG: Updating total count to:', totalCount);
-                                        totalCountElement.textContent = totalCount;
-                                    }
+                    data: { user_id: userId },
+                    success: function(response) {
+                        const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+                        if (row) {
+                            setTimeout(() => {
+                                row.remove();
+                                const totalCountElement = document.querySelector('.stat-card:first-child p');
+                                if (totalCountElement) {
+                                    const totalCount = parseInt(totalCountElement.textContent) - 1;
+                                    totalCountElement.textContent = totalCount;
+                                }
+                                
+                                const totalRecordsElement = document.getElementById('totalRecords');
+                                if (totalRecordsElement) {
+                                    const totalRecords = parseInt(totalRecordsElement.textContent) - 1;
+                                    totalRecordsElement.textContent = totalRecords;
                                     
-                                    // Update the record count
-                                    const totalRecordsElement = document.getElementById('totalRecords');
-                                    console.log('DEBUG: Found total records element:', totalRecordsElement);
-                                    if (totalRecordsElement) {
-                                        const totalRecords = parseInt(totalRecordsElement.textContent) - 1;
-                                        console.log('DEBUG: Updating total records to:', totalRecords);
-                                        totalRecordsElement.textContent = totalRecords;
-                                        
-                                        // If no records left, show a message
-                                        if (totalRecords === 0) {
-                                            console.log('DEBUG: No records left, showing empty message');
-                                            const tbody = document.getElementById('alumniTableBody');
-                                            if (tbody) {
-                                                tbody.innerHTML = '<tr><td colspan="8" class="text-center">No alumni records found</td></tr>';
-                                            }
+                                    if (totalRecords === 0) {
+                                        const tbody = document.getElementById('alumniTableBody');
+                                        if (tbody) {
+                                            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No alumni records found</td></tr>';
                                         }
                                     }
-                                }, 300);
-                            } else {
-                                console.log('DEBUG: Could not find parent row');
-                            }
-                        } else {
-                            console.log('DEBUG: Delete button not found');
+                                }
+                            }, 300);
                         }
-                    } else {
-                        console.log('DEBUG: Error response received:', data.message);
-                        showAlert('error', 'Error: ' + data.message);
+                    },
+                    error: function() {
+                        showAlert('error', 'Failed to delete alumni');
                     }
-                })
-                .catch(error => {
-                    console.error('DEBUG: Error in delete process:', error);
-                    showAlert('error', 'An error occurred while removing the alumni');
                 });
-            });
+            }
         }
 
         function verifyAlumni(userId) {
@@ -949,7 +900,7 @@ try {
             });
 
             // Handle filter changes
-            $('#verificationFilter, #employmentFilter, #sortBy').on('change', function() {
+            $('#verificationFilter, #employmentFilter').on('change', function() {
                 currentPage = 1;
                 updateSearchResults();
             });
@@ -979,43 +930,84 @@ try {
             // Initial search
             updateSearchResults();
 
-            // Add click handlers for sortable columns
+            // Update the sorting click handler
             $('.sortable').on('click', function() {
                 const column = $(this).data('sort');
                 
-                // Update sort icons
-                $('.sortable').removeClass('asc desc');
-                $('.sortable i').removeClass('fa-sort-up fa-sort-down').addClass('fa-sort');
-                
+                // Update sort order
                 if (currentSortColumn === column) {
-                    // Toggle sort order
                     currentSortOrder = currentSortOrder === 'ASC' ? 'DESC' : 'ASC';
                 } else {
-                    // New column, default to ascending
                     currentSortColumn = column;
                     currentSortOrder = 'ASC';
                 }
                 
-                // Update sort icon
+                // Update visual indicators
+                $('.sortable').removeClass('asc desc');
+                $('.sortable i').removeClass('fa-sort-up fa-sort-down').addClass('fa-sort');
+                
                 $(this).addClass(currentSortOrder.toLowerCase());
                 $(this).find('i')
                     .removeClass('fa-sort')
                     .addClass(currentSortOrder === 'ASC' ? 'fa-sort-up' : 'fa-sort-down');
                 
-                // Update sort dropdown to match
-                $('#sortBy').val(column);
-                
-                // Trigger search with new sort
-                updateSearchResults(currentPage);
+                // Reset to first page and update results
+                currentPage = 1;
+                updateSearchResults(1);
             });
 
-            // Add debug logging to filter changes
-            $('#searchCategory, #verificationFilter, #employmentFilter, #enrollmentFormatFilter, #sortBy').on('change', function() {
-                const filterName = $(this).attr('id');
-                const filterValue = $(this).val();
-                console.log('Filter changed:', filterName, filterValue);
+            // Add event handler for department filter
+            $('#departmentFilter').on('change', function() {
+                const selectedDepartment = $(this).val();
+                filterByDepartment(selectedDepartment);
             });
         });
+
+        // Add this new function for department filtering
+        function filterByDepartment(department) {
+            // Show loading state if you want
+            $('#alumniTableBody').html('<tr><td colspan="8" class="text-center">Loading...</td></tr>');
+
+            $.ajax({
+                url: 'search_alumni.php',
+                method: 'POST',
+                data: {
+                    departmentFilter: department,
+                    searchCategory: $('#searchCategory').val(),
+                    searchTerm: $('#searchTerm').val(),
+                    verificationFilter: $('#verificationFilter').val(),
+                    employmentFilter: $('#employmentFilter').val(),
+                    page: 1,
+                    limit: $('#recordsPerPage').val()
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.error) {
+                        showAlert('error', response.error);
+                        return;
+                    }
+
+                    // Update the table body with new results
+                    $('#alumniTableBody').html(response.html);
+                    
+                    // Update pagination
+                    updatePagination(response.pagination);
+                    
+                    // Update record info
+                    updateRecordInfo(response.pagination);
+
+                    // Show success message
+                    if (department) {
+                        showAlert('success', `Showing results for ${department} department`);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Department filter error:', error);
+                    showAlert('error', 'An error occurred while filtering departments');
+                    $('#alumniTableBody').html('<tr><td colspan="8" class="text-center">Error loading data</td></tr>');
+                }
+            });
+        }
     </script>
 </body>
 </html>

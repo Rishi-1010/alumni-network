@@ -51,8 +51,16 @@ try {
     // Validate sort order
     $sortOrder = strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC';
 
-    // Validate sort column to prevent SQL injection
-    $allowedSortColumns = ['fullname', 'email', 'enrollment_number', 'graduation_year', 'current_status', 'verification_status'];
+    // Validate sort column
+    $allowedSortColumns = [
+        'fullname', 
+        'email', 
+        'enrollment_number', 
+        'graduation_year', 
+        'current_status',
+        'verification_status'
+    ];
+
     if (!in_array($sortBy, $allowedSortColumns)) {
         $sortBy = 'fullname';
     }
@@ -127,13 +135,33 @@ try {
         }
     }
 
+    // Handle department filter
+    $departmentFilter = $_POST['departmentFilter'] ?? '';
+    if ($departmentFilter !== '') {
+        $departmentMapping = [
+            'SRIMCA' => 'Shrimad Rajchandra Institute Of Management And Computer Application',
+            'BVPICS' => 'Bhulabhai VanmaliBhai Patel Institute Of Computer Science'
+        ];
+        
+        if (isset($departmentMapping[$departmentFilter])) {
+            $whereConditions[] = "ed.department = ?";
+            $params[] = $departmentMapping[$departmentFilter];
+        }
+    }
+
     // Add WHERE clause if conditions exist
     if (!empty($whereConditions)) {
         $baseQuery .= " WHERE " . implode(" AND ", $whereConditions);
     }
 
-    // Add GROUP BY
+    // Make sure the ORDER BY clause is applied consistently
     $baseQuery .= " GROUP BY u.user_id";
+    $baseQuery .= " ORDER BY " . 
+        ($sortBy === 'verification_status' ? 'ed.verification_status' : 
+        ($sortBy === 'current_status' ? 'ps.current_status' : 
+        ($sortBy === 'graduation_year' ? 'ed.graduation_year' : 
+        ($sortBy === 'enrollment_number' ? 'ed.enrollment_number' : 
+        'u.' . $sortBy)))) . " " . $sortOrder;
 
     // Count total results for pagination
     $countQuery = "SELECT COUNT(DISTINCT u.user_id) as total FROM users u
@@ -159,22 +187,6 @@ try {
     if ($totalResults == 0) {
         $startRecord = 0;
         $endRecord = 0;
-    }
-
-    // Add ORDER BY with special handling for enrollment_number
-    if ($sortBy === 'enrollment_number') {
-        // For enrollment numbers, we need to handle both formats
-        $baseQuery .= " ORDER BY 
-            CASE 
-                WHEN ed.enrollment_number REGEXP '^[0-9]{15}$' THEN 1 
-                ELSE 2 
-            END,
-            ed.enrollment_number " . $sortOrder;
-    } else {
-        $baseQuery .= " ORDER BY " . ($sortBy === 'registration_date' ? 'u.registration_date' : 
-                       ($sortBy === 'graduation_year' ? 'ed.graduation_year' : 
-                       ($sortBy === 'current_status' ? 'ps.current_status' : 'u.' . $sortBy))) . 
-                       " " . $sortOrder;
     }
 
     // Add LIMIT for pagination
@@ -214,15 +226,12 @@ try {
                         if ($alumni['skills']) {
                             $skills = explode(',', $alumni['skills']);
                             foreach ($skills as $skill) {
-                                // Check if skill is a JSON array
                                 $decodedSkills = json_decode($skill, true);
                                 if (json_last_error() === JSON_ERROR_NONE && is_array($decodedSkills)) {
-                                    // Handle array of skills
                                     foreach ($decodedSkills as $singleSkill) {
                                         echo "<span class='badge bg-primary me-1'>" . htmlspecialchars(trim($singleSkill)) . "</span>";
                                     }
                                 } else {
-                                    // Handle single skill
                                     echo "<span class='badge bg-primary me-1'>" . htmlspecialchars(trim($skill)) . "</span>";
                                 }
                             }

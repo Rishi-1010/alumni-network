@@ -9,10 +9,11 @@ require_once '../../config/db_connection.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumni Login</title>
-    <link rel="stylesheet" href="../../assets/css/register.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/login.css">
 </head>
-<body>
+<body class="login-page">
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="logo">
@@ -23,9 +24,9 @@ require_once '../../config/db_connection.php';
         </div>
     </nav>
 
-    <div class="register-container">
-        <form id="loginForm" class="registration-form" action="process_login.php" method="POST">
-            <h2>Alumni Login</h2><br>
+    <div class="login-container">
+        <form id="loginForm" class="login-form" action="process_login.php" method="POST">
+            <h2>Alumni Login</h2>
             
             <?php
             if(isset($_SESSION['error'])) {
@@ -54,7 +55,9 @@ require_once '../../config/db_connection.php';
 
             <div class="form-links">
                 <a href="forgot_password.php">Forgot Password?</a>
-                
+                <span>
+                    Don't have an account? <a href="../Registration/register.php">Register here</a>
+                </span>
             </div>
         </form>
     </div>

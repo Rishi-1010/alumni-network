@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS educational_details (
     user_id INT NOT NULL,
     university_name VARCHAR(255) NOT NULL,
     enrollment_number VARCHAR(15) NOT NULL UNIQUE,
-    graduation_year INT NOT NULL,
+    graduation_year INT DEFAULT NULL,
     verification_status VARCHAR(50),
     verification_date DATE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
@@ -66,12 +66,13 @@ CREATE TABLE projects (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Skills table
+-- Skills table (updated version)
 CREATE TABLE skills (
     skill_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    skill_name VARCHAR(100) NOT NULL,
-    proficiency_level ENUM('beginner', 'intermediate', 'advanced', 'expert'),
+    language_specialization JSON,
+    tools JSON,
+    technologies JSON,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 

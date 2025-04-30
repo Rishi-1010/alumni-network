@@ -71,6 +71,18 @@ try {
         throw new Exception('User with this enrollment number already exists');
     }
 
+    // Add this validation after the enrollment number validation
+    if (empty($_POST['graduation_year'])) {
+        throw new Exception("Graduation year is required");
+    }
+
+    // Validate graduation year is within acceptable range
+    $graduationYear = intval($_POST['graduation_year']);
+    $currentYear = date('Y');
+    if ($graduationYear < 2000 || $graduationYear > ($currentYear + 4)) {
+        throw new Exception("Invalid graduation year");
+    }
+
     // Start transaction
     $conn->beginTransaction();
 
@@ -89,62 +101,118 @@ try {
         ]);
         $userId = $conn->lastInsertId();
 
-        // Insert Skills
+        // Insert Skills with enhanced debugging
         if (!empty($_POST['skills'])) {
-            // Check if we have arrays for language, tools, and technologies
-            if (is_array($_POST['skills']['language']) && 
-                is_array($_POST['skills']['tools']) && 
-                is_array($_POST['skills']['technologies'])) {
-                
-                // Handle "Other" options
-                $language = $_POST['skills']['language'];
-                $tools = $_POST['skills']['tools'];
-                $technologies = $_POST['skills']['technologies'];
-                
-                // Replace "other" with user-provided values if they exist
-                if (in_array('other', $language) && !empty($_POST['skills']['other_language'])) {
-                    $language = array_diff($language, ['other']);
-                    $language[] = $_POST['skills']['other_language'];
-                }
-                
-                if (in_array('other', $tools) && !empty($_POST['skills']['other_tools'])) {
-                    $tools = array_diff($tools, ['other']);
-                    $tools[] = $_POST['skills']['other_tools'];
-                }
-                
-                if (in_array('other', $technologies) && !empty($_POST['skills']['other_technologies'])) {
-                    $technologies = array_diff($technologies, ['other']);
-                    $technologies[] = $_POST['skills']['other_technologies'];
-                }
-                
-                // Convert arrays to JSON strings for storage
-                $languageJSON = json_encode(array_values($language));
-                $toolsJSON = json_encode(array_values($tools));
-                $technologiesJSON = json_encode(array_values($technologies));
-                
-                $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies) VALUES (?, ?, ?, ?)");
-                
+            error_log("Skills data received: " . print_r($_POST['skills'], true));
+            
+            // Check if all required arrays exist
+            if (!isset($_POST['skills']['language'])) {
+                error_log("Language array is missing");
+                throw new Exception("Language specialization is required");
+            }
+            if (!isset($_POST['skills']['tools'])) {
+                error_log("Tools array is missing");
+                throw new Exception("Tools selection is required");
+            }
+            if (!isset($_POST['skills']['technologies'])) {
+                error_log("Technologies array is missing");
+                throw new Exception("Technologies selection is required");
+            }
+
+            // Check if arrays are actually arrays and not empty
+            if (!is_array($_POST['skills']['language']) || empty($_POST['skills']['language'])) {
+                error_log("Language is not an array or is empty");
+                throw new Exception("Please select at least one programming language");
+            }
+            if (!is_array($_POST['skills']['tools']) || empty($_POST['skills']['tools'])) {
+                error_log("Tools is not an array or is empty");
+                throw new Exception("Please select at least one tool");
+            }
+            if (!is_array($_POST['skills']['technologies']) || empty($_POST['skills']['technologies'])) {
+                error_log("Technologies is not an array or is empty");
+                throw new Exception("Please select at least one technology");
+            }
+
+            // Handle "Other" options with debugging
+            $language = $_POST['skills']['language'];
+            $tools = $_POST['skills']['tools'];
+            $technologies = $_POST['skills']['technologies'];
+            
+            error_log("Original arrays - Languages: " . print_r($language, true));
+            error_log("Original arrays - Tools: " . print_r($tools, true));
+            error_log("Original arrays - Technologies: " . print_r($technologies, true));
+            
+            // Replace "other" with user-provided values if they exist
+            if (in_array('other', $language) && !empty($_POST['skills']['other_language'])) {
+                $language = array_diff($language, ['other']);
+                $language[] = $_POST['skills']['other_language'];
+                error_log("Added custom language: " . $_POST['skills']['other_language']);
+            }
+            
+            if (in_array('other', $tools) && !empty($_POST['skills']['other_tools'])) {
+                $tools = array_diff($tools, ['other']);
+                $tools[] = $_POST['skills']['other_tools'];
+                error_log("Added custom tool: " . $_POST['skills']['other_tools']);
+            }
+            
+            if (in_array('other', $technologies) && !empty($_POST['skills']['other_technologies'])) {
+                $technologies = array_diff($technologies, ['other']);
+                $technologies[] = $_POST['skills']['other_technologies'];
+                error_log("Added custom technology: " . $_POST['skills']['other_technologies']);
+            }
+            
+            // Convert arrays to JSON strings for storage
+            $languageJSON = json_encode(array_values($language));
+            $toolsJSON = json_encode(array_values($tools));
+            $technologiesJSON = json_encode(array_values($technologies));
+            
+            error_log("Final JSON strings:");
+            error_log("Languages JSON: " . $languageJSON);
+            error_log("Tools JSON: " . $toolsJSON);
+            error_log("Technologies JSON: " . $technologiesJSON);
+            
+            $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies) VALUES (?, ?, ?, ?)");
+            
+            try {
                 $stmt_skill->execute([
                     $userId,
                     $languageJSON,
                     $toolsJSON,
                     $technologiesJSON
                 ]);
-            } else {
-                error_log("Incomplete skill entry for user ID: $userId");
+                error_log("Successfully inserted skills for user ID: $userId");
+            } catch (PDOException $e) {
+                error_log("Database error while inserting skills: " . $e->getMessage());
+                throw new Exception("Failed to save skills information: " . $e->getMessage());
             }
+        } else {
+            error_log("No skills data received in POST request");
+            throw new Exception("Skills information is required");
         }
 
-        // Insert Educational Details
+        // Add this before the educational details insertion
+        error_log("Graduation Year from form: " . ($_POST['graduation_year'] ?? 'not set'));
+
+        // Update the educational details insertion with debug logging
+        $department = '';
+        if ($_POST['course'] === 'BCA') {
+            $department = "Bhulabhai VanmaliBhai Patel Institute Of Computer Science";
+        } else if ($_POST['course'] === 'MCA') {
+            $department = "Shrimad Rajchandra Institute Of Management And Computer Application";
+        }
+
         $stmt = $conn->prepare("INSERT INTO educational_details
-                               (user_id, university_name, enrollment_number, graduation_year)
-                               VALUES (?, ?, ?, ?)");
+                               (user_id, university_name, course, department, enrollment_number, graduation_year)
+                               VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $userId,
             'Uka Tarsadia University',
+            $_POST['course'],
+            $department,
             $enrollmentNumber,
-            null // Graduation year is not collected in the form
+            $_POST['graduation_year']
         ]);
+        error_log("Successfully inserted educational details with graduation year: " . $_POST['graduation_year']);
 
         // Insert Professional Status
         if (!empty($_POST['current_status'])) {
@@ -287,18 +355,6 @@ try {
                 } elseif ($_FILES['certifications']['error'][$key]['certificate_file'] !== UPLOAD_ERR_NO_FILE) {
                     // Log any upload errors except "no file"
                     error_log("Error uploading certificate: " . $_FILES['certifications']['error'][$key]['certificate_file']);
-                }
-            }
-        }
-
-        // Insert Skills
-        if (!empty($_POST['skills'])) {
-            $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, skill_name, proficiency_level) VALUES (?, ?, ?)");
-            foreach ($_POST['skills'] as $skill) {
-                if (!empty($skill['name']) && !empty($skill['level'])) {
-                    $stmt_skill->execute([$userId, $skill['name'], $skill['level']]);
-                } else {
-                    error_log("Skipping incomplete skill entry for user ID: $userId");
                 }
             }
         }

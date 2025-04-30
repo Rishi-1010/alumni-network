@@ -22,10 +22,19 @@ try {
     $stmt = $conn->prepare("
         SELECT 
             u.*,
-            ed.course, ed.graduation_year, ed.enrollment_number, 
-            ed.verification_status, ed.verification_date,
-            ps.current_status, ps.company_name, ps.position,
-            ps.freelance_title, ps.platforms, ps.expertise_areas, ps.experience_years
+            ed.course, 
+            ed.graduation_year,
+            ed.enrollment_number,
+            ed.verification_status, 
+            ed.verification_date,
+            ed.department,
+            ps.current_status, 
+            ps.company_name, 
+            ps.position,
+            ps.freelance_title, 
+            ps.platforms, 
+            ps.expertise_areas, 
+            ps.experience_years
         FROM users u
         LEFT JOIN educational_details ed ON u.user_id = ed.user_id
         LEFT JOIN professional_status ps ON u.user_id = ps.user_id
@@ -53,38 +62,6 @@ try {
             $userData['position'] = $professionalData['position'];
             
             error_log("Fetched Professional Status Separately: " . print_r($professionalData, true));
-        }
-    }
-
-    // Calculate graduation year for BCA students based on enrollment number
-    if (!empty($userData['enrollment_number'])) {
-        $enrollmentNumber = $userData['enrollment_number'];
-        $enrollmentYear = null;
-        
-        // Check if enrollment number is alphanumeric (like 10BCA06)
-        if (preg_match('/^(\d{2})[A-Za-z]+/', $enrollmentNumber, $matches)) {
-            // Extract first two digits and add 2000 to get the full year
-            $twoDigitYear = $matches[1];
-            $enrollmentYear = 2000 + intval($twoDigitYear);
-        } 
-        // Check if enrollment number is numeric with at least 4 digits
-        else if (strlen($enrollmentNumber) >= 4 && is_numeric($enrollmentNumber)) {
-            // Extract the first 4 digits as enrollment year
-            $enrollmentYear = intval(substr($enrollmentNumber, 0, 4));
-        }
-        
-        // Check if we have a valid enrollment year
-        $currentYear = date('Y');
-        if ($enrollmentYear !== null && $enrollmentYear >= 2000 && $enrollmentYear <= $currentYear) {
-            // Add 3 years to get graduation year for BCA course
-            $calculatedGraduationYear = $enrollmentYear + 3;
-            
-            // Update the graduation year in the userData array
-            $userData['graduation_year'] = $calculatedGraduationYear;
-            
-            // Update the graduation year in the database
-            $updateStmt = $conn->prepare("UPDATE educational_details SET graduation_year = ? WHERE user_id = ?");
-            $updateStmt->execute([$calculatedGraduationYear, $userId]);
         }
     }
 
@@ -224,8 +201,17 @@ try {
                                         <p><i class="fas fa-book"></i> <strong>Course:</strong> 
                                             <?php echo htmlspecialchars($userData['course'] ?? 'Not provided'); ?>
                                         </p>
+                                        <p><i class="fas fa-university"></i> <strong>Department:</strong> 
+                                            <?php echo htmlspecialchars($userData['department'] ?? 'Not provided'); ?>
+                                        </p>
                                         <p><i class="fas fa-calendar-check"></i> <strong>Graduation Year:</strong> 
-                                            <?php echo htmlspecialchars($userData['graduation_year'] ?? 'Not provided'); ?>
+                                            <?php 
+                                            if (!empty($userData['graduation_year'])) {
+                                                echo htmlspecialchars($userData['graduation_year']);
+                                            } else {
+                                                echo 'Not provided';
+                                            }
+                                            ?>
                                         </p>
                                         <p><i class="fas fa-id-card"></i> <strong>Enrollment Number:</strong> 
                                             <?php echo htmlspecialchars($userData['enrollment_number'] ?? 'Not provided'); ?>

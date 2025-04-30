@@ -13,14 +13,14 @@ if (isset($_SESSION['error'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumni Registration</title>
-    <link rel="stylesheet" href="../../assets/css/register.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/register.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body class="register-page">
-    <!-- Add navigation bar -->
+    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="logo">
             <a href="../../index.html" class="home-link">
@@ -32,7 +32,7 @@ if (isset($_SESSION['error'])) {
 
     <div class="register-container">
         <div class="registration-form">
-            <!-- New Steps Flow -->
+            <!-- Steps Flow -->
             <div class="steps-flow">
                 <div class="step-line"></div>
                 <div class="step-progress"></div>
@@ -75,7 +75,7 @@ if (isset($_SESSION['error'])) {
 
             <!-- Form Container -->
             <div class="form-container">
-            <form id="registrationForm" method="POST" action="process_registration.php" enctype="multipart/form-data">
+                <form id="registrationForm" method="POST" action="process_registration.php" enctype="multipart/form-data">
                     <!-- Step 1: Basic Information -->
                     <div class="form-step active" id="step1">
                     <h2>Basic Information</h2>
@@ -119,11 +119,20 @@ if (isset($_SESSION['error'])) {
                     <input type="hidden" id="university_name" name="university_name" value="Uka Tarsadia University">
                     <div class="form-group">
                         <label for="course">Course*</label>
-                        <select id="course" name="course" required>
-                            <option value="">Select Course</option>
+                        <select id="course" name="course" required onchange="updateDepartment()">
+                            <option value="" selected>Select Course</option>
                             <option value="BCA">BCA</option>
                             <option value="MCA">MCA</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <input type="text" 
+                               id="department" 
+                               name="department" 
+                               readonly 
+                               required
+                               style="background-color: #f5f5f5; cursor: not-allowed;">
                     </div>
                     <div class="form-group enrollment-format-group">
                         <label>Enrollment Number Format*</label>
@@ -159,6 +168,21 @@ if (isset($_SESSION['error'])) {
                                    placeholder="Enter your 15-digit enrollment number" 
                                    maxlength="15" 
                                    required>
+                    </div>
+                    
+                    <!-- Add graduation year dropdown after enrollment number fields -->
+                    <div class="form-group">
+                        <label for="graduation_year">Graduation Year*</label>
+                        <select id="graduation_year" name="graduation_year" required>
+                            <option value="">Select Graduation Year</option>
+                            <?php
+                            $currentYear = date('Y');
+                            // Show years from 2000 to current year + 4 (for current students)
+                            for ($year = $currentYear + 4; $year >= 2000; $year--) {
+                                echo "<option value='$year'>$year</option>";
+                            }
+                            ?>
+                        </select>
                     </div>
                     
                     <div class="button-group">
@@ -200,7 +224,7 @@ if (isset($_SESSION['error'])) {
                         </div>
                         <div class="form-group">
                             <label for="platforms">Freelancing Platforms*</label>
-                            <select id="platforms" name="platforms[]" multiple class="select2-multiple">
+                            <select id="platforms" name="platforms[]" multiple="multiple" class="select2-multiple" style="width: 100%;">
                                 <option value="upwork">Upwork</option>
                                 <option value="fiverr">Fiverr</option>
                                 <option value="freelancer">Freelancer.com</option>
@@ -212,7 +236,7 @@ if (isset($_SESSION['error'])) {
                         </div>
                         <div class="form-group">
                             <label for="expertise_areas">Areas of Expertise*</label>
-                            <select id="expertise_areas" name="expertise_areas[]" multiple class="select2-multiple">
+                            <select id="expertise_areas" name="expertise_areas[]" multiple="multiple" class="select2-multiple" style="width: 100%;">
                                 <option value="web_development">Web Development</option>
                                 <option value="mobile_development">Mobile Development</option>
                                 <option value="ui_ux">UI/UX Design</option>
@@ -227,11 +251,12 @@ if (isset($_SESSION['error'])) {
                             <label for="experience_years">Years of Freelancing Experience*</label>
                             <select id="experience_years" name="experience_years" required>
                                 <option value="">Select Experience</option>
-                                <option value="less_than_1">Less than 1 year</option>
-                                <option value="1_2">1-2 years</option>
-                                <option value="2_3">2-3 years</option>
-                                <option value="3_5">3-5 years</option>
-                                <option value="more_than_5">More than 5 years</option>
+                                <option value="0">Less than 1 year</option>
+                                <option value="1">1 year</option>
+                                <option value="2">2 years</option>
+                                <option value="3">3 years</option>
+                                <option value="4">4 years</option>
+                                <option value="5">5+ years</option>
                             </select>
                         </div>
                     </div>
@@ -363,6 +388,8 @@ if (isset($_SESSION['error'])) {
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="../../assets/js/register.js"></script>
     <div class="certificate-preview"></div>
 
@@ -431,5 +458,26 @@ if (isset($_SESSION['error'])) {
             }
         }
     </style>
+
+    <script>
+    function updateDepartment() {
+        const courseSelect = document.getElementById('course');
+        const departmentInput = document.getElementById('department');
+        
+        if (courseSelect.value === 'BCA') {
+            departmentInput.value = "Bhulabhai VanmaliBhai Patel Institute Of Computer Science";
+        } else if (courseSelect.value === 'MCA') {
+            departmentInput.value = "Shrimad Rajchandra Institute Of Management And Computer Application";
+        } else {
+            departmentInput.value = "";
+        }
+    }
+
+    // Initialize with empty department on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const departmentInput = document.getElementById('department');
+        departmentInput.value = "";
+    });
+    </script>
 </body>
 </html>

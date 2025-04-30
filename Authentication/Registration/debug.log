@@ -62,3 +62,15 @@ Caught Outer Exception: User with this enrollment number already exists in C:\xa
 Caught Outer Exception: This email is already registered. Please use a different email address or try logging in. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 56
 Caught Exception: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'freelance_title' in 'field list' in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 161
 Caught Exception: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'freelance_title' in 'field list' in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 161
+Caught Outer Exception: This email is already registered. Please use a different email address or try logging in. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 56
+Caught Outer Exception: This email is already registered. Please use a different email address or try logging in. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 56
+Caught Outer Exception: This email is already registered. Please use a different email address or try logging in. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 56
+Caught Outer Exception: This email is already registered. Please use a different email address or try logging in. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 56
+Caught Outer Exception: User with this enrollment number already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 71
+Caught Exception: Please fill in all required skill fields in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 142
+Caught Exception: Please fill in all required skill fields in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 142
+Caught Exception: Please fill in all required skill fields in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 142
+Caught Outer Exception: This email is already registered. Please use a different email address or try logging in. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 56
+Caught Outer Exception: User with this enrollment number already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 71
+Caught Exception: Please fill in all required skill fields in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 142
+Caught Exception: Please fill in all required skill fields in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 142

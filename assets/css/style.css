@@ -34,16 +34,18 @@ body:not(.register-page) {
 .logo {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .logo img {
-    height: 40px;
+    height: 80px;
+    width: auto;
+    transition: transform 0.2s ease;
 }
 
 .logo span {
-    color: white;
-    font-size: 1.5rem;
+    color: inherit;
+    font-size: 1.8rem;
     font-weight: 600;
 }
 
@@ -116,4 +118,28 @@ body:not(.register-page) {
 .user-btn:hover {
     background: #34495e;
     text-decoration: none;
+}
+
+.home-link {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.3s ease;
+}
+
+.home-link:hover {
+    opacity: 0.9;
+}
+
+.home-link img {
+    height: 80px;
+    width: auto;
+}
+
+.home-link span {
+    color: inherit;
+    font-size: 1.8rem;
+    font-weight: 600;
 } 

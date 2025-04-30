@@ -29,6 +29,7 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 │ │ ├── contactus.css # Added contactus.css if not already present
 │ │ ├── dashboard.css
 │ │ ├── invite.css
+│ │ ├── login.css
 │ │ ├── modal.css
 │ │ ├── navigation.css
 │ │ ├── portfolio.css # Added portfolio.css
@@ -337,32 +338,30 @@ A comprehensive alumni management system designed for Uka Tarsadia University gr
 - jQuery 3.7.1
 
 ## Recent Updates
-- **Enhanced Skills Management System**
-  - Modified skills table structure with language specialization, tools, technologies, and proficiency levels
-  - Implemented multi-select functionality for tools and technologies
-  - Added JSON storage for multiple selections in the database
-  - Improved skills display in portfolio view with badge-based visualization
-  - Enhanced UI for skills selection with better organization and visual hierarchy
-  - Added hover effects and consistent styling for skill badges
-  - Centralized styling in portfolio.css for better maintainability
-  - Removed redundant "Add Another Skill" functionality for a more streamlined experience
+- **Enhanced Alumni Management System**
+  - Improved sorting functionality with persistent sort state across pagination
+  - Added department-based filtering (SRIMCA/BVPICS)
+  - Default display of 10 records per page
+  - Added birthday wishes functionality
+  - Streamlined search interface with removal of redundant reset button
+  - Enhanced table header sorting with visual indicators
+  - Real-time updates for department filtering
+  - Improved pagination system with dynamic record count display
 
-- Improved Educational Details System
-  - Enhanced educational_details table structure
-  - Added course information display in graduation section
-  - Streamlined educational data management
+- **Department Management**
+  - Added automatic department assignment based on course selection
+    - BCA: Bhulabhai VanmaliBhai Patel Institute Of Computer Science
+    - MCA: Shrimad Rajchandra Institute Of Management And Computer Application
+  - Department display in alumni records and portfolio view
+  - Department-based filtering in alumni management
 
-- Enhanced Certificate Management
-  - Improved certificate upload and storage system
-  - Added certificate count display in portfolio
-  - Enhanced certificate directory structure
-  - Improved certificate deletion handling
-
-- Robust Alumni Management
-  - Implemented secure alumni deletion system with directory cleanup
-  - Added transaction-based deletions for data integrity
-  - Enhanced file system management for user assets
-  - Improved user data cleanup processes
+- **User Interface Improvements**
+  - Enhanced table sorting with visual indicators
+  - Improved pagination controls
+  - Better responsive design for mobile devices
+  - Streamlined filter controls
+  - Dynamic record count display
+  - Export functionality for filtered results
 
 ## Setup Instructions
 1. Clone the repository
