@@ -32,11 +32,15 @@ CREATE TABLE IF NOT EXISTS educational_details (
 CREATE TABLE professional_status (
     prof_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    current_status ENUM('employed', 'seeking', 'student', 'other') NOT NULL,
+    current_status ENUM('employed', 'seeking', 'student', 'freelancer', 'other') NOT NULL,
     company_name VARCHAR(200),
     position VARCHAR(100),
     start_date DATE,
     is_current BOOLEAN DEFAULT TRUE,
+    freelance_title VARCHAR(200),
+    platforms TEXT,
+    expertise_areas TEXT,
+    experience_years INT,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 

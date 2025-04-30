@@ -43,7 +43,7 @@ try {
             ps.current_status,
             ps.company_name,
             ps.position,
-            GROUP_CONCAT(DISTINCT CONCAT(s.language_specialization, ' (', s.proficiency_level, ')')) as skills,
+            GROUP_CONCAT(DISTINCT s.language_specialization) as languages,
             GROUP_CONCAT(DISTINCT p.title) as projects
         FROM users u
         LEFT JOIN educational_details ed ON u.user_id = ed.user_id
@@ -157,6 +157,26 @@ try {
             display: flex;
             gap: 3px;
         }
+        .alumni-actions .btn {
+            padding: 0.15rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1.2;
+        }
+        .alumni-actions .btn i {
+            font-size: 0.75rem;
+            margin-right: 2px;
+        }
+        .alumni-actions .btn-sm {
+            padding: 0.15rem 0.4rem;
+        }
+        .alumni-actions .delete-alumni {
+            padding: 0.1rem 0.3rem;
+            font-size: 0.7rem;
+        }
+        .alumni-actions .delete-alumni i {
+            font-size: 0.7rem;
+            margin-right: 1px;
+        }
         .search-controls {
             background: #fff;
             padding: 15px;
@@ -204,10 +224,24 @@ try {
         .export-btn {
             margin-left: auto;
         }
-        .skills-list, .projects-list {
+        .skills-list {
             max-height: 60px;
             overflow-y: auto;
             font-size: 0.8em;
+        }
+        .skill-item {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+        .skill-item .badge {
+            font-size: 0.85em;
+            font-weight: normal;
+        }
+        .skill-item .badge.small {
+            font-size: 0.75em;
+            padding: 0.2em 0.4em;
         }
         .tooltip-content {
             display: none;
@@ -219,10 +253,6 @@ try {
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             font-size: 0.8em;
-        }
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
         }
         .pagination {
             margin-top: 10px;
@@ -471,13 +501,23 @@ try {
                         <td>
                             <div class="skills-list">
                                 <?php
-                                if ($alumni['skills']) {
-                                    $skills = explode(',', $alumni['skills']);
-                                    foreach ($skills as $skill) {
-                                        echo "<span class='badge bg-info me-1'>" . htmlspecialchars($skill) . "</span>";
+                                if ($alumni['languages']) {
+                                    $languages = explode(',', $alumni['languages']);
+                                    foreach ($languages as $language) {
+                                        // Check if language is a JSON array
+                                        $decodedLanguages = json_decode($language, true);
+                                        if (json_last_error() === JSON_ERROR_NONE && is_array($decodedLanguages)) {
+                                            // Handle array of languages
+                                            foreach ($decodedLanguages as $singleLanguage) {
+                                                echo "<span class='badge bg-primary me-1'>" . htmlspecialchars(trim($singleLanguage)) . "</span>";
+                                            }
+                                        } else {
+                                            // Handle single language
+                                            echo "<span class='badge bg-primary me-1'>" . htmlspecialchars(trim($language)) . "</span>";
+                                        }
                                     }
                                 } else {
-                                    echo "No skills listed";
+                                    echo "No languages listed";
                                 }
                                 ?>
                             </div>
@@ -492,13 +532,15 @@ try {
                                class="btn btn-primary btn-sm" title="View Portfolio">
                                 <i class="fas fa-eye"></i>
                             </a>
-                                            <?php if ($alumni['verification_status'] !== 'verified'): ?>
+                            <?php if ($alumni['verification_status'] !== 'verified'): ?>
                                 <button onclick="verifyAlumni(<?php echo $alumni['user_id']; ?>)" 
                                         class="btn btn-success btn-sm" title="Verify Alumni">
                                     <i class="fas fa-check"></i>
                                 </button>
-                                            <?php endif; ?>
-                            <button type="button" onclick="deleteAlumni(<?php echo $alumni['user_id']; ?>)" class="btn btn-danger btn-sm">
+                            <?php endif; ?>
+                            <button type="button" class="btn btn-danger btn-sm delete-alumni" 
+                                    data-user-id="<?php echo $alumni['user_id']; ?>" 
+                                    title="Delete Alumni">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
                                 </td>
@@ -538,39 +580,20 @@ try {
     <script src="../../assets/js/modal.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const deleteButtons = document.querySelectorAll('.delete-alumni');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const userId = this.dataset.id;
-                    customConfirm('Are you sure you want to remove this alumni?', () => {
-                        fetch('delete_alumni.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `user_id=${userId}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status === 'success') {
-                                showNotification('Alumni removed successfully', 'success');
-                                setTimeout(() => location.reload(), 1000);
-                            } else {
-                                showNotification('Error: ' + data.message, 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showNotification('An error occurred while removing the alumni', 'error');
-                        });
-                    });
-                });
+            // Event delegation for delete buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-alumni')) {
+                    const button = e.target.closest('.delete-alumni');
+                    const userId = button.dataset.userId;
+                    deleteAlumni(userId);
+                }
             });
+
             // Check if mobile menu button exists before adding event listener
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             if (mobileMenuBtn) {
                 mobileMenuBtn.addEventListener('click', function() {
-            document.getElementById('navLinks').classList.toggle('active');
+                    document.getElementById('navLinks').classList.toggle('active');
                 });
             }
         });
@@ -760,8 +783,9 @@ try {
         }
         
         function deleteAlumni(userId) {
-            console.log('Deleting alumni:', userId);
+            console.log('DEBUG: Starting deleteAlumni function with userId:', userId);
             customConfirm('Are you sure you want to delete this alumni? This will permanently delete all their data including certificates.', () => {
+                console.log('DEBUG: User confirmed deletion, making fetch request');
                 fetch('delete_alumni.php', {
                     method: 'POST',
                     headers: {
@@ -769,33 +793,69 @@ try {
                     },
                     body: `user_id=${userId}`
                 })
-                .then(response => response.json())
+                .then(response => {
+                    console.log('DEBUG: Received response from server');
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('DEBUG: Parsed response data:', data);
                     if (data.status === 'success') {
-                        showNotification('Alumni removed successfully', 'success');
+                        console.log('DEBUG: Success response received');
+                        showAlert('success', 'Alumni removed successfully');
                         // Remove the deleted row from the table
-                        $(`tr:has(button[onclick="deleteAlumni(${userId})"])`).fadeOut(300, function() {
-                            $(this).remove();
-                            // Update the total count
-                            const totalCount = parseInt($('.stat-card:first-child p').text()) - 1;
-                            $('.stat-card:first-child p').text(totalCount);
-                            
-                            // Update the record count
-                            const totalRecords = parseInt($('#totalRecords').text()) - 1;
-                            $('#totalRecords').text(totalRecords);
-                            
-                            // If no records left, show a message
-                            if (totalRecords === 0) {
-                                $('#alumniTableBody').html('<tr><td colspan="8" class="text-center">No alumni records found</td></tr>');
+                        const deleteButton = document.querySelector(`button[data-user-id="${userId}"]`);
+                        console.log('DEBUG: Found delete button:', deleteButton);
+                        if (deleteButton) {
+                            const row = deleteButton.closest('tr');
+                            console.log('DEBUG: Found row to delete:', row);
+                            if (row) {
+                                console.log('DEBUG: Starting row removal animation');
+                                row.style.transition = 'opacity 0.3s';
+                                row.style.opacity = '0';
+                                setTimeout(() => {
+                                    console.log('DEBUG: Removing row from DOM');
+                                    row.remove();
+                                    // Update the total count
+                                    const totalCountElement = document.querySelector('.stat-card:first-child p');
+                                    console.log('DEBUG: Found total count element:', totalCountElement);
+                                    if (totalCountElement) {
+                                        const totalCount = parseInt(totalCountElement.textContent) - 1;
+                                        console.log('DEBUG: Updating total count to:', totalCount);
+                                        totalCountElement.textContent = totalCount;
+                                    }
+                                    
+                                    // Update the record count
+                                    const totalRecordsElement = document.getElementById('totalRecords');
+                                    console.log('DEBUG: Found total records element:', totalRecordsElement);
+                                    if (totalRecordsElement) {
+                                        const totalRecords = parseInt(totalRecordsElement.textContent) - 1;
+                                        console.log('DEBUG: Updating total records to:', totalRecords);
+                                        totalRecordsElement.textContent = totalRecords;
+                                        
+                                        // If no records left, show a message
+                                        if (totalRecords === 0) {
+                                            console.log('DEBUG: No records left, showing empty message');
+                                            const tbody = document.getElementById('alumniTableBody');
+                                            if (tbody) {
+                                                tbody.innerHTML = '<tr><td colspan="8" class="text-center">No alumni records found</td></tr>';
+                                            }
+                                        }
+                                    }
+                                }, 300);
+                            } else {
+                                console.log('DEBUG: Could not find parent row');
                             }
-                        });
+                        } else {
+                            console.log('DEBUG: Delete button not found');
+                        }
                     } else {
-                        showNotification('Error: ' + data.message, 'error');
+                        console.log('DEBUG: Error response received:', data.message);
+                        showAlert('error', 'Error: ' + data.message);
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('An error occurred while removing the alumni', 'error');
+                    console.error('DEBUG: Error in delete process:', error);
+                    showAlert('error', 'An error occurred while removing the alumni');
                 });
             });
         }

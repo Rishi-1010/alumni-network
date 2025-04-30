@@ -25,7 +25,7 @@ try {
             ps.current_status,
             ps.company_name,
             ps.position,
-            GROUP_CONCAT(DISTINCT CONCAT(s.language_specialization, ' (', s.proficiency_level, ')')) as skills,
+            GROUP_CONCAT(DISTINCT s.language_specialization) as skills,
             GROUP_CONCAT(DISTINCT p.title) as projects
         FROM users u
         LEFT JOIN educational_details ed ON u.user_id = ed.user_id
@@ -214,7 +214,17 @@ try {
                         if ($alumni['skills']) {
                             $skills = explode(',', $alumni['skills']);
                             foreach ($skills as $skill) {
-                                echo "<span class='badge bg-info me-1'>" . htmlspecialchars($skill) . "</span>";
+                                // Check if skill is a JSON array
+                                $decodedSkills = json_decode($skill, true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($decodedSkills)) {
+                                    // Handle array of skills
+                                    foreach ($decodedSkills as $singleSkill) {
+                                        echo "<span class='badge bg-primary me-1'>" . htmlspecialchars(trim($singleSkill)) . "</span>";
+                                    }
+                                } else {
+                                    // Handle single skill
+                                    echo "<span class='badge bg-primary me-1'>" . htmlspecialchars(trim($skill)) . "</span>";
+                                }
                             }
                         } else {
                             echo "No skills listed";
@@ -238,9 +248,10 @@ try {
                             <i class="fas fa-check"></i>
                         </button>
                     <?php endif; ?>
-                    <button onclick="deleteAlumni(<?php echo $alumni['user_id']; ?>)" 
-                            class="btn btn-danger btn-sm" title="Delete Alumni">
-                        <i class="fas fa-trash"></i>
+                    <button type="button" class="btn btn-danger btn-sm delete-alumni" 
+                            data-user-id="<?php echo $alumni['user_id']; ?>" 
+                            title="Delete Alumni">
+                        <i class="fas fa-trash"></i> Delete
                     </button>
                 </td>
             </tr>

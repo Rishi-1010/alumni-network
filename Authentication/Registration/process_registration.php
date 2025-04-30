@@ -53,7 +53,7 @@ try {
     $stmt = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
     $stmt->execute([$_POST['email']]);
     if ($stmt->rowCount() > 0) {
-        throw new Exception('User with this email already exists');
+        throw new Exception('This email is already registered. Please use a different email address or try logging in.');
     }
 
     // Determine enrollment number based on format
@@ -94,8 +94,7 @@ try {
             // Check if we have arrays for language, tools, and technologies
             if (is_array($_POST['skills']['language']) && 
                 is_array($_POST['skills']['tools']) && 
-                is_array($_POST['skills']['technologies']) && 
-                !empty($_POST['skills']['level'])) {
+                is_array($_POST['skills']['technologies'])) {
                 
                 // Handle "Other" options
                 $language = $_POST['skills']['language'];
@@ -123,14 +122,13 @@ try {
                 $toolsJSON = json_encode(array_values($tools));
                 $technologiesJSON = json_encode(array_values($technologies));
                 
-                $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies, proficiency_level) VALUES (?, ?, ?, ?, ?)");
+                $stmt_skill = $conn->prepare("INSERT INTO skills (user_id, language_specialization, tools, technologies) VALUES (?, ?, ?, ?)");
                 
                 $stmt_skill->execute([
                     $userId,
                     $languageJSON,
                     $toolsJSON,
-                    $technologiesJSON,
-                    $_POST['skills']['level']
+                    $technologiesJSON
                 ]);
             } else {
                 error_log("Incomplete skill entry for user ID: $userId");
@@ -150,15 +148,34 @@ try {
 
         // Insert Professional Status
         if (!empty($_POST['current_status'])) {
-            $stmt = $conn->prepare("INSERT INTO professional_status
-                                   (user_id, current_status, company_name, position)
-                                   VALUES (?, ?, ?, ?)");
-            $stmt->execute([
-                $userId,
-                $_POST['current_status'],
-                $_POST['company_name'] ?? null,
-                $_POST['position'] ?? null
-            ]);
+            if ($_POST['current_status'] === 'freelancer') {
+                // Handle freelancer data
+                $platforms = !empty($_POST['platforms']) ? json_encode($_POST['platforms']) : null;
+                $expertise_areas = !empty($_POST['expertise_areas']) ? json_encode($_POST['expertise_areas']) : null;
+                
+                $stmt = $conn->prepare("INSERT INTO professional_status
+                                       (user_id, current_status, freelance_title, platforms, expertise_areas, experience_years)
+                                       VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute([
+                    $userId,
+                    $_POST['current_status'],
+                    $_POST['freelance_title'] ?? null,
+                    $platforms,
+                    $expertise_areas,
+                    $_POST['experience_years'] ?? null
+                ]);
+            } else {
+                // Handle other status types (employed, student, etc.)
+                $stmt = $conn->prepare("INSERT INTO professional_status
+                                       (user_id, current_status, company_name, position)
+                                       VALUES (?, ?, ?, ?)");
+                $stmt->execute([
+                    $userId,
+                    $_POST['current_status'],
+                    $_POST['company_name'] ?? null,
+                    $_POST['position'] ?? null
+                ]);
+            }
         }
 
         // Insert Projects (if any submitted)
@@ -299,11 +316,16 @@ try {
         // Commit transaction
         $conn->commit();
 
-        // Clear any buffered output before redirect
+        // Clear any buffered output before sending JSON
         ob_end_clean();
 
-        // Redirect to contactus.php on success
-        header('Location: ../Login/login.php'); // Adjust path as needed
+        // Return success response as JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Registration successful',
+            'redirect' => '../Login/login.php'
+        ]);
         exit;
 
     } catch (Exception $e) {

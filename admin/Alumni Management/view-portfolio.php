@@ -24,7 +24,8 @@ try {
             u.*,
             ed.course, ed.graduation_year, ed.enrollment_number, 
             ed.verification_status, ed.verification_date,
-            ps.current_status, ps.company_name, ps.position
+            ps.current_status, ps.company_name, ps.position,
+            ps.freelance_title, ps.platforms, ps.expertise_areas, ps.experience_years
         FROM users u
         LEFT JOIN educational_details ed ON u.user_id = ed.user_id
         LEFT JOIN professional_status ps ON u.user_id = ps.user_id
@@ -123,9 +124,9 @@ try {
     <title>Alumni Portfolio - Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
     <link rel="stylesheet" href="../../assets/css/portfolio.css">
 </head>
 <body>
@@ -270,6 +271,41 @@ try {
                                             <p><i class="fas fa-id-badge"></i> <strong>Position:</strong> 
                                                 <?php echo htmlspecialchars($userData['position'] ?? 'Not provided'); ?>
                                             </p>
+                                        <?php elseif($userData['current_status'] === 'freelancer'): ?>
+                                            <p><i class="fas fa-user-tie"></i> <strong>Professional Title:</strong> 
+                                                <?php echo htmlspecialchars($userData['freelance_title'] ?? 'Not provided'); ?>
+                                            </p>
+                                            <p><i class="fas fa-globe"></i> <strong>Freelancing Platforms:</strong> 
+                                                <?php 
+                                                    if (!empty($userData['platforms'])) {
+                                                        $platforms = json_decode($userData['platforms'], true);
+                                                        if (is_array($platforms)) {
+                                                            echo implode(', ', array_map('ucfirst', $platforms));
+                                                        } else {
+                                                            echo htmlspecialchars($userData['platforms']);
+                                                        }
+                                                    } else {
+                                                        echo 'Not provided';
+                                                    }
+                                                ?>
+                                            </p>
+                                            <p><i class="fas fa-tools"></i> <strong>Areas of Expertise:</strong> 
+                                                <?php 
+                                                    if (!empty($userData['expertise_areas'])) {
+                                                        $expertise = json_decode($userData['expertise_areas'], true);
+                                                        if (is_array($expertise)) {
+                                                            echo implode(', ', array_map('ucfirst', $expertise));
+                                                        } else {
+                                                            echo htmlspecialchars($userData['expertise_areas']);
+                                                        }
+                                                    } else {
+                                                        echo 'Not provided';
+                                                    }
+                                                ?>
+                                            </p>
+                                            <p><i class="fas fa-clock"></i> <strong>Years of Experience:</strong> 
+                                                <?php echo htmlspecialchars($userData['experience_years'] ?? 'Not provided'); ?>
+                                            </p>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -278,6 +314,11 @@ try {
                                         <div class="info-card">
                                             <p><strong>Employment Status:</strong></p>
                                             <span class="badge bg-success">Active</span>
+                                        </div>
+                                    <?php elseif($userData['current_status'] === 'freelancer'): ?>
+                                        <div class="info-card">
+                                            <p><strong>Freelancing Status:</strong></p>
+                                            <span class="badge bg-info">Active Freelancer</span>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -351,28 +392,16 @@ try {
                     <div class="card-header">
                         <h3><i class="fas fa-certificate"></i> Skills and Certifications</h3>
                     </div>
-                    <div class="card-body">
-                        <h4>Skills</h4>
+                    <div class="card-body text-white">
                         <?php if (!empty($skills)): ?>
                             <div class="row">
                                 <?php foreach ($skills as $skill): ?>
                                     <div class="col-md-6 mb-3">
-                                        <div class="skill-card">
+                                        <div class="skill-card text-white">
                                             <div class="skill-header">
-                                                <h5 class="mb-2">
+                                                <!-- <h5 class="mb-2">
                                                     <i class="fas fa-code"></i> Language Specialization
-                                                </h5>
-                                                <span class="badge bg-<?php 
-                                                    switch($skill['proficiency_level']) {
-                                                        case 'Beginner': echo 'info'; break;
-                                                        case 'Intermediate': echo 'primary'; break;
-                                                        case 'Advanced': echo 'success'; break;
-                                                        case 'Expert': echo 'warning'; break;
-                                                        default: echo 'secondary';
-                                                    }
-                                                ?>">
-                                                    <?php echo htmlspecialchars($skill['proficiency_level']); ?>
-                                                </span>
+                                                </h5> -->
                                             </div>
                                             <div class="skill-details">
                                                 <p>
@@ -382,10 +411,10 @@ try {
                                                         $languages = json_decode($skill['language_specialization'], true);
                                                         if (is_array($languages)) {
                                                             foreach ($languages as $lang) {
-                                                                echo '<span class="badge bg-info me-1">' . htmlspecialchars($lang) . '</span>';
+                                                                echo '<span class="badge bg-primary me-1">' . htmlspecialchars($lang) . '</span>';
                                                             }
                                                         } else {
-                                                            echo htmlspecialchars($skill['language_specialization']);
+                                                            echo '<span class="badge bg-primary me-1">' . htmlspecialchars($skill['language_specialization']) . '</span>';
                                                         }
                                                     ?>
                                                     </span>
@@ -400,10 +429,10 @@ try {
                                                         $tools = json_decode($skill['tools'], true);
                                                         if (is_array($tools)) {
                                                             foreach ($tools as $tool) {
-                                                                echo '<span class="badge bg-info me-1">' . htmlspecialchars($tool) . '</span>';
+                                                                echo '<span class="badge bg-primary me-1">' . htmlspecialchars($tool) . '</span>';
                                                             }
                                                         } else {
-                                                            echo htmlspecialchars($skill['tools']);
+                                                            echo '<span class="badge bg-primary me-1">' . htmlspecialchars($skill['tools']) . '</span>';
                                                         }
                                                     ?>
                                                     </span>
@@ -418,10 +447,10 @@ try {
                                                         $technologies = json_decode($skill['technologies'], true);
                                                         if (is_array($technologies)) {
                                                             foreach ($technologies as $tech) {
-                                                                echo '<span class="badge bg-info me-1">' . htmlspecialchars($tech) . '</span>';
+                                                                echo '<span class="badge bg-primary me-1">' . htmlspecialchars($tech) . '</span>';
                                                             }
                                                         } else {
-                                                            echo htmlspecialchars($skill['technologies']);
+                                                            echo '<span class="badge bg-primary me-1">' . htmlspecialchars($skill['technologies']) . '</span>';
                                                         }
                                                     ?>
                                                     </span>
@@ -440,12 +469,12 @@ try {
                             </div>
                         <?php endif; ?>
 
-                        <h4>Certifications</h4>
+                        <h4 class="text-white">Certifications</h4>
                         <?php if (!empty($certifications)): ?>
                             <div class="row">
                                 <?php foreach ($certifications as $index => $certification): ?>
                                     <div class="col-md-6 mb-3">
-                                        <div class="certification-item">
+                                        <div class="certification-item text-white">
                                             <div class="cert-header">
                                                 <h5>
                                                     <i class="fas fa-certificate"></i> 

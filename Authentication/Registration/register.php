@@ -15,252 +15,11 @@ if (isset($_SESSION['error'])) {
     <title>Alumni Registration</title>
     <link rel="stylesheet" href="../../assets/css/register.css">
     <link rel="stylesheet" href="../../assets/css/style.css">
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script> -->
-    <!-- <script src="../../assets/js/animations.js"></script> -->
-    <script>
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     hoverEffect('.next-btn');
-        //     hoverEffect('.submit-btn');
-        //     hoverEffect('.nav-links a');
-        // });
-    </script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
-    <!-- Add this CSS for Select2 styling -->
-    <style>
-        .select2-container {
-            width: 100% !important;
-            margin-bottom: 10px;
-        }
-        .select2-selection--multiple {
-            border: 1px solid #ced4da !important;
-            border-radius: 4px !important;
-        }
-        .select2-error {
-            border-color: #dc3545 !important;
-        }
-        .select2-container--classic .select2-selection--multiple .select2-selection__choice {
-            background-color: #007bff;
-            color: white;
-            border: none;
-        }
-        .select2-container--classic .select2-selection--multiple .select2-selection__choice__remove {
-            color: white;
-        }
-        
-        /* Input validation styles */
-        .form-group {
-            position: relative;
-        }
-        .form-group input {
-            padding-right: 30px;
-        }
-        .validation-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            display: none;
-            pointer-events: none;
-        }
-        .validation-icon.valid {
-            color: #28a745;
-            display: block;
-        }
-        .validation-icon.invalid {
-            color: #dc3545;
-            display: block;
-        }
-        .error-message {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: none;
-        }
-        .form-group.error input {
-            border-color: #dc3545;
-        }
-        .form-group.valid input {
-            border-color: #28a745;
-        }
-        
-        /* Email validation styles */
-        .email-input {
-            position: relative;
-        }
-        .email-input input {
-            padding-right: 30px;
-        }
-        .email-validation-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            display: none;
-        }
-        .email-validation-icon.valid {
-            color: #28a745;
-            display: block;
-        }
-        .email-validation-icon.invalid {
-            color: #dc3545;
-            display: block;
-        }
-        .email-error-message {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: none;
-        }
-        .email-input.error input {
-            border-color: #dc3545;
-        }
-        .email-input.valid input {
-            border-color: #28a745;
-        }
-        
-        /* Additional Select2 styling for better search visibility */
-        .select2-container--classic .select2-search--dropdown .select2-search__field {
-            border: 1px solid #aaa;
-            border-radius: 4px;
-            padding: 8px;
-            font-size: 16px;
-            width: 100%;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .select2-container--classic .select2-search--dropdown .select2-search__field:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-        
-        .select2-container--classic .select2-results__option--highlighted[aria-selected] {
-            background-color: #007bff;
-        }
-        
-        .select2-container--classic .select2-results__option {
-            padding: 8px 12px;
-        }
-        
-        .help-text {
-            display: block;
-            margin-top: 5px;
-            font-size: 0.85em;
-            color: #6c757d;
-        }
-        
-        /* DOB validation styles */
-        .dob-input {
-            position: relative;
-        }
-        .dob-validation-icon {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            display: none;
-        }
-        .dob-validation-icon.valid {
-            color: #28a745;
-            display: block;
-        }
-        .dob-validation-icon.invalid {
-            color: #dc3545;
-            display: block;
-        }
-        .dob-error-message {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: none;
-        }
-        .dob-input.error input {
-            border-color: #dc3545;
-        }
-        .dob-input.valid input {
-            border-color: #28a745;
-        }
-        
-        /* Password validation styles */
-        .password-container {
-            position: relative;
-        }
-        .password-strength-meter {
-            height: 5px;
-            background-color: #eee;
-            margin-top: 10px;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        .password-strength-meter .meter {
-            height: 100%;
-            width: 0;
-            transition: width 0.3s ease, background-color 0.3s ease;
-        }
-        .password-strength-meter .meter.weak {
-            width: 33.33%;
-            background-color: #dc3545;
-        }
-        .password-strength-meter .meter.medium {
-            width: 66.66%;
-            background-color: #ffc107;
-        }
-        .password-strength-meter .meter.strong {
-            width: 100%;
-            background-color: #28a745;
-        }
-        .password-requirements {
-            margin-top: 10px;
-            font-size: 0.875rem;
-            color: #6c757d;
-        }
-        .password-requirements ul {
-            list-style: none;
-            padding-left: 0;
-            margin: 5px 0;
-        }
-        .password-requirements li {
-            margin: 5px 0;
-            display: flex;
-            align-items: center;
-        }
-        .password-requirements li::before {
-            content: '✕';
-            color: #dc3545;
-            margin-right: 8px;
-            font-size: 0.875rem;
-        }
-        .password-requirements li.valid::before {
-            content: '✓';
-            color: #28a745;
-        }
-        .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #6c757d;
-            padding: 0;
-            font-size: 1rem;
-        }
-        .password-toggle:hover {
-            color: #495057;
-        }
-    </style>
 </head>
-<body>
+<body class="register-page">
     <!-- Add navigation bar -->
     <nav class="navbar">
         <div class="logo">
@@ -273,24 +32,52 @@ if (isset($_SESSION['error'])) {
 
     <div class="register-container">
         <div class="registration-form">
-            <!-- Progress Bar and Indicators -->
-            <div class="progress-container">
-                <div class="progress-bar"></div>
-            </div>
-            <div class="step-indicators">
-                <div class="step-indicator active"></div>
-                <div class="step-indicator"></div>
-                <div class="step-indicator"></div>
-                <div class="step-indicator"></div>
-                <div class="step-indicator"></div>
-                <div class="step-indicator"></div>
+            <!-- New Steps Flow -->
+            <div class="steps-flow">
+                <div class="step-line"></div>
+                <div class="step-progress"></div>
                 
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-title">Basic Info</div>
+                </div>
+                
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-title">Education</div>
+                </div>
+                
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-title">Status</div>
+                </div>
+                
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-title">Projects?</div>
+                </div>
+                
+                <div class="step project-dependent" data-step="5">
+                    <div class="step-circle">5</div>
+                    <div class="step-title">Projects</div>
+                </div>
+                
+                <div class="step" data-step="6">
+                    <div class="step-circle skills-step-number">6</div>
+                    <div class="step-title">Skills</div>
+                </div>
+                
+                <div class="step" data-step="7">
+                    <div class="step-circle goals-step-number">7</div>
+                    <div class="step-title">Goals</div>
+                </div>
             </div>
 
-            <!-- Form Steps -->
+            <!-- Form Container -->
+            <div class="form-container">
             <form id="registrationForm" method="POST" action="process_registration.php" enctype="multipart/form-data">
-                <!-- Step 1 -->
-                <div class="form-step" id="step1" style="display: block;">
+                    <!-- Step 1: Basic Information -->
+                    <div class="form-step active" id="step1">
                     <h2>Basic Information</h2>
                     <div class="form-group">
                         <label for="fullname">Full Name*</label>
@@ -311,11 +98,19 @@ if (isset($_SESSION['error'])) {
                     <div class="form-group">
                         <label for="password">Password*</label>
                         <input type="password" id="password" name="password" required>
-                    </div>
                     <div class="password-strength-meter">
                         <div class="meter"></div>
                     </div>
-                    <button type="button" id="step1Next" class="next-btn">Next</button>
+                        </div>
+                        
+                        <div class="step-navigation">
+                            <button type="button" class="nav-button next" id="step1Next">
+                                Next
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
                 </div>
 
                 <!-- Step 2 -->
@@ -334,24 +129,36 @@ if (isset($_SESSION['error'])) {
                         <label>Enrollment Number Format*</label>
                         <div class="radio-group">
                             <div class="radio-item">
-                                <input type="radio" id="format_old" name="enrollment_format" value="old" checked>
+                                    <input type="radio" id="format_old" name="enrollment_format" value="old">
                                 <label for="format_old">Before 2011</label>
                             </div>
                             <div class="radio-item">
-                                <input type="radio" id="format_new" name="enrollment_format" value="new">
+                                    <input type="radio" id="format_new" name="enrollment_format" value="new" checked>
                                 <label for="format_new">After 2011</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group" id="old_format_group">
+                        <div class="form-group" id="old_format_group" style="display: none;">
                         <label for="enrollment_number_old">Old Enrollment Number (YY|Course|Number)*</label>
-                        <input type="text" id="enrollment_number_old" name="enrollment_number_old" placeholder="YY|Course|Number" pattern="[0-9]{2}(BCA|MCA)[0-9]{3}" title="Please enter your enrollment number in the format YY|Course|Number" maxlength="11" required>
-                        <small class="help-text">Enter your enrollment number in the format YY|Course|Number</small>
+                            <input type="text" 
+                                   id="enrollment_number_old" 
+                                   name="enrollment_number_old" 
+                                   placeholder="e.g., 10BCA16 or 07BCA015" 
+                                   pattern="[0-9]{2}(BCA|MCA)([1-9][0-9]|[1-9][0-9]{2})" 
+                                   title="Please enter your enrollment number in the format YY|Course|Number." 
+                                   maxlength="8" 
+                                   required>
                     </div>
-                    <div class="form-group" id="new_format_group" style="display: none;">
+                        <div class="form-group" id="new_format_group">
                         <label for="enrollment_number">New Enrollment Number*</label>
-                        <input type="text" id="enrollment_number" name="enrollment_number" pattern="[0-9]{15}" title="Please enter your 15-digit enrollment number" placeholder="Enter your 15-digit enrollment number" maxlength="15">
-                        <small class="help-text">Enter your 15-digit enrollment number</small>
+                            <input type="text" 
+                                   id="enrollment_number" 
+                                   name="enrollment_number" 
+                                   pattern="\d{15}" 
+                                   title="Please enter your 15-digit enrollment number" 
+                                   placeholder="Enter your 15-digit enrollment number" 
+                                   maxlength="15" 
+                                   required>
                     </div>
                     
                     <div class="button-group">
@@ -368,6 +175,7 @@ if (isset($_SESSION['error'])) {
                         <select id="current_status" name="current_status" required onchange="toggleEmploymentFields()">
                             <option value="">Select your status</option>
                             <option value="employed">Employed</option>
+                            <option value="freelancer">Freelancer</option>
                             <option value="seeking">Seeking Opportunities</option>
                             <option value="student">Further Studies</option>
                             <option value="other">Other</option>
@@ -384,6 +192,49 @@ if (isset($_SESSION['error'])) {
                             <input type="text" id="position" name="position">
                         </div>
                     </div>
+
+                    <div id="freelancer-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="freelance_title">Professional Title*</label>
+                            <input type="text" id="freelance_title" name="freelance_title" placeholder="e.g., Full Stack Developer, UI/UX Designer">
+                        </div>
+                        <div class="form-group">
+                            <label for="platforms">Freelancing Platforms*</label>
+                            <select id="platforms" name="platforms[]" multiple class="select2-multiple">
+                                <option value="upwork">Upwork</option>
+                                <option value="fiverr">Fiverr</option>
+                                <option value="freelancer">Freelancer.com</option>
+                                <option value="toptal">Toptal</option>
+                                <option value="guru">Guru</option>
+                                <option value="independent">Independent/Direct Clients</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expertise_areas">Areas of Expertise*</label>
+                            <select id="expertise_areas" name="expertise_areas[]" multiple class="select2-multiple">
+                                <option value="web_development">Web Development</option>
+                                <option value="mobile_development">Mobile Development</option>
+                                <option value="ui_ux">UI/UX Design</option>
+                                <option value="data_science">Data Science</option>
+                                <option value="digital_marketing">Digital Marketing</option>
+                                <option value="content_writing">Content Writing</option>
+                                <option value="graphic_design">Graphic Design</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="experience_years">Years of Freelancing Experience*</label>
+                            <select id="experience_years" name="experience_years" required>
+                                <option value="">Select Experience</option>
+                                <option value="less_than_1">Less than 1 year</option>
+                                <option value="1_2">1-2 years</option>
+                                <option value="2_3">2-3 years</option>
+                                <option value="3_5">3-5 years</option>
+                                <option value="more_than_5">More than 5 years</option>
+                            </select>
+                        </div>
+                    </div>
                     
                     <div class="button-group">
                         <button type="button" class="prev-btn" id="step3Prev">Previous</button>
@@ -393,7 +244,7 @@ if (isset($_SESSION['error'])) {
 
                 <!-- Step 4: Project Question -->
                 <div class="form-step" id="step4" style="display: none;">
-                    <h2>Would you happen to have any completed projects?</h2>
+                    <h2>Do you have any completed projects you'd like to share with the system?</h2>
                     <div class="form-group">
                         <div class="radio-group">
                             <div class="radio-item">
@@ -406,7 +257,6 @@ if (isset($_SESSION['error'])) {
                             </div>
                         </div>
                     </div>
-                    <!-- Removed project count input -->
                     <div class="button-group">
                         <button type="button" class="prev-btn" id="step4Prev">Previous</button>
                         <button type="button" class="next-btn" id="step4Next">Next</button>
@@ -433,7 +283,6 @@ if (isset($_SESSION['error'])) {
                                  <input type="text" id="project_technologies_0" name="projects[0][technologies]"
                                         placeholder="e.g., PHP, MySQL, JavaScript" required>
                              </div>
-                             <!-- Remove button will be added dynamically for subsequent projects -->
                         </div>
                     </div>
                     <button type="button" id="add-project" class="btn-secondary">Add Another Project</button>
@@ -454,37 +303,20 @@ if (isset($_SESSION['error'])) {
                                     <!-- Options will be populated via JavaScript -->
                                 </select>
                                 <small class="help-text">Type to search or add custom languages</small>
-                                <div id="other_language_container" style="display: none; margin-top: 10px;">
-                                    <input type="text" id="other_language" name="skills[other_language]" placeholder="Enter other language specialization">
-                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="tools">Tools*</label>
                                 <select class="select2-multiple" name="skills[tools][]" multiple="multiple" required>
                                     <!-- Options will be populated via JavaScript -->
                                 </select>
-                                <div id="other_tools_container" style="display: none; margin-top: 10px;">
-                                    <input type="text" id="other_tools" name="skills[other_tools]" placeholder="Enter other tools">
-                                </div>
+                                <small class="help-text">Type to search or add custom tools</small>
                             </div>
                             <div class="form-group">
                                 <label for="technologies">Technologies*</label>
                                 <select class="select2-multiple" name="skills[technologies][]" multiple="multiple" required>
                                     <!-- Options will be populated via JavaScript -->
                                 </select>
-                                <div id="other_technologies_container" style="display: none; margin-top: 10px;">
-                                    <input type="text" id="other_technologies" name="skills[other_technologies]" placeholder="Enter other technologies">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="skill_level">Overall Proficiency Level*</label>
-                                <select name="skills[level]" required>
-                                    <option value="">Select Level</option>
-                                    <option value="beginner">Beginner</option>
-                                    <option value="intermediate">Intermediate</option>
-                                    <option value="advanced">Advanced</option>
-                                    <option value="expert">Expert</option>
-                                </select>
+                                <small class="help-text">Type to search or add custom technologies</small>
                             </div>
                         </div>
                     </div>
@@ -526,379 +358,78 @@ if (isset($_SESSION['error'])) {
                         <button type="submit" class="submit-btn" id="submitForm">Submit</button>
                     </div>
                 </div>
-
             </form>
+            </div>
         </div>
     </div>
 
-    <script src="../../assets/js/register.js"></script> <!-- Added script tag -->
-
-    <script>
-    // Phone validation
-    const phoneInput = document.getElementById('phone');
-    const phoneContainer = phoneInput.parentElement;
-    const phoneIcon = document.createElement('span');
-    phoneIcon.className = 'validation-icon';
-    phoneContainer.appendChild(phoneIcon);
-
-    const phoneError = document.createElement('div');
-    phoneError.className = 'error-message';
-    phoneContainer.appendChild(phoneError);
-
-    phoneInput.addEventListener('input', function() {
-        const value = this.value.replace(/\D/g, '');
-        if (value.length > 10) {
-            this.value = value.slice(0, 10);
-        }
-        
-        if (!this.value) {
-            phoneContainer.classList.remove('valid', 'error');
-            phoneIcon.className = 'validation-icon';
-            phoneError.style.display = 'none';
-        } else if (value.length === 10) {
-            phoneContainer.classList.add('valid');
-            phoneContainer.classList.remove('error');
-            phoneIcon.className = 'validation-icon valid';
-            phoneIcon.innerHTML = '✓';
-            phoneError.style.display = 'none';
-        } else {
-            phoneContainer.classList.add('error');
-            phoneContainer.classList.remove('valid');
-            phoneIcon.className = 'validation-icon invalid';
-            phoneIcon.innerHTML = '✕';
-            phoneError.textContent = 'Please enter exactly 10 digits';
-            phoneError.style.display = 'block';
-        }
-    });
-
-    // Email validation
-    const emailInput = document.getElementById('email');
-    const emailContainer = emailInput.parentElement;
-    const emailIcon = document.createElement('span');
-    emailIcon.className = 'validation-icon';
-    emailContainer.appendChild(emailIcon);
-
-    const emailError = document.createElement('div');
-    emailError.className = 'error-message';
-    emailError.textContent = 'Please enter a valid email address';
-    emailContainer.appendChild(emailError);
-
-    emailInput.addEventListener('input', function() {
-        const email = this.value;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
-        if (email === '') {
-            emailContainer.classList.remove('valid', 'error');
-            emailIcon.className = 'validation-icon';
-            emailError.style.display = 'none';
-        } else if (emailRegex.test(email)) {
-            emailContainer.classList.add('valid');
-            emailContainer.classList.remove('error');
-            emailIcon.className = 'validation-icon valid';
-            emailIcon.innerHTML = '✓';
-            emailError.style.display = 'none';
-        } else {
-            emailContainer.classList.add('error');
-            emailContainer.classList.remove('valid');
-            emailIcon.className = 'validation-icon invalid';
-            emailIcon.innerHTML = '✕';
-            emailError.style.display = 'block';
-        }
-    });
-
-    // DOB validation
-    const dobInput = document.getElementById('dob');
-    const dobContainer = dobInput.parentElement;
-    const dobIcon = document.createElement('span');
-    dobIcon.className = 'validation-icon';
-    dobContainer.appendChild(dobIcon);
-
-    const dobError = document.createElement('div');
-    dobError.className = 'error-message';
-    dobContainer.appendChild(dobError);
-
-    function validateDOB() {
-        const dob = new Date(dobInput.value);
-        const today = new Date();
-        
-        // Reset validation state
-        dobContainer.classList.remove('valid', 'error');
-        dobIcon.className = 'validation-icon';
-        dobError.style.display = 'none';
-
-        // Check if date is empty
-        if (!dobInput.value) {
-            return;
-        }
-
-        // Check if date is valid
-        if (isNaN(dob.getTime())) {
-            dobContainer.classList.add('error');
-            dobIcon.className = 'validation-icon invalid';
-            dobIcon.innerHTML = '✕';
-            dobError.textContent = 'Please enter a valid date';
-            dobError.style.display = 'block';
-            return;
-        }
-
-        // Check if date is in the future
-        if (dob > today) {
-            dobContainer.classList.add('error');
-            dobIcon.className = 'validation-icon invalid';
-            dobIcon.innerHTML = '✕';
-            dobError.textContent = 'Date of birth cannot be in the future';
-            dobError.style.display = 'block';
-            return;
-        }
-
-        // Calculate age
-        let age = today.getFullYear() - dob.getFullYear();
-        const monthDiff = today.getMonth() - dob.getMonth();
-        
-        // Adjust age if birthday hasn't occurred this year
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-            age--;
-        }
-
-        // Set minimum and maximum age limits
-        const minAge = 16;
-        const maxAge = 100;
-
-        // Validate age limits
-        if (age < minAge) {
-            dobContainer.classList.add('error');
-            dobIcon.className = 'validation-icon invalid';
-            dobIcon.innerHTML = '✕';
-            dobError.textContent = `You must be at least ${minAge} years old`;
-            dobError.style.display = 'block';
-        } else if (age > maxAge) {
-            dobContainer.classList.add('error');
-            dobIcon.className = 'validation-icon invalid';
-            dobIcon.innerHTML = '✕';
-            dobError.textContent = `Age cannot be more than ${maxAge} years`;
-            dobError.style.display = 'block';
-        } else {
-            dobContainer.classList.add('valid');
-            dobIcon.className = 'validation-icon valid';
-            dobIcon.innerHTML = '✓';
-        }
-    }
-
-    // Set max date to today
-    const today = new Date().toISOString().split('T')[0];
-    dobInput.setAttribute('max', today);
-
-    // Validate on all relevant events
-    dobInput.addEventListener('input', validateDOB);
-    dobInput.addEventListener('change', validateDOB);
-    dobInput.addEventListener('blur', validateDOB);
-    dobInput.addEventListener('keyup', validateDOB);
-
-    // Prevent manual entry of future dates
-    dobInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            validateDOB();
-        }
-    });
-
-    // Initial validation
-    validateDOB();
-
-    // Handle "Other" option in specialization dropdowns
-    document.addEventListener('DOMContentLoaded', function() {
-        // Language Specialization
-        $('select[name="skills[language][]"]').on('change', function() {
-            const selectedOptions = $(this).val();
-            if (selectedOptions && selectedOptions.includes('other')) {
-                $('#other_language_container').show();
-                // Make the other language input required when "Other" is selected
-                $('#other_language').prop('required', true);
-            } else {
-                $('#other_language_container').hide();
-                // Remove required attribute when "Other" is not selected
-                $('#other_language').prop('required', false);
-            }
-        });
-
-        // Tools
-        $('select[name="skills[tools][]"]').on('change', function() {
-            const selectedOptions = $(this).val();
-            if (selectedOptions && selectedOptions.includes('other')) {
-                $('#other_tools_container').show();
-                // Make the other tools input required when "Other" is selected
-                $('#other_tools').prop('required', true);
-            } else {
-                $('#other_tools_container').hide();
-                // Remove required attribute when "Other" is not selected
-                $('#other_tools').prop('required', false);
-            }
-        });
-
-        // Technologies
-        $('select[name="skills[technologies][]"]').on('change', function() {
-            const selectedOptions = $(this).val();
-            if (selectedOptions && selectedOptions.includes('other')) {
-                $('#other_technologies_container').show();
-                // Make the other technologies input required when "Other" is selected
-                $('#other_technologies').prop('required', true);
-            } else {
-                $('#other_technologies_container').hide();
-                // Remove required attribute when "Other" is not selected
-                $('#other_technologies').prop('required', false);
-            }
-        });
-
-        // Add "Other" option to all specialization dropdowns
-        function addOtherOption(selectElement) {
-            // Check if "Other" option already exists
-            let hasOtherOption = false;
-            $(selectElement).find('option').each(function() {
-                if ($(this).val() === 'other') {
-                    hasOtherOption = true;
-                    return false; // Break the loop
-                }
-            });
-
-            // Add "Other" option if it doesn't exist
-            if (!hasOtherOption) {
-                $(selectElement).append(new Option('Other', 'other'));
-            }
-        }
-
-        // Add "Other" option to all specialization dropdowns
-        addOtherOption('select[name="skills[language][]"]');
-        addOtherOption('select[name="skills[tools][]"]');
-        addOtherOption('select[name="skills[technologies][]"]');
-
-        // Form submission handling
-        $('#registrationForm').on('submit', function(e) {
-            // Check if "Other" is selected but no value is provided
-            const languageSelected = $('select[name="skills[language][]"]').val();
-            const toolsSelected = $('select[name="skills[tools][]"]').val();
-            const technologiesSelected = $('select[name="skills[technologies][]"]').val();
-            
-            let isValid = true;
-            
-            if (languageSelected && languageSelected.includes('other') && !$('#other_language').val()) {
-                alert('Please enter your other language specialization');
-                isValid = false;
-            }
-            
-            if (toolsSelected && toolsSelected.includes('other') && !$('#other_tools').val()) {
-                alert('Please enter your other tools');
-                isValid = false;
-            }
-            
-            if (technologiesSelected && technologiesSelected.includes('other') && !$('#other_technologies').val()) {
-                alert('Please enter your other technologies');
-                isValid = false;
-            }
-            
-            if (!isValid) {
-                e.preventDefault();
-            }
-        });
-    });
-
-    // Password validation
-    const passwordInput = document.getElementById('password');
-    const passwordContainer = passwordInput.parentElement;
-    const passwordIcon = document.createElement('span');
-    passwordIcon.className = 'validation-icon';
-    passwordContainer.appendChild(passwordIcon);
-
-    // Create password toggle button
-    const passwordToggle = document.createElement('button');
-    passwordToggle.type = 'button';
-    passwordToggle.className = 'password-toggle';
-    passwordToggle.innerHTML = '👁️';
-    passwordContainer.appendChild(passwordToggle);
-
-    // Create password strength meter
-    const strengthMeter = document.createElement('div');
-    strengthMeter.className = 'password-strength-meter';
-    const meter = document.createElement('div');
-    meter.className = 'meter';
-    strengthMeter.appendChild(meter);
-    passwordContainer.appendChild(strengthMeter);
-
-    // Create password requirements list
-    const requirements = document.createElement('div');
-    requirements.className = 'password-requirements';
-    requirements.innerHTML = `
-        <ul>
-            <li data-requirement="length">At least 8 characters long</li>
-            <li data-requirement="uppercase">Contains uppercase letter</li>
-            <li data-requirement="lowercase">Contains lowercase letter</li>
-            <li data-requirement="number">Contains number</li>
-            <li data-requirement="special">Contains special character</li>
-        </ul>
-    `;
-    passwordContainer.appendChild(requirements);
-
-    // Password validation function
-    function validatePassword() {
-        const password = passwordInput.value;
-        const requirements = {
-            length: password.length >= 8,
-            uppercase: /[A-Z]/.test(password),
-            lowercase: /[a-z]/.test(password),
-            number: /[0-9]/.test(password),
-            special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
-        };
-
-        // Update requirements list
-        Object.keys(requirements).forEach(req => {
-            const element = document.querySelector(`[data-requirement="${req}"]`);
-            if (requirements[req]) {
-                element.classList.add('valid');
-            } else {
-                element.classList.remove('valid');
-            }
-        });
-
-        // Calculate password strength
-        const strength = Object.values(requirements).filter(Boolean).length;
-        meter.className = 'meter';
-        
-        if (password.length === 0) {
-            meter.style.width = '0';
-            passwordContainer.classList.remove('valid', 'error');
-            passwordIcon.className = 'validation-icon';
-        } else if (strength <= 2) {
-            meter.classList.add('weak');
-            passwordContainer.classList.add('error');
-            passwordContainer.classList.remove('valid');
-            passwordIcon.className = 'validation-icon invalid';
-            passwordIcon.innerHTML = '✕';
-        } else if (strength <= 4) {
-            meter.classList.add('medium');
-            passwordContainer.classList.add('error');
-            passwordContainer.classList.remove('valid');
-            passwordIcon.className = 'validation-icon invalid';
-            passwordIcon.innerHTML = '✕';
-        } else {
-            meter.classList.add('strong');
-            passwordContainer.classList.add('valid');
-            passwordContainer.classList.remove('error');
-            passwordIcon.className = 'validation-icon valid';
-            passwordIcon.innerHTML = '✓';
-        }
-    }
-
-    // Toggle password visibility
-    passwordToggle.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        this.innerHTML = type === 'password' ? '👁️' : '👁️‍🗨️';
-    });
-
-    // Validate password on input
-    passwordInput.addEventListener('input', validatePassword);
-    </script>
-
-    <!-- Add preview for uploaded certificates -->
+    <script src="../../assets/js/register.js"></script>
     <div class="certificate-preview"></div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">✓</div>
+            <h2>Registration Successful!</h2>
+            <p>You will be redirected to the login page in <span id="countdown">5</span> seconds...</p>
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+
+        .modal h2 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .modal p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        #countdown {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
 </body>
 </html>

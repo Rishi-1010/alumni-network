@@ -13,7 +13,7 @@
     font-family: 'Poppins', sans-serif;
 }
 
-body {
+body:not(.register-page) {
     background-color: var(--light-bg);
 }
 
