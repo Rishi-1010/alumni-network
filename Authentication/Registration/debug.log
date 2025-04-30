@@ -49,3 +49,8 @@ Caught Outer Exception: User with this enrollment number already exists in C:\xa
 Caught Outer Exception: User with this enrollment number already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 49
 Caught Outer Exception: Invalid phone number in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 27
 Caught Outer Exception: User with this email already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 34
+Caught Outer Exception: Invalid phone number format. Please enter exactly 10 digits. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 49
+Caught Outer Exception: User with this email already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 56
+Caught Outer Exception: Invalid phone number format. Please enter exactly 10 digits. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 49
+Caught Outer Exception: User with this enrollment number already exists in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 71
+Caught Outer Exception: Invalid phone number format. Please enter exactly 10 digits. in C:\xampp\htdocs\alumni-network\Authentication\Registration\process_registration.php on line 49

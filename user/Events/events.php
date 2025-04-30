@@ -474,6 +474,56 @@ try {
                 justify-content: center;
             }
         }
+
+        .event-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .btn-cancel-registration {
+            padding: 0.6rem 1.2rem;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel-registration:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .registration-notice {
+            color: #6c757d;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .event-actions {
+                align-items: center;
+                width: 100%;
+            }
+
+            .btn-cancel-registration,
+            .registration-notice {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -517,14 +567,25 @@ try {
                                 Registered on <?php echo date('M j, Y', strtotime($event['registration_date'])); ?>
                             </div>
                         </div>
-                        <div class="event-badges">
-                            <span class="event-type <?php echo $event['event_type']; ?>">
-                                <i class="fas <?php echo $event['event_type'] === 'physical' ? 'fa-building' : 'fa-video'; ?>"></i>
-                                <?php echo ucfirst($event['event_type']); ?>
-                            </span>
-                            <span class="event-status status-<?php echo $event['status']; ?>">
-                                <?php echo ucfirst($event['status']); ?>
-                            </span>
+                        <div class="event-actions">
+                            <div class="event-badges">
+                                <span class="event-type <?php echo $event['event_type']; ?>">
+                                    <i class="fas <?php echo $event['event_type'] === 'physical' ? 'fa-building' : 'fa-video'; ?>"></i>
+                                    <?php echo ucfirst($event['event_type']); ?>
+                                </span>
+                                <span class="event-status status-<?php echo $event['status']; ?>">
+                                    <?php echo ucfirst($event['status']); ?>
+                                </span>
+                            </div>
+                            <?php if ($event['status'] === 'upcoming'): ?>
+                                <button class="btn-cancel-registration" data-event-id="<?php echo $event['event_id']; ?>">
+                                    <i class="fas fa-times"></i> Cancel Registration
+                                </button>
+                            <?php elseif ($event['status'] === 'ongoing'): ?>
+                                <div class="registration-notice">
+                                    <i class="fas fa-info-circle"></i> Cannot cancel ongoing event registration
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -587,6 +648,25 @@ try {
         </div>
     </div>
 
+    <!-- Custom Modal -->
+    <div id="customModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Cancellation</h5>
+                <button type="button" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="modalCancel">No, Keep Registration</button>
+                <button type="button" class="btn btn-primary" id="modalConfirm">Yes, Cancel Registration</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../../assets/js/modal.js"></script>
     <script>
         // Event filtering
         document.querySelectorAll('.filter-btn').forEach(button => {
@@ -604,6 +684,18 @@ try {
                     } else {
                         card.style.display = 'none';
                     }
+                });
+            });
+        });
+
+        // Event registration cancellation
+        document.querySelectorAll('.btn-cancel-registration').forEach(button => {
+            button.addEventListener('click', function() {
+                const eventId = this.dataset.eventId;
+                const eventTitle = this.closest('.enrolled-event-card').querySelector('.enrolled-event-title').textContent;
+                
+                customConfirm(`Are you sure you want to cancel your registration for "${eventTitle}"?`, function() {
+                    window.location.href = `cancel_registration.php?event_id=${eventId}`;
                 });
             });
         });

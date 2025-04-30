@@ -242,6 +242,21 @@ try {
         .dashboard-container {
             padding: 15px;
         }
+        .sortable {
+            cursor: pointer;
+            position: relative;
+        }
+        .sortable:hover {
+            background-color: #e9ecef;
+        }
+        .sortable i {
+            margin-left: 5px;
+            font-size: 0.8em;
+        }
+        .sortable.asc i.fa-sort-up,
+        .sortable.desc i.fa-sort-down {
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -302,6 +317,8 @@ try {
             </div>
         </div>
 
+        <hr class="section-divider">
+
         <!-- Add this after your welcome section -->
         <div class="search-controls mb-4">
             <form id="searchForm" class="row g-3">
@@ -313,26 +330,50 @@ try {
                             <option value="fullname">Full Name</option>
                             <option value="email">Email</option>
                             <option value="phone">Phone</option>
-                            <option value="registration_date">Registration Date</option>
                         </optgroup>
                         <optgroup label="Education">
                             <option value="enrollment_number">Enrollment Number</option>
                             <option value="graduation_year">Graduation Year</option>
-                            <option value="verification_status">Verification Status</option>
                         </optgroup>
                         <optgroup label="Professional">
-                            <option value="current_status">Employment Status</option>
                             <option value="company_name">Company Name</option>
                             <option value="position">Position</option>
                         </optgroup>
                         <optgroup label="Skills & Projects">
-                            <option value="skill_name">Skill</option>
+                            <option value="language">Language</option>
                             <option value="project_title">Project Title</option>
                         </optgroup>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Enter search term...">
+                    <select class="form-select" id="languageSelect" name="searchTerm" style="display: none;">
+                        <option value="">Select Language</option>
+                        <option value="Java">Java</option>
+                        <option value="Python">Python</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="C++">C++</option>
+                        <option value="C#">C#</option>
+                        <option value="PHP">PHP</option>
+                        <option value="Ruby">Ruby</option>
+                        <option value="Swift">Swift</option>
+                        <option value="Kotlin">Kotlin</option>
+                        <option value="Go">Go</option>
+                        <option value="Rust">Rust</option>
+                        <option value="TypeScript">TypeScript</option>
+                        <option value="HTML">HTML</option>
+                        <option value="CSS">CSS</option>
+                        <option value="SQL">SQL</option>
+                        <option value="NoSQL">NoSQL</option>
+                        <option value="React">React</option>
+                        <option value="Angular">Angular</option>
+                        <option value="Vue.js">Vue.js</option>
+                        <option value="Node.js">Node.js</option>
+                        <option value="Django">Django</option>
+                        <option value="Flask">Flask</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Laravel">Laravel</option>
+                    </select>
                 </div>
                 <div class="col-md-2">
                     <button type="reset" class="btn btn-secondary w-100">
@@ -353,6 +394,13 @@ try {
                     </select>
                 </div>
                 <div class="col-md-2">
+                    <select class="form-select" id="enrollmentFormatFilter" name="enrollmentFormatFilter">
+                        <option value="">All Enrollment Formats</option>
+                        <option value="yy_course_number">YY|Course|Number Format</option>
+                        <option value="15_digit">15-Digit Format</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <select class="form-select" id="employmentFilter" name="employmentFilter">
                         <option value="">All Professional Status</option>
                         <option value="employed">Employed</option>
@@ -369,12 +417,6 @@ try {
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <select class="form-select" id="sortOrder" name="sortOrder">
-                        <option value="ASC">Ascending</option>
-                        <option value="DESC">Descending</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
                     <select class="form-select" id="recordsPerPage" name="recordsPerPage">
                         <option value="5" selected>5 Records</option>
                         <option value="10">10 Records</option>
@@ -382,6 +424,11 @@ try {
                         <option value="50">50 Records</option>
                         <option value="100">100 Records</option>
                     </select>
+                </div>
+                <div class="col-md-2">
+                    <a href="../Birthdays/wish_birthdays.php" class="btn btn-primary w-100">
+                        <i class="fas fa-birthday-cake"></i> Send Birthday Wishes
+                    </a>
                 </div>
             </div>
         </div>
@@ -391,11 +438,11 @@ try {
             <table class="alumni-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Enrollment Number</th>
-                        <th>Graduation Year</th>
-                        <th>Professional Status</th>
+                        <th class="sortable" data-sort="fullname">Name <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="email">Email <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="enrollment_number">Enrollment Number <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="graduation_year">Graduation Year <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="current_status">Professional Status <i class="fas fa-sort"></i></th>
                         <th>Skills</th>
                         <th>Verification</th>
                         <th>Actions</th>
@@ -543,6 +590,8 @@ try {
         let itemsPerPage = 5; // Changed default from 10 to 5
         let isSearching = false;
         let searchTimeout;
+        let currentSortColumn = 'fullname';
+        let currentSortOrder = 'ASC';
         
         // Function to update search results
         function updateSearchResults(page = 1) {
@@ -554,8 +603,9 @@ try {
                 searchTerm: $('#searchTerm').val(),
                 verificationFilter: $('#verificationFilter').val(),
                 employmentFilter: $('#employmentFilter').val(),
-                sortBy: $('#sortBy').val(),
-                sortOrder: $('#sortOrder').val(),
+                enrollmentFormatFilter: $('#enrollmentFormatFilter').val(),
+                sortBy: currentSortColumn,
+                sortOrder: currentSortOrder,
                 page: page,
                 limit: itemsPerPage
             };
@@ -566,7 +616,6 @@ try {
                 data: searchData,
                 dataType: 'json',
                 success: function(response) {
-                    console.log('Search response:', response);
                     if (response.error) {
                         showAlert('error', response.error);
                         return;
@@ -704,13 +753,14 @@ try {
             $pagination.find('.page-link').on('click', function(e) {
                 e.preventDefault();
                 const page = $(this).data('page');
-                if (page) {
+                if (page && !$(this).parent().hasClass('disabled')) {
                     updateSearchResults(page);
                 }
             });
         }
         
         function deleteAlumni(userId) {
+            console.log('Deleting alumni:', userId);
             customConfirm('Are you sure you want to delete this alumni? This will permanently delete all their data including certificates.', () => {
                 fetch('delete_alumni.php', {
                     method: 'POST',
@@ -751,6 +801,7 @@ try {
         }
 
         function verifyAlumni(userId) {
+            console.log('Verifying alumni:', userId);
             customConfirm('Are you sure you want to verify this alumni?', () => {
                 $.ajax({
                     url: 'verify_alumni.php',
@@ -813,15 +864,32 @@ try {
 
             // Handle category dropdown change
             $('#searchCategory').on('change', function() {
-                // Clear the search term when category changes
-                $('#searchTerm').val('');
-                // Trigger search immediately when category changes
+                const selectedValue = $(this).val();
+                if (selectedValue === 'language') {
+                    $('#searchTerm').hide();
+                    $('#languageSelect').show();
+                } else {
+                    $('#searchTerm').show();
+                    $('#languageSelect').hide();
+                }
+            });
+
+            // Handle language select change
+            $('#languageSelect').on('change', function() {
+                currentPage = 1;
+                updateSearchResults();
+            });
+
+            // Handle enrollment format filter change
+            $('#enrollmentFormatFilter').on('change', function() {
+                const selectedFormat = $(this).val();
+                // Always trigger search, even when empty (All Enrollment Formats)
                 currentPage = 1;
                 updateSearchResults();
             });
 
             // Handle filter changes
-            $('#verificationFilter, #employmentFilter, #sortBy, #sortOrder').on('change', function() {
+            $('#verificationFilter, #employmentFilter, #sortBy').on('change', function() {
                 currentPage = 1;
                 updateSearchResults();
             });
@@ -850,6 +918,43 @@ try {
 
             // Initial search
             updateSearchResults();
+
+            // Add click handlers for sortable columns
+            $('.sortable').on('click', function() {
+                const column = $(this).data('sort');
+                
+                // Update sort icons
+                $('.sortable').removeClass('asc desc');
+                $('.sortable i').removeClass('fa-sort-up fa-sort-down').addClass('fa-sort');
+                
+                if (currentSortColumn === column) {
+                    // Toggle sort order
+                    currentSortOrder = currentSortOrder === 'ASC' ? 'DESC' : 'ASC';
+                } else {
+                    // New column, default to ascending
+                    currentSortColumn = column;
+                    currentSortOrder = 'ASC';
+                }
+                
+                // Update sort icon
+                $(this).addClass(currentSortOrder.toLowerCase());
+                $(this).find('i')
+                    .removeClass('fa-sort')
+                    .addClass(currentSortOrder === 'ASC' ? 'fa-sort-up' : 'fa-sort-down');
+                
+                // Update sort dropdown to match
+                $('#sortBy').val(column);
+                
+                // Trigger search with new sort
+                updateSearchResults(currentPage);
+            });
+
+            // Add debug logging to filter changes
+            $('#searchCategory, #verificationFilter, #employmentFilter, #enrollmentFormatFilter, #sortBy').on('change', function() {
+                const filterName = $(this).attr('id');
+                const filterValue = $(this).val();
+                console.log('Filter changed:', filterName, filterValue);
+            });
         });
     </script>
 </body>

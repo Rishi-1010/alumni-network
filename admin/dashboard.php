@@ -185,12 +185,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
         .notification.fade-out { animation: fadeOut 0.5s forwards; }
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes fadeOut { to { opacity: 0; } }
+
+        /* Add section divider style */
+        .section-divider {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 35px 0;
+            width: 100%;
+        }
+
+        /* Section title styling */
+        .section-title {
+            margin: 35px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .section-title h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        .title-line {
+            flex-grow: 1;
+            height: 1px;
+            background-color: #e0e0e0;
+        }
     </style>
 </head>
 <body>
     <!-- Navigation and other dashboard components -->
     <nav class="dashboard-nav">
-        <div class="logo">
+        <div href="dashboard.php" class="logo">
             <img src="../assets/img/logo.png" alt="Alumni Network Logo">
             <span>SRIMCA_BVPICS Alumni Network</span>
         </div>
@@ -229,8 +256,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_otp'])) {
             </div>
         </div>
 
+        <!-- Section Divider -->
+        <hr class="section-divider">
+
         <!-- Section Title -->
-        <h2 class="section-title">Quick Actions</h2>
+        <div class="section-title">
+            <h2>Quick Actions</h2>
+            <div class="title-line"></div>
+        </div>
 
         <!-- Action Cards -->
         <div class="action-cards">

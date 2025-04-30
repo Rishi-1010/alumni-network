@@ -72,6 +72,24 @@ try {
     <link rel="stylesheet" href="assets/css/dashboard.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
+        /* Simple Development Notice */
+        .dev-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .dev-notice h3 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+        .dev-notice p {
+            margin: 0;
+        }
+
         /* Events Section Styles */
         .events-section {
             background: #fff;
@@ -219,6 +237,13 @@ try {
         </div>
     </nav>
 
+    <!-- Simple Development Notice -->
+    <div class="dev-notice">
+        <h3>🚧 Under Development 🚧</h3>
+        <p>This platform is currently under development. Some features are still being implemented. Thank you for your patience!</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Note: The Admin Portal is nearly developed with most features operational.</p>
+    </div>
+
     <!-- Main Content -->
     <div class="dashboard-container">
         <!-- Welcome Section -->
@@ -285,7 +310,7 @@ try {
                                     <i class="fas <?php echo $event['event_type'] === 'physical' ? 'fa-building' : 'fa-video'; ?>"></i>
                                     <?php echo ucfirst($event['event_type']); ?>
                                 </span>
-                                <a href="event_registration.php?id=<?php echo $event['event_id']; ?>" class="register-btn">
+                                <a href="user/Events/register_event.php?id=<?php echo $event['event_id']; ?>" class="register-btn">
                                     Register Now
                                 </a>
                             </div>

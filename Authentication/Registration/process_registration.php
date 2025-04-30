@@ -22,9 +22,31 @@ try {
         throw new Exception('Invalid request method');
     }
 
+    // Validate email format
+    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        throw new Exception('Invalid email format. Please enter a valid email address.');
+    }
+
+    // Validate DOB
+    $dob = new DateTime($_POST['dob']);
+    $today = new DateTime();
+    $age = $today->diff($dob)->y;
+    
+    // Set minimum and maximum age limits
+    $minAge = 16;
+    $maxAge = 100;
+    
+    if ($age < $minAge) {
+        throw new Exception("You must be at least {$minAge} years old to register.");
+    }
+    
+    if ($age > $maxAge) {
+        throw new Exception("Age cannot be more than {$maxAge} years.");
+    }
+
     // Validate phone number (10 digits)
     if (!preg_match('/^[0-9]{10}$/', $_POST['phone'])) {
-        throw new Exception('Invalid phone number');
+        throw new Exception('Invalid phone number format. Please enter exactly 10 digits.');
     }
 
     // Check if user exists (using correct column name)

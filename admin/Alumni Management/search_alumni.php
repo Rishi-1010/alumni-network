@@ -51,6 +51,12 @@ try {
     // Validate sort order
     $sortOrder = strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC';
 
+    // Validate sort column to prevent SQL injection
+    $allowedSortColumns = ['fullname', 'email', 'enrollment_number', 'graduation_year', 'current_status', 'verification_status'];
+    if (!in_array($sortBy, $allowedSortColumns)) {
+        $sortBy = 'fullname';
+    }
+
     // Handle search term
     if ($searchTerm !== '') {
         switch($searchCategory) {
@@ -108,6 +114,19 @@ try {
         $params[] = $employmentFilter;
     }
 
+    // Handle enrollment format filter
+    if (!empty($_POST['enrollmentFormatFilter'])) {
+        $format = $_POST['enrollmentFormatFilter'];
+        
+        if ($format === 'yy_course_number') {
+            // Filter for YY|Course|Number format (e.g., 05BCA69)
+            $whereConditions[] = "ed.enrollment_number REGEXP '^[0-9]{2}[A-Za-z]+[0-9]+$'";
+        } elseif ($format === '15_digit') {
+            // Filter for 15-digit format (e.g., 202107100510074)
+            $whereConditions[] = "ed.enrollment_number REGEXP '^[0-9]{15}$'";
+        }
+    }
+
     // Add WHERE clause if conditions exist
     if (!empty($whereConditions)) {
         $baseQuery .= " WHERE " . implode(" AND ", $whereConditions);
@@ -142,17 +161,21 @@ try {
         $endRecord = 0;
     }
 
-    // Add ORDER BY
-    $orderByColumn = match($sortBy) {
-        'registration_date' => 'u.registration_date',
-        'graduation_year' => 'ed.graduation_year',
-        'current_status' => 'ps.current_status',
-        'company_name' => 'ps.company_name',
-        'position' => 'ps.position',
-        default => 'u.fullname'
-    };
-    
-    $baseQuery .= " ORDER BY $orderByColumn $sortOrder";
+    // Add ORDER BY with special handling for enrollment_number
+    if ($sortBy === 'enrollment_number') {
+        // For enrollment numbers, we need to handle both formats
+        $baseQuery .= " ORDER BY 
+            CASE 
+                WHEN ed.enrollment_number REGEXP '^[0-9]{15}$' THEN 1 
+                ELSE 2 
+            END,
+            ed.enrollment_number " . $sortOrder;
+    } else {
+        $baseQuery .= " ORDER BY " . ($sortBy === 'registration_date' ? 'u.registration_date' : 
+                       ($sortBy === 'graduation_year' ? 'ed.graduation_year' : 
+                       ($sortBy === 'current_status' ? 'ps.current_status' : 'u.' . $sortBy))) . 
+                       " " . $sortOrder;
+    }
 
     // Add LIMIT for pagination
     $baseQuery .= " LIMIT $limit OFFSET $offset";

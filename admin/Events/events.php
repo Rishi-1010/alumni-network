@@ -515,7 +515,7 @@ $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <!-- Edit Event Modal -->
     <div class="modal fade" id="editEventModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Event</h5>
@@ -525,51 +525,57 @@ $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="modal-body">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="event_id" id="edit_event_id">
-                        <div class="mb-3">
-                            <label class="form-label">Event Title</label>
-                            <input type="text" class="form-control" name="title" id="edit_title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea class="form-control" name="description" id="edit_description" rows="3" required></textarea>
-                        </div>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Event Date</label>
-                                <input type="date" class="form-control" name="event_date" id="edit_event_date" required>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Event Title</label>
+                                    <input type="text" class="form-control" name="title" id="edit_title" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" id="edit_description" rows="3" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Event Date</label>
+                                        <input type="date" class="form-control" name="event_date" id="edit_event_date" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Event Time</label>
+                                        <input type="time" class="form-control" name="event_time" id="edit_event_time" required>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Event Time</label>
-                                <input type="time" class="form-control" name="event_time" id="edit_event_time" required>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" class="form-control" name="location" id="edit_location" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Event Type</label>
+                                    <select class="form-select" name="event_type" id="edit_event_type" required>
+                                        <option value="physical">Physical</option>
+                                        <option value="virtual">Virtual</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Maximum Attendees</label>
+                                    <input type="number" class="form-control" name="max_attendees" id="edit_max_attendees" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Registration Deadline</label>
+                                    <input type="datetime-local" class="form-control" name="registration_deadline" id="edit_registration_deadline" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="status" id="edit_status" required>
+                                        <option value="upcoming">Upcoming</option>
+                                        <option value="ongoing">Ongoing</option>
+                                        <option value="past">Past</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Location</label>
-                            <input type="text" class="form-control" name="location" id="edit_location" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Event Type</label>
-                            <select class="form-select" name="event_type" id="edit_event_type" required>
-                                <option value="physical">Physical</option>
-                                <option value="virtual">Virtual</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Maximum Attendees</label>
-                            <input type="number" class="form-control" name="max_attendees" id="edit_max_attendees" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Registration Deadline</label>
-                            <input type="datetime-local" class="form-control" name="registration_deadline" id="edit_registration_deadline" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Status</label>
-                            <select class="form-select" name="status" id="edit_status" required>
-                                <option value="upcoming">Upcoming</option>
-                                <option value="ongoing">Ongoing</option>
-                                <option value="past">Past</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -659,6 +665,10 @@ $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             throw new Error(data.error);
                         }
                         
+                        // Format the registration_deadline to datetime-local format
+                        const registrationDate = new Date(data.registration_deadline);
+                        const formattedDateTime = registrationDate.toISOString().slice(0, 16);
+                        
                         document.getElementById('edit_event_id').value = data.event_id;
                         document.getElementById('edit_title').value = data.title;
                         document.getElementById('edit_description').value = data.description;
@@ -667,7 +677,7 @@ $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         document.getElementById('edit_location').value = data.location;
                         document.getElementById('edit_event_type').value = data.event_type;
                         document.getElementById('edit_max_attendees').value = data.max_attendees;
-                        document.getElementById('edit_registration_deadline').value = data.registration_deadline;
+                        document.getElementById('edit_registration_deadline').value = formattedDateTime;
                         document.getElementById('edit_status').value = data.status;
                         
                         new bootstrap.Modal(document.getElementById('editEventModal')).show();

@@ -50,6 +50,81 @@ if (isset($_SESSION['error'])) {
             color: white;
         }
         
+        /* Input validation styles */
+        .form-group {
+            position: relative;
+        }
+        .form-group input {
+            padding-right: 30px;
+        }
+        .validation-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            display: none;
+            pointer-events: none;
+        }
+        .validation-icon.valid {
+            color: #28a745;
+            display: block;
+        }
+        .validation-icon.invalid {
+            color: #dc3545;
+            display: block;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .form-group.error input {
+            border-color: #dc3545;
+        }
+        .form-group.valid input {
+            border-color: #28a745;
+        }
+        
+        /* Email validation styles */
+        .email-input {
+            position: relative;
+        }
+        .email-input input {
+            padding-right: 30px;
+        }
+        .email-validation-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            display: none;
+        }
+        .email-validation-icon.valid {
+            color: #28a745;
+            display: block;
+        }
+        .email-validation-icon.invalid {
+            color: #dc3545;
+            display: block;
+        }
+        .email-error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .email-input.error input {
+            border-color: #dc3545;
+        }
+        .email-input.valid input {
+            border-color: #28a745;
+        }
+        
         /* Additional Select2 styling for better search visibility */
         .select2-container--classic .select2-search--dropdown .select2-search__field {
             border: 1px solid #aaa;
@@ -79,6 +154,109 @@ if (isset($_SESSION['error'])) {
             margin-top: 5px;
             font-size: 0.85em;
             color: #6c757d;
+        }
+        
+        /* DOB validation styles */
+        .dob-input {
+            position: relative;
+        }
+        .dob-validation-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            display: none;
+        }
+        .dob-validation-icon.valid {
+            color: #28a745;
+            display: block;
+        }
+        .dob-validation-icon.invalid {
+            color: #dc3545;
+            display: block;
+        }
+        .dob-error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .dob-input.error input {
+            border-color: #dc3545;
+        }
+        .dob-input.valid input {
+            border-color: #28a745;
+        }
+        
+        /* Password validation styles */
+        .password-container {
+            position: relative;
+        }
+        .password-strength-meter {
+            height: 5px;
+            background-color: #eee;
+            margin-top: 10px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .password-strength-meter .meter {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .password-strength-meter .meter.weak {
+            width: 33.33%;
+            background-color: #dc3545;
+        }
+        .password-strength-meter .meter.medium {
+            width: 66.66%;
+            background-color: #ffc107;
+        }
+        .password-strength-meter .meter.strong {
+            width: 100%;
+            background-color: #28a745;
+        }
+        .password-requirements {
+            margin-top: 10px;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .password-requirements ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 5px 0;
+        }
+        .password-requirements li {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        .password-requirements li::before {
+            content: '✕';
+            color: #dc3545;
+            margin-right: 8px;
+            font-size: 0.875rem;
+        }
+        .password-requirements li.valid::before {
+            content: '✓';
+            color: #28a745;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 0;
+            font-size: 1rem;
+        }
+        .password-toggle:hover {
+            color: #495057;
         }
     </style>
 </head>
@@ -355,15 +533,177 @@ if (isset($_SESSION['error'])) {
 
     <script src="../../assets/js/register.js"></script> <!-- Added script tag -->
 
-
     <script>
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    document.querySelector('input[type="file"]').addEventListener('change', function(e) {
-        if (this.files[0].size > MAX_FILE_SIZE) {
-            alert('File size must be less than 5MB');
-            this.value = '';
+    // Phone validation
+    const phoneInput = document.getElementById('phone');
+    const phoneContainer = phoneInput.parentElement;
+    const phoneIcon = document.createElement('span');
+    phoneIcon.className = 'validation-icon';
+    phoneContainer.appendChild(phoneIcon);
+
+    const phoneError = document.createElement('div');
+    phoneError.className = 'error-message';
+    phoneContainer.appendChild(phoneError);
+
+    phoneInput.addEventListener('input', function() {
+        const value = this.value.replace(/\D/g, '');
+        if (value.length > 10) {
+            this.value = value.slice(0, 10);
+        }
+        
+        if (!this.value) {
+            phoneContainer.classList.remove('valid', 'error');
+            phoneIcon.className = 'validation-icon';
+            phoneError.style.display = 'none';
+        } else if (value.length === 10) {
+            phoneContainer.classList.add('valid');
+            phoneContainer.classList.remove('error');
+            phoneIcon.className = 'validation-icon valid';
+            phoneIcon.innerHTML = '✓';
+            phoneError.style.display = 'none';
+        } else {
+            phoneContainer.classList.add('error');
+            phoneContainer.classList.remove('valid');
+            phoneIcon.className = 'validation-icon invalid';
+            phoneIcon.innerHTML = '✕';
+            phoneError.textContent = 'Please enter exactly 10 digits';
+            phoneError.style.display = 'block';
         }
     });
+
+    // Email validation
+    const emailInput = document.getElementById('email');
+    const emailContainer = emailInput.parentElement;
+    const emailIcon = document.createElement('span');
+    emailIcon.className = 'validation-icon';
+    emailContainer.appendChild(emailIcon);
+
+    const emailError = document.createElement('div');
+    emailError.className = 'error-message';
+    emailError.textContent = 'Please enter a valid email address';
+    emailContainer.appendChild(emailError);
+
+    emailInput.addEventListener('input', function() {
+        const email = this.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (email === '') {
+            emailContainer.classList.remove('valid', 'error');
+            emailIcon.className = 'validation-icon';
+            emailError.style.display = 'none';
+        } else if (emailRegex.test(email)) {
+            emailContainer.classList.add('valid');
+            emailContainer.classList.remove('error');
+            emailIcon.className = 'validation-icon valid';
+            emailIcon.innerHTML = '✓';
+            emailError.style.display = 'none';
+        } else {
+            emailContainer.classList.add('error');
+            emailContainer.classList.remove('valid');
+            emailIcon.className = 'validation-icon invalid';
+            emailIcon.innerHTML = '✕';
+            emailError.style.display = 'block';
+        }
+    });
+
+    // DOB validation
+    const dobInput = document.getElementById('dob');
+    const dobContainer = dobInput.parentElement;
+    const dobIcon = document.createElement('span');
+    dobIcon.className = 'validation-icon';
+    dobContainer.appendChild(dobIcon);
+
+    const dobError = document.createElement('div');
+    dobError.className = 'error-message';
+    dobContainer.appendChild(dobError);
+
+    function validateDOB() {
+        const dob = new Date(dobInput.value);
+        const today = new Date();
+        
+        // Reset validation state
+        dobContainer.classList.remove('valid', 'error');
+        dobIcon.className = 'validation-icon';
+        dobError.style.display = 'none';
+
+        // Check if date is empty
+        if (!dobInput.value) {
+            return;
+        }
+
+        // Check if date is valid
+        if (isNaN(dob.getTime())) {
+            dobContainer.classList.add('error');
+            dobIcon.className = 'validation-icon invalid';
+            dobIcon.innerHTML = '✕';
+            dobError.textContent = 'Please enter a valid date';
+            dobError.style.display = 'block';
+            return;
+        }
+
+        // Check if date is in the future
+        if (dob > today) {
+            dobContainer.classList.add('error');
+            dobIcon.className = 'validation-icon invalid';
+            dobIcon.innerHTML = '✕';
+            dobError.textContent = 'Date of birth cannot be in the future';
+            dobError.style.display = 'block';
+            return;
+        }
+
+        // Calculate age
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        
+        // Adjust age if birthday hasn't occurred this year
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+
+        // Set minimum and maximum age limits
+        const minAge = 16;
+        const maxAge = 100;
+
+        // Validate age limits
+        if (age < minAge) {
+            dobContainer.classList.add('error');
+            dobIcon.className = 'validation-icon invalid';
+            dobIcon.innerHTML = '✕';
+            dobError.textContent = `You must be at least ${minAge} years old`;
+            dobError.style.display = 'block';
+        } else if (age > maxAge) {
+            dobContainer.classList.add('error');
+            dobIcon.className = 'validation-icon invalid';
+            dobIcon.innerHTML = '✕';
+            dobError.textContent = `Age cannot be more than ${maxAge} years`;
+            dobError.style.display = 'block';
+        } else {
+            dobContainer.classList.add('valid');
+            dobIcon.className = 'validation-icon valid';
+            dobIcon.innerHTML = '✓';
+        }
+    }
+
+    // Set max date to today
+    const today = new Date().toISOString().split('T')[0];
+    dobInput.setAttribute('max', today);
+
+    // Validate on all relevant events
+    dobInput.addEventListener('input', validateDOB);
+    dobInput.addEventListener('change', validateDOB);
+    dobInput.addEventListener('blur', validateDOB);
+    dobInput.addEventListener('keyup', validateDOB);
+
+    // Prevent manual entry of future dates
+    dobInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            validateDOB();
+        }
+    });
+
+    // Initial validation
+    validateDOB();
 
     // Handle "Other" option in specialization dropdowns
     document.addEventListener('DOMContentLoaded', function() {
@@ -460,6 +800,102 @@ if (isset($_SESSION['error'])) {
             }
         });
     });
+
+    // Password validation
+    const passwordInput = document.getElementById('password');
+    const passwordContainer = passwordInput.parentElement;
+    const passwordIcon = document.createElement('span');
+    passwordIcon.className = 'validation-icon';
+    passwordContainer.appendChild(passwordIcon);
+
+    // Create password toggle button
+    const passwordToggle = document.createElement('button');
+    passwordToggle.type = 'button';
+    passwordToggle.className = 'password-toggle';
+    passwordToggle.innerHTML = '👁️';
+    passwordContainer.appendChild(passwordToggle);
+
+    // Create password strength meter
+    const strengthMeter = document.createElement('div');
+    strengthMeter.className = 'password-strength-meter';
+    const meter = document.createElement('div');
+    meter.className = 'meter';
+    strengthMeter.appendChild(meter);
+    passwordContainer.appendChild(strengthMeter);
+
+    // Create password requirements list
+    const requirements = document.createElement('div');
+    requirements.className = 'password-requirements';
+    requirements.innerHTML = `
+        <ul>
+            <li data-requirement="length">At least 8 characters long</li>
+            <li data-requirement="uppercase">Contains uppercase letter</li>
+            <li data-requirement="lowercase">Contains lowercase letter</li>
+            <li data-requirement="number">Contains number</li>
+            <li data-requirement="special">Contains special character</li>
+        </ul>
+    `;
+    passwordContainer.appendChild(requirements);
+
+    // Password validation function
+    function validatePassword() {
+        const password = passwordInput.value;
+        const requirements = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password),
+            special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        };
+
+        // Update requirements list
+        Object.keys(requirements).forEach(req => {
+            const element = document.querySelector(`[data-requirement="${req}"]`);
+            if (requirements[req]) {
+                element.classList.add('valid');
+            } else {
+                element.classList.remove('valid');
+            }
+        });
+
+        // Calculate password strength
+        const strength = Object.values(requirements).filter(Boolean).length;
+        meter.className = 'meter';
+        
+        if (password.length === 0) {
+            meter.style.width = '0';
+            passwordContainer.classList.remove('valid', 'error');
+            passwordIcon.className = 'validation-icon';
+        } else if (strength <= 2) {
+            meter.classList.add('weak');
+            passwordContainer.classList.add('error');
+            passwordContainer.classList.remove('valid');
+            passwordIcon.className = 'validation-icon invalid';
+            passwordIcon.innerHTML = '✕';
+        } else if (strength <= 4) {
+            meter.classList.add('medium');
+            passwordContainer.classList.add('error');
+            passwordContainer.classList.remove('valid');
+            passwordIcon.className = 'validation-icon invalid';
+            passwordIcon.innerHTML = '✕';
+        } else {
+            meter.classList.add('strong');
+            passwordContainer.classList.add('valid');
+            passwordContainer.classList.remove('error');
+            passwordIcon.className = 'validation-icon valid';
+            passwordIcon.innerHTML = '✓';
+        }
+    }
+
+    // Toggle password visibility
+    passwordToggle.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '👁️' : '👁️‍🗨️';
+    });
+
+    // Validate password on input
+    passwordInput.addEventListener('input', validatePassword);
     </script>
 
     <!-- Add preview for uploaded certificates -->
